@@ -302,7 +302,7 @@ jobs:
             > sbom.json
           sbom="$(jq -er .sbom sbom.json)"
           du -sh "${sbom}"
-          echo "SBOM=${sbom}" >> $GITHUB_OUTPUT
+          echo "SBOM=${sbom}" >> "$GITHUB_OUTPUT"
 
       - name: Install dgoss
         run: |
@@ -375,7 +375,7 @@ jobs:
             --sbom "${{ steps.generate-sbom.outputs.SBOM }}" \
             > sbom-attach.json
           sbom_digest="$(jq -er .sbom_digest sbom-attach.json)"
-          echo "sbom_digest=${sbom_digest}" >> $GITHUB_OUTPUT
+          echo "sbom_digest=${sbom_digest}" >> "$GITHUB_OUTPUT"
 
       - name: Sign SBOM OCI Artifact
         if: github.event_name != 'pull_request'
