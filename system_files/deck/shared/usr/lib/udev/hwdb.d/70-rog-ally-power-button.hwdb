@@ -1,0 +1,4 @@
+# ASUS ROG Ally & ROG Xbox Ally X
+# Mute duplicate ACPI power button event device so only AMD/ASUS gpio-keys handles power events
+evdev:name:Power Button:dmi:*svnASUSTeK*:pn*RC7*
+ STEAMOS_POWER_BUTTON_IGNORE=1
