@@ -92,8 +92,7 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=bind,from=akmods-extra,src=/rpms/kmods,dst=/tmp/rpms/kmods-extra \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    /ctx/install-kernel-akmods && \
-    /ctx/cleanup
+    /ctx/bazzite/install-kernel-akmods
 
 # Setup Copr repos
 RUN --mount=type=cache,dst=/var/cache \

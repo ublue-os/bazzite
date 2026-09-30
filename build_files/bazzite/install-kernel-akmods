@@ -1,0 +1,104 @@
+#!/usr/bin/env bash
+#
+# Install kernel packages and akmods, bypassing dracut/rpm-ostree triggers.
+#
+set -euo pipefail
+
+echo "::group::Executing install-kernel-akmods"
+trap 'echo "::endgroup::"' EXIT
+
+# ── 1. Create shims to bypass kernel install triggers ─────────────────────────
+# Create shim scripts to prevent kernel installation from triggering dracut
+# and rpm-ostree, allowing the build to progress with minimal impact.
+echo "==> Creating kernel install shims..."
+
+pushd /usr/lib/kernel/install.d
+    mv -f 05-rpmostree.install 05-rpmostree.install.bak
+    mv -f 50-dracut.install 50-dracut.install.bak
+    printf '%s\n' '#!/bin/sh' 'exit 0' > 05-rpmostree.install
+    printf '%s\n' '#!/bin/sh' 'exit 0' > 50-dracut.install
+    chmod +x 05-rpmostree.install 50-dracut.install
+popd
+
+# ── 2. Remove existing kernel packages ────────────────────────────────────────
+# Erase all existing kernel-related packages to avoid conflicts.
+echo "==> Removing existing kernel packages..."
+declare -a kernel_packages=(
+    "kernel"
+    "kernel-core"
+    "kernel-modules"
+    "kernel-modules-core"
+    "kernel-modules-extra"
+    "kernel-tools-libs"
+    "kernel-tools"
+)
+
+for pkg in "${kernel_packages[@]}"; do
+    echo "    Erasing '${pkg}'..."
+    rpm --erase "${pkg}" --nodeps
+done
+
+# ── 3. Cleanup leftover modules ───────────────────────────────────────────────
+# Remove leftover module directories not covered by kernel-* packages.
+echo "==> Cleaning up leftover modules..."
+rm -rf /usr/lib/modules
+
+# ── 4. Install kernel packages ────────────────────────────────────────────────
+# Install kernel RPMs from /tmp/kernel-rpms using dnf5.
+echo "==> Installing kernel packages..."
+dnf5 -y install \
+    /tmp/kernel-rpms/kernel-[0-9]*.rpm \
+    /tmp/kernel-rpms/kernel-core-*.rpm \
+    /tmp/kernel-rpms/kernel-modules-*.rpm \
+    /tmp/kernel-rpms/kernel-devel-*.rpm
+
+# ── 5. Versionlock kernel packages ────────────────────────────────────────────
+# Prevent kernel packages from being updated by dnf.
+echo "==> Version locking kernel packages..."
+dnf5 versionlock add \
+    kernel \
+    kernel-devel \
+    kernel-devel-matched \
+    kernel-core \
+    kernel-modules
+
+# ── 6. Install common akmods ──────────────────────────────────────────────────
+# Install common kernel module RPMs (KVMFR, OpenRazer, v4l2loopback, etc.).
+echo "==> Installing common akmods..."
+/ctx/install-kmods \
+    /tmp/rpms/{common,kmods}/*kvmfr*.rpm \
+    /tmp/rpms/{common,kmods}/*openrazer*.rpm \
+    /tmp/rpms/{common,kmods}/*v4l2loopback*.rpm \
+    /tmp/rpms/{common,kmods}/*xone*.rpm \
+    /tmp/rpms/{common,kmods}/*wl*.rpm
+
+# ── 7. Install extra akmods ───────────────────────────────────────────────────
+# Install extra kernel module RPMs (zenergy, gcadapter, evdi, etc.).
+echo "==> Installing extra akmods..."
+/ctx/install-kmods \
+    /tmp/rpms/{extra,kmods-extra}/*zenergy*.rpm \
+    /tmp/rpms/{extra,kmods-extra}/*gcadapter*.rpm \
+    /tmp/rpms/{extra,kmods-extra}/*evdi*.rpm \
+    /tmp/rpms/{extra,kmods-extra}/*kvmfr*.rpm \
+    /tmp/rpms/{extra,kmods-extra}/*new-lg4ff*.rpm \
+    /tmp/rpms/{extra,kmods-extra}/*hid-tmff2*.rpm \
+    /tmp/rpms/{extra,kmods-extra}/*t150-driver*.rpm \
+    /tmp/rpms/{extra,kmods-extra}/*hid-fanatecff*.rpm \
+    /tmp/rpms/{extra,kmods-extra}/*ryzen_smu*.rpm \
+    /tmp/rpms/{extra,kmods-extra}/*sc0710*.rpm \
+    /tmp/rpms/{extra,kmods-extra}/*nct6687d*.rpm \
+    /tmp/rpms/{extra,kmods-extra}/*system76*.rpm \
+    /tmp/rpms/{extra,kmods-extra}/*vhba*.rpm
+
+# ── 8. Restore original kernel install.d scripts ──────────────────────────────
+# Move the backed-up install scripts back to their original names.
+echo "==> Restoring original kernel install.d scripts..."
+
+pushd /usr/lib/kernel/install.d
+    mv -f 05-rpmostree.install.bak 05-rpmostree.install
+    mv -f 50-dracut.install.bak 50-dracut.install
+popd
+
+# ── 9. Cleanup ────────────────────────────────────────────────────────────────
+echo "==> Running cleanup..."
+/ctx/cleanup
