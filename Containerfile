@@ -461,7 +461,7 @@ RUN --mount=type=cache,dst=/var/cache \
     desktop-file-edit --set-key=Hidden --set-value=true /usr/share/applications/nvtop.desktop && \
     desktop-file-edit --set-key=Hidden --set-value=true /usr/share/applications/btop.desktop && \
     desktop-file-edit --set-key=Hidden --set-value=true /usr/share/applications/yad-icon-browser.desktop && \
-    desktop-file-edit --set-key=Hidden --set-value=true /usr/share/applications/com.microsoft.edit.desktop && \
+    rm /usr/share/applications/com.microsoft.edit.desktop && \
     sed -i 's/#UserspaceHID.*/UserspaceHID=true/' /etc/bluetooth/input.conf && \
     sed -i "s|grub_probe\} --target=device /\`|grub_probe} --target=device /sysroot\`|g" /usr/bin/grub2-mkconfig && \
     rm -f /usr/lib/systemd/system/service.d/50-keep-warm.conf && \
