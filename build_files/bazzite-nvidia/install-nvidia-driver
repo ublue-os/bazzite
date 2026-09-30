@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+#
+# Install NVIDIA drivers and configure Mesa support.
+#
+# Enables the terra-mesa repo, installs EGL/Wayland packages, runs the
+# NVIDIA installer, removes Nouveau Vulkan ICDs, and sets up Waydroid
+# with NVIDIA support.
+#
+set -euo pipefail
+
+# ── 1. Enable terra-mesa and ublue-os/staging COPR ──────────────────────────
+# terra-mesa provides NVIDIA-compatible Mesa drivers; staging has additional
+# packages needed for the installation.
+echo "==> Enabling terra-mesa and ublue-os/staging..."
+dnf5 config-manager setopt "terra-mesa".enabled=1
+dnf5 -y copr enable ublue-os/staging
+
+# ── 2. Install EGL and Wayland packages ─────────────────────────────────────
+# EGL and Wayland integration libraries for both x86_64 and i686 architectures.
+echo "==> Installing EGL and Wayland packages..."
+dnf5 -y install \
+    egl-wayland.x86_64 \
+    egl-wayland.i686 \
+    egl-wayland2.x86_64 \
+    egl-wayland2.i686
+
+# ── 3. Run NVIDIA installer ─────────────────────────────────────────────────
+# Installs NVIDIA kernel modules and drivers from prebuilt RPMs.
+echo "==> Running NVIDIA installer..."
+IMAGE_NAME="SKIP_PACKAGE_INSTALL" \
+    AKMODNV_PATH="/tmp/rpms/nvidia" \
+    MULTILIB=1 \
+    /tmp/rpms/nvidia/ublue-os/nvidia-install.sh
+
+# ── 4. Remove Nouveau Vulkan ICDs ───────────────────────────────────────────
+# Nouveau is the open-source NVIDIA driver; remove its Vulkan ICD files to
+# prevent conflicts with the proprietary NVIDIA driver.
+echo "==> Removing Nouveau Vulkan ICDs..."
+rm -f /usr/share/vulkan/icd.d/nouveau_icd.*.json
+
+# ── 5. Create NVIDIA ML symlink ─────────────────────────────────────────────
+# libnvidia-ml.so is required by tools like nvidia-smi and CUDA.
+echo "    Creating libnvidia-ml.so symlink..."
+ln -s libnvidia-ml.so.1 /usr/lib64/libnvidia-ml.so
+
+# ── 6. Disable terra-mesa and ublue-os/staging ──────────────────────────────
+# Re-enable skip_if_unavailable and disable repos used only for this install.
+echo "==> Disabling terra-mesa and ublue-os/staging..."
+dnf5 config-manager setopt "terra-mesa".enabled=0
+dnf5 -y copr disable ublue-os/staging
+
+# ── 7. Swap Waydroid for NVIDIA variant ─────────────────────────────────────
+# Replace the default Waydroid package with the NVIDIA-optimized version.
+echo "    Swapping Waydroid for NVIDIA variant..."
+dnf5 -y swap --repo terra-extras waydroid waydroid-nvidia
+
+# ── 8. Run cleanup ──────────────────────────────────────────────────────────
+echo "==> Running cleanup..."
+/ctx/cleanup

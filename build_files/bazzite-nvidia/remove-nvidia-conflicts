@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+#
+# Remove packages and configurations that conflict with NVIDIA drivers.
+#
+# Disables skip_if_unavailable, removes incompatible firmware and utilities,
+# and swaps cardwire for switcheroo-control on non-deck images.
+#
+set -euo pipefail
+
+# ── 1. Disable skip_if_unavailable ──────────────────────────────────────────
+# Ensures DNF doesn't silently skip unavailable packages during removal.
+echo "==> Disabling skip_if_unavailable..."
+dnf5 config-manager unsetopt skip_if_unavailable
+
+# ── 2. Remove conflicting firmware ──────────────────────────────────────────
+# nvidia-gpu-firmware conflicts with NVIDIA proprietary drivers.
+echo "==> Removing conflicting firmware..."
+dnf5 -y remove nvidia-gpu-firmware
+
+# ── 3. Replace cardwire with switcheroo-control (nvidia-lts only) ───────────
+# On nvidia-lts, cardwire doesn't work well; swap it for switcheroo-control
+# and install supergfxctl from the terra repo.
+if [[ "${NVIDIA_FLAVOR}" = "nvidia-lts" ]]; then
+    echo "    Disabling cardwired.service..."
+    systemctl disable cardwired.service
+
+    echo "    Removing cardwire-gui..."
+    dnf5 -y remove cardwire-gui
+
+    echo "    Swapping cardwire for switcheroo-control..."
+    dnf5 -y swap cardwire switcheroo-control
+
+    echo "    Installing supergfxctl from terra repo..."
+    dnf5 -y install --enable-repo=terra supergfxctl
+fi
+
+# ── 4. Remove nvidia-deck configuration on non-deck images ──────────────────
+# The nvidia-deck.conf is only relevant for Steam Deck images.
+if ! grep -q "deck" <<< "${IMAGE_NAME}"; then
+    echo "    Removing nvidia-deck.conf (not a deck image)..."
+    rm -f /usr/lib/modprobe.d/nvidia-deck.conf
+fi
+
+# ── 5. Run cleanup ──────────────────────────────────────────────────────────
+echo "==> Running cleanup..."
+/ctx/cleanup
