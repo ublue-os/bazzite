@@ -87,7 +87,3 @@ if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then
     dnf versionlock add "qt6-*"
     dnf versionlock add "plasma-*"
 fi
-
-# -- 8. Cleanup --
-echo "==> Running cleanup..."
-/ctx/cleanup

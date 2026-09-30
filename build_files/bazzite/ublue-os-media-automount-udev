@@ -19,7 +19,3 @@ dnf5 install -y \
 # Enable the service, ignoring errors if it is already enabled.
 echo "==> Enabling automount service..."
 systemctl enable ublue-os-media-automount.service || true
-
-# -- 3. Cleanup --
-echo "==> Running cleanup..."
-/ctx/cleanup

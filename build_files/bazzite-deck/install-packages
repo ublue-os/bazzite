@@ -82,8 +82,3 @@ echo "==> Creating steamos-logger symlinks..."
 ln -s /usr/bin/steamos-logger /usr/bin/steamos-info
 ln -s /usr/bin/steamos-logger /usr/bin/steamos-notice
 ln -s /usr/bin/steamos-logger /usr/bin/steamos-warning
-
-# -- 6. Run cleanup --
-# Clean up package manager caches and temporary files.
-echo "==> Running cleanup..."
-/ctx/cleanup

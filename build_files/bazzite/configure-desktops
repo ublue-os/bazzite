@@ -22,7 +22,3 @@ fi
 # Install rom-properties-utils for both KDE and GNOME.
 echo "==> Installing common packages..."
 dnf5 -y install rom-properties-utils
-
-# -- 3. Cleanup --
-echo "==> Running cleanup..."
-/ctx/cleanup

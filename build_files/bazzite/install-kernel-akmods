@@ -98,7 +98,3 @@ pushd /usr/lib/kernel/install.d
     mv -f 05-rpmostree.install.bak 05-rpmostree.install
     mv -f 50-dracut.install.bak 50-dracut.install
 popd
-
-# -- 9. Cleanup --
-echo "==> Running cleanup..."
-/ctx/cleanup

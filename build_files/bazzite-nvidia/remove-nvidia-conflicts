@@ -43,7 +43,3 @@ if ! grep -q "deck" <<< "${IMAGE_NAME}"; then
     echo "    Removing nvidia-deck.conf (not a deck image)..."
     rm -f /usr/lib/modprobe.d/nvidia-deck.conf
 fi
-
-# -- 5. Run cleanup --
-echo "==> Running cleanup..."
-/ctx/cleanup

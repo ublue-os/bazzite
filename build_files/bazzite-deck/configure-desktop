@@ -47,8 +47,3 @@ fi
 # Activate sddm as the default display manager.
 echo "==> Enabling sddm..."
 systemctl enable sddm.service
-
-# -- 4. Run cleanup --
-# Clean up package manager caches and temporary files.
-echo "==> Running cleanup..."
-/ctx/cleanup

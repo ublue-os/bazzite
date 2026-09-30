@@ -29,5 +29,4 @@ echo "==> Installing firmware..."
 cp -a /tmp/firmware/. /
 
 # -- 5. Cleanup --
-echo "==> Cleaning up..."
 rm -rf /tmp/firmware

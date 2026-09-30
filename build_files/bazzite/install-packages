@@ -183,7 +183,3 @@ sed -i~ -E \
 sed -i \
     's/ --xdg-runtime=\\"${XDG_RUNTIME_DIR}\\"//g' \
     /usr/bin/btrfs-assistant-launcher
-
-# -- 11. Cleanup --
-echo "==> Running cleanup..."
-/ctx/cleanup

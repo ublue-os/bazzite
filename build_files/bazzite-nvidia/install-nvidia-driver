@@ -56,7 +56,3 @@ dnf5 -y copr disable ublue-os/staging
 # Replace the default Waydroid package with the NVIDIA-optimized version.
 echo "    Swapping Waydroid for NVIDIA variant..."
 dnf5 -y swap --repo terra-extras waydroid waydroid-nvidia
-
-# -- 8. Run cleanup --
-echo "==> Running cleanup..."
-/ctx/cleanup

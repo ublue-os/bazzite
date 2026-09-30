@@ -23,8 +23,3 @@ echo "==> Versionlocking UPower packages..."
 dnf5 versionlock add \
     upower \
     upower-libs
-
-# -- 3. Run cleanup --
-# Clean up package manager caches and temporary files.
-echo "==> Running cleanup..."
-/ctx/cleanup

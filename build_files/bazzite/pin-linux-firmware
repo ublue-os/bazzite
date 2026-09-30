@@ -16,7 +16,3 @@ dnf5 -y install \
     --allowerasing \
     "linux-firmware-${LINUX_FIRMWARE_VERSION}*" \
     "linux-firmware-whence-${LINUX_FIRMWARE_VERSION}*"
-
-# -- 2. Cleanup --
-echo "==> Running cleanup..."
-/ctx/cleanup

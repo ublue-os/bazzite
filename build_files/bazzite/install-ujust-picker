@@ -25,7 +25,3 @@ setfattr \
     -n user.component \
     -v "ujust-picker" \
     /usr/bin/ujust-picker
-
-# -- 3. Cleanup --
-echo "==> Running cleanup..."
-/ctx/cleanup

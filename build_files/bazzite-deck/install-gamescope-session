@@ -33,8 +33,3 @@ setfattr \
     -n user.update-interval \
     -v "yearly" \
     /usr/share/gamescope-session-plus/bootstrap_steam.tar.gz
-
-# -- 4. Run cleanup --
-# Clean up package manager caches and temporary files.
-echo "==> Running cleanup..."
-/ctx/cleanup

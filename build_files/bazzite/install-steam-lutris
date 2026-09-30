@@ -75,7 +75,3 @@ setfattr \
     -n user.component \
     -v "winetricks" \
     /usr/bin/winetricks
-
-# -- 6. Cleanup --
-echo "==> Running cleanup..."
-/ctx/cleanup

@@ -30,8 +30,3 @@ dnf5 -y copr enable ycollet/audinux
 # Allow dnf5 to proceed even if a repo is temporarily unavailable.
 echo "==> Configuring dnf5 availability handling..."
 dnf5 config-manager unsetopt skip_if_unavailable
-
-# -- 4. Run cleanup --
-# Clean up package manager caches and temporary files.
-echo "==> Running cleanup..."
-/ctx/cleanup

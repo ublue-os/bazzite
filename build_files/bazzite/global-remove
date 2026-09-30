@@ -41,7 +41,3 @@ fi
 # -- 3. Remove the packages --
 echo "==> Removing packages with dnf5..."
 dnf5 -y remove "${REMOVE_ALL[@]}"
-
-# -- 4. Cleanup --
-echo "==> Running cleanup..."
-/ctx/cleanup
