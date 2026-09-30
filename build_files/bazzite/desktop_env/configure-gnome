@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+#
+# Apply GNOME-specific modifications for Bazzite.
+#
+# Configure GNOME desktop environment: install packages, remove
+# unnecessary ones, build extensions, and enable services.
+#
+set -euo pipefail
+
+# ── 1. Install GNOME packages ───────────────────────────────────────────
+# Install GNOME desktop packages including extensions, themes, and tools.
+echo "==> Installing GNOME packages..."
+dnf5 -y install \
+    nautilus-gsconnect \
+    steamdeck-backgrounds \
+    steamdeck-gnome-presets \
+    gnome-shell-extension-user-theme \
+    gnome-shell-extension-gsconnect \
+    gnome-search-yafti \
+    gnome-rounded-blur \
+    rom-properties-gtk4 \
+    rom-properties-localsearch3 \
+    ibus-mozc \
+    openssh-askpass \
+    firewall-config
+
+# ── 2. Remove unnecessary GNOME packages ────────────────────────────────
+# Remove GNOME packages not needed for the target desktop experience.
+echo "==> Removing unnecessary GNOME packages..."
+dnf5 -y remove \
+    gnome-software \
+    gnome-classic-session \
+    gnome-tour \
+    gnome-extensions-app \
+    gnome-system-monitor \
+    gnome-initial-setup \
+    gnome-shell-extension-background-logo \
+    gnome-shell-extension-apps-menu \
+    gnome-shell-extension-launch-new-instance \
+    gnome-shell-extension-places-menu \
+    gnome-shell-extension-window-list
+
+# ── 3. Build and install GNOME extensions ───────────────────────────────
+# Build and install custom GNOME shell extensions from source.
+echo "==> Building GNOME extensions..."
+/ctx/desktop_env/build-gnome-extensions
+
+# ── 4. Enable dconf-update service ──────────────────────────────────────
+# Enable the dconf-update service for configuration persistence.
+echo "==> Enabling dconf-update service..."
+systemctl enable dconf-update.service
