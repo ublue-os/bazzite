@@ -13,6 +13,7 @@ Quick start:
 CI usage:
 
     ./build.py matrix              # GitHub Actions matrix JSON (via fromJson)
+    ./build.py version             # the one release tag shared by every image
     ./build.py resolve --image X   # build args + labels + tags, as JSON
     ./build.py build --image X --rechunk --sbom --sign --push
 
@@ -57,7 +58,7 @@ IMAGE_VENDOR_DEFAULT = "ublue-os"
 DEFAULTS = {
     "fedora_version": 44,
     "kernel_flavor": "ogc",
-    "kernel_version": "7.2.0-ogc3.1.fc44",
+    "kernel_version": "7.2.4-ogc3.1.fc44",
     "base_image_flavor": "main",
     "arch": "x86_64",
 }
@@ -112,7 +113,7 @@ IMAGES: dict[str, dict] = {
         "nvidia_flavor": "nvidia-lts",
         "install_nvidia": True,
         "kernel_flavor": "ogc-lts",
-        "kernel_version": "6.18.44-ogc1.1.fc44",
+        "kernel_version": "6.18.49-ogc1.1.fc44",
     },
     "bazzite-gnome-nvidia": {
         "base_image_name": "silverblue",
@@ -121,7 +122,7 @@ IMAGES: dict[str, dict] = {
         "nvidia_flavor": "nvidia-lts",
         "install_nvidia": True,
         "kernel_flavor": "ogc-lts",
-        "kernel_version": "6.18.44-ogc1.1.fc44",
+        "kernel_version": "6.18.49-ogc1.1.fc44",
     },
     "bazzite-nvidia-open": {
         "base_image_name": "kinoite",
@@ -539,6 +540,39 @@ def cmd_doctor(args: argparse.Namespace) -> int:
     return 0 if ok else 1
 
 
+def list_tags(image_ref: str) -> set[str]:
+    """Tags currently in the registry for `image_ref`; empty if it doesn't exist yet."""
+    result = run(["skopeo", "list-tags", f"docker://{image_ref}"], capture=True, check=False)
+    if result.returncode != 0:
+        return set()
+    return set(json.loads(result.stdout).get("Tags", []))
+
+
+def cmd_version(args: argparse.Namespace) -> int:
+    """The release version tag for the whole run, resolved once for every image.
+
+    A tag already taken by any one image counts as taken for all of them, so
+    every image in a run lands on the same tag -- changelog.py relies on that
+    when it pairs up the current and previous release across images.
+    """
+    fedora_versions = {get_variant(image).fedora_version for image in IMAGES}
+    if len(fedora_versions) != 1:
+        log.error("images disagree on fedora_version: %s", sorted(fedora_versions))
+        return 1
+    version = release_version(ref_name=args.ref_name, fedora_version=fedora_versions.pop())
+
+    if not args.dry_run and not args.skip_registry:
+        existing: set[str] = set()
+        with group(f"Checking existing tags under {args.push_registry}"):
+            for image in sorted(IMAGES):
+                existing |= list_tags(f"{args.push_registry}/{image}")
+        version = dedup_version(version, existing)
+
+    log.info("version tag for this run: %s", version)
+    print(json.dumps({"version": version}))
+    return 0
+
+
 def cmd_resolve(args: argparse.Namespace) -> int:
     """Build args + labels + tags for one image, as JSON."""
     variant = get_variant(args.image)
@@ -582,19 +616,20 @@ def cmd_resolve(args: argparse.Namespace) -> int:
         version_pretty=source_pretty,
     )
 
-    version = release_version(ref_name=ref_name, fedora_version=variant.fedora_version)
     output_image = f"{args.push_registry}/{variant.image}"
-    if not args.dry_run and not args.skip_registry:
-        with group(f"Checking existing tags for {output_image}"):
-            result = run(
-                ["skopeo", "list-tags", f"docker://{output_image}"],
-                capture=True,
-                check=False,
-            )
-            existing = set()
-            if result.returncode == 0:
-                existing = set(json.loads(result.stdout).get("Tags", []))
-            version = dedup_version(version, existing)
+    if args.version:
+        # Precomputed by `version` for the whole run (CI). Guards against it
+        # and the IMAGES table drifting apart on a Fedora bump, which would
+        # silently stamp the old release onto images.
+        version = args.version
+        if f"{variant.fedora_version}." not in version:
+            log.error("version tag %s does not match fedora_version %s", version, variant.fedora_version)
+            return 1
+    else:
+        version = release_version(ref_name=ref_name, fedora_version=variant.fedora_version)
+        if not args.dry_run and not args.skip_registry:
+            with group(f"Checking existing tags for {output_image}"):
+                version = dedup_version(version, list_tags(output_image))
 
     tags = alias_tags(ref_name=ref_name, version=version, fedora_version=variant.fedora_version)
     labels = labels_for(variant, version=version, sha=sha, kernel_evr=args.kernel_evr or variant.kernel_version)
@@ -943,7 +978,14 @@ def build_parser() -> argparse.ArgumentParser:
     p_resolve.add_argument("--upstream-tag", default=None, help="skip the skopeo inspect and use this instead")
     p_resolve.add_argument("--kernel-evr", default=None, help="skip the in-image rpm query and use this instead")
     p_resolve.add_argument("--skip-registry", action="store_true", help="skip point-release dedup against the registry")
+    p_resolve.add_argument("--version", default=None, help="use this release version (from `version`) instead of resolving one")
     p_resolve.set_defaults(func=cmd_resolve)
+
+    p_version = sub.add_parser("version", help="print the release version tag shared by every image in a run, as JSON")
+    p_version.add_argument("--ref-name", default=os.environ.get("GITHUB_REF_NAME", "main"))
+    p_version.add_argument("--push-registry", default=PULL_REGISTRY)
+    p_version.add_argument("--skip-registry", action="store_true", help="skip point-release dedup against the registry")
+    p_version.set_defaults(func=cmd_version)
 
     p_build = sub.add_parser("build", help="build one image locally")
     p_build.add_argument("--image", default=DEFAULT_IMAGE, choices=sorted(IMAGES))

@@ -22,52 +22,52 @@ EXPECTED_VARIANTS = {
     "bazzite": {
         "base_image_name": "kinoite", "container_target": "bazzite",
         "nvidia_base": "bazzite", "nvidia_flavor": "nvidia-lts", "install_nvidia": False,
-        "kernel_flavor": "ogc", "kernel_version": "7.2.0-ogc3.1.fc44",
+        "kernel_flavor": "ogc", "kernel_version": "7.2.4-ogc3.1.fc44",
     },
     "bazzite-gnome": {
         "base_image_name": "silverblue", "container_target": "bazzite",
         "nvidia_base": "bazzite", "nvidia_flavor": "nvidia-lts", "install_nvidia": False,
-        "kernel_flavor": "ogc", "kernel_version": "7.2.0-ogc3.1.fc44",
+        "kernel_flavor": "ogc", "kernel_version": "7.2.4-ogc3.1.fc44",
     },
     "bazzite-deck": {
         "base_image_name": "kinoite", "container_target": "bazzite-deck",
         "nvidia_base": "bazzite-deck", "nvidia_flavor": "nvidia-lts", "install_nvidia": False,
-        "kernel_flavor": "ogc", "kernel_version": "7.2.0-ogc3.1.fc44",
+        "kernel_flavor": "ogc", "kernel_version": "7.2.4-ogc3.1.fc44",
     },
     "bazzite-deck-gnome": {
         "base_image_name": "silverblue", "container_target": "bazzite-deck",
         "nvidia_base": "bazzite-deck", "nvidia_flavor": "nvidia-lts", "install_nvidia": False,
-        "kernel_flavor": "ogc", "kernel_version": "7.2.0-ogc3.1.fc44",
+        "kernel_flavor": "ogc", "kernel_version": "7.2.4-ogc3.1.fc44",
     },
     "bazzite-deck-nvidia": {
         "base_image_name": "kinoite", "container_target": "bazzite-nvidia",
         "nvidia_base": "bazzite-deck", "nvidia_flavor": "nvidia-open", "install_nvidia": True,
-        "kernel_flavor": "ogc", "kernel_version": "7.2.0-ogc3.1.fc44",
+        "kernel_flavor": "ogc", "kernel_version": "7.2.4-ogc3.1.fc44",
     },
     "bazzite-deck-nvidia-gnome": {
         "base_image_name": "silverblue", "container_target": "bazzite-nvidia",
         "nvidia_base": "bazzite-deck", "nvidia_flavor": "nvidia-open", "install_nvidia": True,
-        "kernel_flavor": "ogc", "kernel_version": "7.2.0-ogc3.1.fc44",
+        "kernel_flavor": "ogc", "kernel_version": "7.2.4-ogc3.1.fc44",
     },
     "bazzite-nvidia": {
         "base_image_name": "kinoite", "container_target": "bazzite-nvidia",
         "nvidia_base": "bazzite", "nvidia_flavor": "nvidia-lts", "install_nvidia": True,
-        "kernel_flavor": "ogc-lts", "kernel_version": "6.18.44-ogc1.1.fc44",
+        "kernel_flavor": "ogc-lts", "kernel_version": "6.18.49-ogc1.1.fc44",
     },
     "bazzite-gnome-nvidia": {
         "base_image_name": "silverblue", "container_target": "bazzite-nvidia",
         "nvidia_base": "bazzite", "nvidia_flavor": "nvidia-lts", "install_nvidia": True,
-        "kernel_flavor": "ogc-lts", "kernel_version": "6.18.44-ogc1.1.fc44",
+        "kernel_flavor": "ogc-lts", "kernel_version": "6.18.49-ogc1.1.fc44",
     },
     "bazzite-nvidia-open": {
         "base_image_name": "kinoite", "container_target": "bazzite-nvidia",
         "nvidia_base": "bazzite", "nvidia_flavor": "nvidia-open", "install_nvidia": True,
-        "kernel_flavor": "ogc", "kernel_version": "7.2.0-ogc3.1.fc44",
+        "kernel_flavor": "ogc", "kernel_version": "7.2.4-ogc3.1.fc44",
     },
     "bazzite-gnome-nvidia-open": {
         "base_image_name": "silverblue", "container_target": "bazzite-nvidia",
         "nvidia_base": "bazzite", "nvidia_flavor": "nvidia-open", "install_nvidia": True,
-        "kernel_flavor": "ogc", "kernel_version": "7.2.0-ogc3.1.fc44",
+        "kernel_flavor": "ogc", "kernel_version": "7.2.4-ogc3.1.fc44",
     },
 }
 
@@ -235,6 +235,37 @@ def test_cmd_matrix_covers_all_images(capsys):
     out = capsys.readouterr().out
     matrix = json.loads(out)
     assert {row["image"] for row in matrix["include"]} == set(b.IMAGES)
+
+
+# --- cmd_version / resolve --version: one tag for the whole run ---
+
+def test_version_dedups_against_tags_from_every_image(monkeypatch, capsys):
+    """A tag taken by only one image still bumps the point release for all."""
+    today = b.release_version(ref_name="unstable", fedora_version=44)
+    taken = {"bazzite-deck": {today, f"{today}.1"}}
+    monkeypatch.setattr(b, "list_tags", lambda ref: taken.get(ref.rsplit("/", 1)[1], set()))
+    args = b.build_parser().parse_args(["version", "--ref-name", "unstable"])
+    assert b.cmd_version(args) == 0
+    assert json.loads(capsys.readouterr().out) == {"version": f"{today}.2"}
+
+
+def test_resolve_uses_precomputed_version(capsys):
+    args = b.build_parser().parse_args([
+        "resolve", "--image", "bazzite-deck", "--ref-name", "unstable",
+        "--upstream-tag", "44.20260820.0", "--version", "unstable-44.20260820.3",
+    ])
+    assert b.cmd_resolve(args) == 0
+    out = json.loads(capsys.readouterr().out)
+    assert out["version"] == "unstable-44.20260820.3"
+    assert out["labels"]["org.opencontainers.image.version"] == "unstable-44.20260820.3"
+
+
+def test_resolve_rejects_version_for_another_fedora_release():
+    args = b.build_parser().parse_args([
+        "resolve", "--image", "bazzite", "--upstream-tag", "44.20260820.0",
+        "--version", "43.20260820",
+    ])
+    assert b.cmd_resolve(args) == 1
 
 
 # --- cmd_build: local vs CI resolved-json modes ---
