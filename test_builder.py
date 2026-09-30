@@ -237,6 +237,24 @@ def test_cmd_matrix_covers_all_images(capsys):
     assert {row["image"] for row in matrix["include"]} == set(b.IMAGES)
 
 
+# --- run(): stdout is reserved for JSON ---
+
+def test_run_sends_child_stdout_to_stderr(capfd):
+    """`podman pull`/`rmi` print IDs to stdout; if those reach our stdout,
+    `./build.py rechunk > rechunk.json` stops being valid JSON."""
+    b.run(["echo", "sha256:deadbeef"])
+    out, err = capfd.readouterr()
+    assert "sha256:deadbeef" not in out
+    assert "sha256:deadbeef" in err
+
+
+def test_scratch_dir_prefers_runner_temp(monkeypatch, tmp_path):
+    monkeypatch.setenv("RUNNER_TEMP", str(tmp_path))
+    assert b.scratch_dir() == str(tmp_path)
+    monkeypatch.delenv("RUNNER_TEMP")
+    assert b.scratch_dir() is None
+
+
 # --- cmd_version / resolve --version: one tag for the whole run ---
 
 def test_version_dedups_against_tags_from_every_image(monkeypatch, capsys):

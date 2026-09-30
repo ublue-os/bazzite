@@ -73,7 +73,8 @@ jobs:
             --ref-name "${{ github.ref_name }}" \
             --push-registry "ghcr.io/${REPO_OWNER,,}" \
             > version.json
-          echo "version=$(jq -r .version version.json)" >> "$GITHUB_OUTPUT"
+          version="$(jq -er .version version.json)"
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
 
   push-ghcr:
     name: Make
@@ -272,7 +273,8 @@ jobs:
             --chunked-image localhost/chunked-img \
             --labels-file "${RUNNER_TEMP}/labels.txt" \
             > rechunk.json
-          echo "ref=$(jq -r .ref rechunk.json)" >> "$GITHUB_OUTPUT"
+          ref="$(jq -er .ref rechunk.json)"
+          echo "ref=${ref}" >> "$GITHUB_OUTPUT"
 
       - name: Setup Syft
         id: setup-syft
@@ -297,8 +299,9 @@ jobs:
             --container-mgr podman \
             --syft-cmd "${SYFT_CMD}" \
             > sbom.json
-          du -sh "$(jq -r .sbom sbom.json)"
-          echo "SBOM=$(jq -r .sbom sbom.json)" >> $GITHUB_OUTPUT
+          sbom="$(jq -er .sbom sbom.json)"
+          du -sh "${sbom}"
+          echo "SBOM=${sbom}" >> $GITHUB_OUTPUT
 
       - name: Install dgoss
         run: |
@@ -343,7 +346,8 @@ jobs:
               --alias-tags "${{ steps.resolve.outputs.alias_tags }}" \
               --rechunk-ref "${{ steps.rechunk.outputs.ref }}" \
               > push.json
-            echo "digest=$(jq -r .digest push.json)" >> "$GITHUB_OUTPUT"
+            digest="$(jq -er .digest push.json)"
+            echo "digest=${digest}" >> "$GITHUB_OUTPUT"
 
       - name: Sign container image
         if: github.event_name != 'pull_request'
@@ -369,7 +373,8 @@ jobs:
             --digest "${{ steps.push.outputs.digest }}" \
             --sbom "${{ steps.generate-sbom.outputs.SBOM }}" \
             > sbom-attach.json
-          echo "sbom_digest=$(jq -r .sbom_digest sbom-attach.json)" >> $GITHUB_OUTPUT
+          sbom_digest="$(jq -er .sbom_digest sbom-attach.json)"
+          echo "sbom_digest=${sbom_digest}" >> $GITHUB_OUTPUT
 
       - name: Sign SBOM OCI Artifact
         if: github.event_name != 'pull_request'
