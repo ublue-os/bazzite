@@ -117,8 +117,7 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    /ctx/global-remove && \
-    /ctx/cleanup
+    /ctx/bazzite/global-remove
 
 # Install new packages
 RUN --mount=type=cache,dst=/var/cache \

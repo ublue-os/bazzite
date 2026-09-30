@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+#
+# Remove packages globally across all Bazzite variants.
+#
+# This script removes packages that are replaced by flatpaks or
+# alternative tools on all Bazzite images.
+#
+set -euo pipefail
+
+# ── 1. Define packages to remove ─────────────────────────────────────────────
+# Packages to remove globally across all Bazzite variants.
+# Not quoted in the array so brace expansion and multiple words expand
+# correctly into individual dnf arguments.
+declare -a remove_global=(
+    firefox{,-langpacks}  # we use the flatpak
+    htop                  # btop is better
+    ublue-os-update-services  # we use uupd, from ublue-os/main
+)
+
+# Packages to remove on KDE (Kinoite).
+declare -a remove_kde=()
+
+# Packages to remove on GNOME (Silverblue).
+declare -a remove_gnome=(
+    toolbox  # can be a global removal after KDE Gear 26.08 landed
+             # https://invent.kde.org/utilities/konsole/-/merge_requests/1207
+)
+
+# ── 2. Build the removal list based on the base image ────────────────────────
+echo "==> Building removal list for '${BASE_IMAGE_NAME}'..."
+
+if [[ "${BASE_IMAGE_NAME}" == "kinoite" ]]; then
+    remove_all=( "${remove_kde[@]}" "${remove_global[@]}" )
+elif [[ "${BASE_IMAGE_NAME}" == "silverblue" ]]; then
+    remove_all=( "${remove_gnome[@]}" "${remove_global[@]}" )
+fi
+
+# ── 3. Remove the packages ───────────────────────────────────────────────────
+echo "==> Removing packages with dnf5..."
+dnf5 -y remove "${remove_all[@]}"
+
+# ── 4. Cleanup ─────────────────────────────────────────────────────────────
+echo "==> Running cleanup..."
+/ctx/cleanup
