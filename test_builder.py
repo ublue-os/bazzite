@@ -469,3 +469,17 @@ def test_resolve_bakes_image_vendor_into_build_args(capsys):
     ])
     assert b.cmd_resolve(args) == 0
     assert json.loads(capsys.readouterr().out)["build_args"]["IMAGE_VENDOR"] == "tedohayer"
+
+
+def test_sbom_attach_passes_relative_path_from_sbom_dir(caplog):
+    """oras rejects absolute file paths, so the SBOM is attached by bare name
+    from its own directory -- this failed every image on the first push run."""
+    caplog.set_level(logging.INFO, logger="build")
+    b.main([
+        "--dry-run", "sbom-attach", "--image", "ghcr.io/x/bazzite",
+        "--digest", "sha256:abc", "--sbom", "/tmp/sbom-xyz/sbom.json",
+    ])
+    line = next(r.getMessage() for r in caplog.records if "oras attach" in r.getMessage())
+    assert line.startswith("+ (cd /tmp/sbom-xyz && oras attach")
+    assert line.endswith(" sbom.json)")
+    assert "/tmp/sbom-xyz/sbom.json" not in line
