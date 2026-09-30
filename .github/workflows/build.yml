@@ -49,6 +49,9 @@ jobs:
   # itself now lives in build.py's IMAGES table (the single source of truth
   # also used by build_iso.yml, clean.yml, and changelog.py) instead of
   # being hardcoded here.
+  #
+  # The version tag is resolved here too, once for the whole run, so every
+  # image lands on the same tag even if only some of them already have it.
   compute-matrix:
     name: Compute build matrix
     runs-on: ubuntu-26.04
@@ -56,18 +59,26 @@ jobs:
       contents: read
     outputs:
       matrix: ${{ steps.matrix.outputs.matrix }}
+      version: ${{ steps.version.outputs.version }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - name: Compute matrix
         id: matrix
         run: echo "matrix=$(./build.py matrix)" >> "$GITHUB_OUTPUT"
+      - name: Generate version tag
+        id: version
+        run: |
+          ./build.py version \
+            --ref-name "${{ github.ref_name }}" \
+            --push-registry "ghcr.io/${REPO_OWNER,,}" \
+            > version.json
+          echo "version=$(jq -r .version version.json)" >> "$GITHUB_OUTPUT"
 
   push-ghcr:
     name: Make
     needs: compute-matrix
     runs-on: ubuntu-26.04
-    needs: [version]
     continue-on-error: false
     permissions:
       contents: read
@@ -115,10 +126,8 @@ jobs:
       # also fixes SHA_HEAD_SHORT always being empty in the old build args
       # file -- that field genuinely comes from github.sha now.
       #
-      # Point-release dedup (the .1/.2 suffix) happens here too, against the
-      # registry's current tag list -- same as before, just earlier in the
-      # job. It only reads registry metadata, not the built image, so the
-      # timing shift doesn't change the result.
+      # The release version (with its .1/.2 point-release suffix) comes from
+      # compute-matrix, so it's the same for every image in the run.
       - name: Resolve build config
         id: resolve
         run: |
@@ -128,6 +137,7 @@ jobs:
             --sha "${{ github.sha }}" \
             --pr-number "${{ github.event.pull_request.number }}" \
             --push-registry "ghcr.io/${{ steps.repo_owner_case.outputs.lowercase }}" \
+            --version "${{ needs.compute-matrix.outputs.version }}" \
             > resolved.json
           jq . resolved.json
 
