@@ -137,6 +137,7 @@ jobs:
             --ref-name "${{ github.ref_name }}" \
             --sha "${{ github.sha }}" \
             --pr-number "${{ github.event.pull_request.number }}" \
+            --image-vendor "${{ steps.repo_owner_case.outputs.lowercase }}" \
             --push-registry "ghcr.io/${{ steps.repo_owner_case.outputs.lowercase }}" \
             --version "${{ needs.compute-matrix.outputs.version }}" \
             > resolved.json
