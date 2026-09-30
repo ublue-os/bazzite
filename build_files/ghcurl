@@ -1,26 +1,48 @@
 #!/usr/bin/env bash
+#
+# Download a GitHub asset using authenticated or unauthenticated requests.
+#
+# Reads GITHUB_TOKEN from a Podman secret mount for authentication.
+#
 set -euo pipefail
 
-# Check for GITHUB_TOKEN in /run/secrets/GITHUB_TOKEN (Podman secret mount)
-if [[ -s /run/secrets/GITHUB_TOKEN ]]; then
-  GITHUB_TOKEN=$(< /run/secrets/GITHUB_TOKEN)
-  echo "Using GITHUB_TOKEN from /run/secrets/GITHUB_TOKEN for authentication." >&2
-  AUTH_HEADER="Authorization: Bearer $GITHUB_TOKEN"
-elif [[ -f /run/secrets/GITHUB_TOKEN ]]; then
-  echo "WARNING: /run/secrets/GITHUB_TOKEN is empty; the token did not reach the build." >&2
-  echo "WARNING: Falling back to unauthenticated requests (subject to rate limits)." >&2
-  AUTH_HEADER=""
+# Check for GITHUB_TOKEN in the Podman secret mount and set the auth header.
+if [[ -s "/run/secrets/GITHUB_TOKEN" ]]; then
+    GITHUB_TOKEN=$(< /run/secrets/GITHUB_TOKEN)
+    echo "Using GITHUB_TOKEN from /run/secrets/GITHUB_TOKEN for authentication." >&2
+    AUTH_HEADER="Authorization: Bearer ${GITHUB_TOKEN}"
+elif [[ -f "/run/secrets/GITHUB_TOKEN" ]]; then
+    echo "WARNING: /run/secrets/GITHUB_TOKEN is empty; the token did not reach the build." >&2
+    echo "WARNING: Falling back to unauthenticated requests (subject to rate limits)." >&2
+    AUTH_HEADER=""
 else
-  echo "GITHUB_TOKEN secret not found. Using unauthenticated requests." >&2
-  AUTH_HEADER=""
+    echo "GITHUB_TOKEN secret not found. Using unauthenticated requests." >&2
+    AUTH_HEADER=""
 fi
 
-URL="$1"
+# Fetch the specified URL with curl, using the auth header if available.
+URL="${1}"
 shift
 OPTIONS=("$@")
 
-if [[ -n "$AUTH_HEADER" ]]; then
-  curl --fail --retry 3 --retry-delay 2 --retry-max-time 60 -sSL -H "$AUTH_HEADER" "${OPTIONS[@]}" "$URL"
+if [[ -n "${AUTH_HEADER}" ]]; then
+    curl \
+      -sSL \
+      --fail \
+      --retry 3 \
+      --retry-delay 2 \
+      --retry-max-time 60 \
+      -H \
+      "${AUTH_HEADER}" \
+      "${OPTIONS[@]}" \
+      "${URL}"
 else
-  curl --fail --retry 3 --retry-delay 2 --retry-max-time 60 -sSL "${OPTIONS[@]}" "$URL"
+    curl \
+      -sSL \
+      --fail \
+      --retry 3 \
+      --retry-delay 2 \
+      --retry-max-time 60 \
+      "${OPTIONS[@]}" \
+      "${URL}"
 fi

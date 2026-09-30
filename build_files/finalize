@@ -1,45 +1,51 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
+#
+# Finalize the system image: clean caches, relocate accounts, and remove
+# stale lock files to produce a minimal, portable root filesystem.
+#
+set -euo pipefail
 
-set -eoux pipefail
-
+# Tell DNF5 not to keep downloaded package cache after installation.
 dnf5 config-manager setopt keepcache=0
 
+# Remove stale temporary and cache directories, then recreate /var/tmp.
 rm -rf /tmp/* || true
 find /var/* -maxdepth 0 -type d \! -name cache -exec rm -fr {} \;
 mkdir -p /var/tmp
 chmod -R 1777 /var/tmp
 
-# Copy entries into /usr/lib/passwd and /usr/lib/group
+# Move user/group entries from /etc to /usr/lib so they persist across
+# chroots and container mounts.
 relocate_accounts() {
     local etc="$1" lib="$2" shadow="$3" keep="$4" reset="$5"
     local out line name
 
     [ -f "$etc" ] || return 0
-    out=$(grep -vE -- "$keep" "$etc") || true
+    out=$(grep -vE -- "${keep}" "${etc}") || true
     [ -n "$out" ] || return 0
 
     echo
     echo "Moving the following entries from ${etc} to ${lib}"
-    echo "$out"
+    echo "${out}"
 
-    { cat "$lib" 2>/dev/null || true; echo "$out"; } > "${lib}.new"
-    mv -f "${lib}.new" "$lib"
+    { cat "${lib}" 2>/dev/null || true; echo "${out}"; } > "${lib}.new"
+    mv -f "${lib}.new" "${lib}"
 
     # Fail the build rather than ship an image where these went missing.
     while IFS= read -r line; do
-        if ! grep -qxF -- "$line" "$lib"; then
+        if ! grep -qxF -- "${line}" "${lib}"; then
             echo "ERROR: '${line}' did not persist in ${lib}" >&2
             return 1
         fi
-    done <<< "$out"
+    done <<< "${out}"
 
-    printf '%s\n' "$reset" > "$etc"
+    printf '%s\n' "${reset}" > "${etc}"
 
-    if [ -f "$shadow" ]; then
+    if [ -f "${shadow}" ]; then
         while IFS= read -r line; do
             name="${line%%:*}"
-            sed -i "/^${name}:/d" "$shadow"
-        done <<< "$out"
+            sed -i "/^${name}:/d" "${shadow}"
+        done <<< "${out}"
     fi
 }
 
@@ -49,7 +55,7 @@ relocate_accounts /etc/group /usr/lib/group /etc/gshadow \
     'root|wheel' 'root:x:0:
 wheel:x:10:'
 
-# Extra lock files created by container processes that might cause issues
+# Delete any remaining unnecessary files.
 rm -rf \
     /etc/.pwd.lock \
     /etc/passwd- \

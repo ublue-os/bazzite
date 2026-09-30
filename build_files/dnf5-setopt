@@ -1,4 +1,9 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
+#
+# Set or unset DNF5 repository options for specified repositories.
+#
+# Usage: dnf5-setopt <setopt|unsetopt> <repo_name|repo_id> <option>=<value>...
+#
 set -euo pipefail
 
 die() {
@@ -18,6 +23,7 @@ _usage() {
     return $status
 }
 
+# Handle the optional -h flag for help output.
 while getopts "h" opt; do
     case $opt in
     h)
@@ -28,45 +34,49 @@ while getopts "h" opt; do
     esac
 done
 
-cmd="dnf5 config-manager"
-action=$1
+# Ensure the first argument is either setopt or unsetopt.
+ACTION="${1}"
 shift
 
-case $action in
-setopt | unsetopt) cmd+=" $action" ;;
+CMD="dnf5 config-manager"
+case "$ACTION" in
+setopt | unsetopt) CMD+=" $ACTION" ;;
 *)
     die "ERROR: Only setopt|unsetopt are allowed as first param"
     ;;
 esac
 
-_repos_raw="$(
+# Search for repositories matching the provided name(s) and collect their IDs.
+REPOS_RAW="$(
     cd "$(dirname "$0")"
     # shellcheck disable=SC2086
     ./dnf5-search ${1//,/ }
 )"
-if [[ -z $_repos_raw ]]; then
-    die "No repo found matching '$1'"
+if [[ -z "${REPOS_RAW}" ]]; then
+    die "No repo found matching '${1}'"
 fi
 shift
 
-repos=()
-mapfile -t repos <<<"$_repos_raw"
+REPOS=()
+mapfile -t REPOS <<<"${REPOS_RAW}"
 
-options=()
+# Parse remaining arguments, stripping leading dots, into an options array.
+OPTIONS=()
 while (($#)); do
-    [[ -n ${_v:=${1##.}} ]] && options+=("$_v")
+    [[ -n ${OPT_VALUE:=${1##.}} ]] && OPTIONS+=("${OPT_VALUE}")
     shift
 done
-unset -v _v
+unset -v OPT_VALUE
 
-if [[ ${#options[@]} -eq 0 ]]; then
+if [[ ${#OPTIONS[@]} -eq 0 ]]; then
     die "No options were providied"
 fi
 
-for repo in "${repos[@]}"; do
-    for opt in "${options[@]}"; do
-        cmd+=" $repo.$opt"
+# Construct the full dnf5 command with all repo.option combinations.
+for repo in "${REPOS[@]}"; do
+    for opt in "${OPTIONS[@]}"; do
+        CMD+=" ${repo}.${opt}"
     done
 done
 
-echo "$cmd"
+echo "${CMD}"

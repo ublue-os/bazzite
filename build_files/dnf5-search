@@ -1,5 +1,9 @@
-#!/usr/bin/bash
-# Retrieve a list of repos ids by name or id
+#!/usr/bin/env bash
+#
+# Search and list DNF5 repository IDs matching the given query.
+#
+# Usage: dnf5-search [REPO_NAME_OR_ID...]
+#
 set -euo pipefail
 
 dnf5 repo info --all --json "$@" | jq -r '.[].id'
