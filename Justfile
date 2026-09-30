@@ -37,7 +37,12 @@ just-fix:
 
 # Build image
 build target="" image="":
-    @{{ project_root }}/just_scripts/build-image.sh {{ target }} {{ image }} 
+    #!/usr/bin/bash
+    set -eo pipefail
+    target="{{ target }}"
+    image="{{ image }}"
+    . "${project_root}/just_scripts/get-defaults.sh"
+    "${project_root}/build.py" build --image "${image}"
 
 # Build ISO
 build-iso-release target="" image="":
@@ -53,7 +58,12 @@ run-iso target="" image="":
 
 # Run Container
 run-container target="" image="":
-    @{{ project_root }}/just_scripts/run-image.sh {{ target }} {{ image }}
+    #!/usr/bin/bash
+    set -eo pipefail
+    target="{{ target }}"
+    image="{{ image }}"
+    . "${project_root}/just_scripts/get-defaults.sh"
+    "${project_root}/build.py" shell --image "${image}"
 
 # List Images
 list-images:

@@ -76,7 +76,7 @@ RUN --mount=type=cache,dst=/var/cache \
     /ctx/cleanup
 
 # Install needed firmware blobs
-RUN --mount=type=bind,src=firmware,dst=/ctx/firmware \
+RUN --mount=type=bind,src=firmware,dst=/ctx/firmware,relabel=shared \
     --mount=type=cache,dst=/var/log \
     --mount=type=tmpfs,dst=/tmp \
     cp -a /ctx/firmware/. /tmp/firmware && \
