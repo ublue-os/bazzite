@@ -282,14 +282,19 @@ def run(
     retries: int = 1,
     retry_wait: float = 5.0,
     env: dict | None = None,
+    interactive: bool = False,
 ) -> subprocess.CompletedProcess:
-    """Run a command. Inherits stdout/stderr unless capture=True.
+    """Run a command. Streams its output to our stderr unless capture=True.
 
-    Output is inherited rather than captured-and-relogged so that tools like
+    Output is streamed rather than captured-and-relogged so that tools like
     buildah and dnf5 render their own progress natively instead of arriving
-    line-prefixed and mangled. Only commands whose output is parsed
-    (skopeo inspect, skopeo list-tags) should pass capture=True, and those
-    are logged at DEBUG rather than INFO.
+    line-prefixed and mangled. It goes to stderr, not stdout, because stdout
+    is reserved for the JSON that CI parses -- `podman pull` and `podman rmi`
+    print image IDs to stdout, which would otherwise land in front of it.
+    Only interactive commands (a shell in the image) keep the real stdout.
+
+    Only commands whose output is parsed (skopeo inspect, skopeo list-tags)
+    should pass capture=True, and those are logged at DEBUG rather than INFO.
     """
     printable = " ".join(cmd)
     log.info("+ %s", printable)
@@ -304,6 +309,7 @@ def run(
                 cmd,
                 check=check,
                 capture_output=capture,
+                stdout=None if capture or interactive else sys.stderr,
                 text=capture,
                 env=run_env,
             )
@@ -741,7 +747,7 @@ def cmd_rechunk(args: argparse.Namespace) -> int:
     for stale in STALE_RECHUNK_LABELS:
         labels += ["--label", f"{stale}-"]
 
-    with tempfile.TemporaryDirectory(prefix="rechunk-") as rechunk_dir:
+    with tempfile.TemporaryDirectory(prefix="rechunk-", dir=scratch_dir()) as rechunk_dir:
         config_path = Path(rechunk_dir) / "chunkah-config.json"
         with group("Composing chunked OCI image"):
             # Carries Env, Cmd, and containers.bootc over to the chunked image.
@@ -785,7 +791,7 @@ def cmd_rechunk(args: argparse.Namespace) -> int:
 
 def cmd_sbom(args: argparse.Namespace) -> int:
     """Export the chunked image's rootfs and run syft over it to produce an SBOM."""
-    oci_dir = Path(tempfile.mkdtemp(prefix="image-oci-"))
+    oci_dir = Path(tempfile.mkdtemp(prefix="image-oci-", dir=scratch_dir()))
     rootfs = oci_dir / "rootfs"
     rootfs.mkdir(parents=True)
     try:
@@ -934,8 +940,18 @@ def cmd_shell(args: argparse.Namespace) -> int:
     if not args.dry_run and not check.stdout.strip():
         log.info("%s not built yet, building first", tag)
         cmd_build(args)
-    run([args.container_mgr, "run", "-it", "--rm", tag, "/usr/bin/bash"], dry_run=args.dry_run)
+    run([args.container_mgr, "run", "-it", "--rm", tag, "/usr/bin/bash"], dry_run=args.dry_run, interactive=True)
     return 0
+
+
+def scratch_dir() -> str | None:
+    """Where to put multi-GiB scratch output (chunked OCI dirs, exported rootfs).
+
+    On Actions runners /tmp sits on the small root disk -- the largest images
+    fail chunkah with "Disk quota exceeded" there -- so use $RUNNER_TEMP when
+    it's set. Locally this is None, i.e. the system default temp dir.
+    """
+    return os.environ.get("RUNNER_TEMP") or None
 
 
 def detect_container_mgr() -> str:
