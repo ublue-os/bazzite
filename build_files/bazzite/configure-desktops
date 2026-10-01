@@ -3,7 +3,7 @@
 # Configure KDE (Kinoite) or GNOME desktop environment depending on the
 # BASE_IMAGE_NAME variable, plus common packages.
 #
-set -xeuo pipefail
+set -euo pipefail
 
 echo "::group::Configure desktop environments"
 trap 'echo "::endgroup::"' EXIT

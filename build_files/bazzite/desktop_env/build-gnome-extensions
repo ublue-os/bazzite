@@ -6,7 +6,7 @@
 # from source, downloads and installs the TouchUp extension from GitHub, and
 # cleans up temporary files and build dependencies.
 #
-set -xeuo pipefail
+set -euo pipefail
 
 # -- 1. Install build dependencies --
 # Install glib2-devel which provides glib-compile-schemas and build tooling.

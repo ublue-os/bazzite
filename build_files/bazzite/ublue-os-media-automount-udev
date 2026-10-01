@@ -3,7 +3,7 @@
 # Install ublue-os-media-automount-udev to automatically mount
 # non-removable device partitions under /media/media-automount/.
 #
-set -xeuo pipefail
+set -euo pipefail
 
 echo "::group::Install ublue-os-media-automount-udev"
 trap 'echo "::endgroup::"' EXIT

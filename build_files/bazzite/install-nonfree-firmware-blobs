@@ -3,7 +3,7 @@
 # Install firmware blobs from the ctx directory into the root filesystem,
 # tagging them as non-free Bazzite components.
 #
-set -xeuo pipefail
+set -euo pipefail
 
 echo "::group::Install non-free firmware blobs"
 trap 'echo "::endgroup::"' EXIT

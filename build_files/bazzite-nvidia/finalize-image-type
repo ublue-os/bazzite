@@ -5,7 +5,7 @@
 # Appends the Bazzite NVIDIA justfile include, handles dconf overrides for
 # Silverblue, configures systemd services, and rebuilds the initramfs.
 #
-set -xeuo pipefail
+set -euo pipefail
 
 echo "::group::Finalize bazzite-nvidia image"
 trap 'echo "::endgroup::"' EXIT

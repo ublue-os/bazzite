@@ -2,7 +2,7 @@
 #
 # Install kernel packages and akmods, bypassing dracut/rpm-ostree triggers.
 #
-set -xeuo pipefail
+set -euo pipefail
 
 echo "::group::Install kernel akmods"
 trap 'echo "::endgroup::"' EXIT

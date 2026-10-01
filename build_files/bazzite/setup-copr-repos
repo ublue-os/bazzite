@@ -3,7 +3,7 @@
 # Setup Copr repositories, install Terra packages, configure Tailscale,
 # and apply repository priorities and exclusions for Bazzite.
 #
-set -xeuo pipefail
+set -euo pipefail
 
 echo "::group::Setup Copr repos"
 trap 'echo "::endgroup::"' EXIT

@@ -3,7 +3,7 @@
 # Pin linux-firmware to a known-good version specified by
 # the LINUX_FIRMWARE_VERSION environment variable.
 #
-set -xeuo pipefail
+set -euo pipefail
 
 echo "::group::Pin Linux firmware"
 trap 'echo "::endgroup::"' EXIT

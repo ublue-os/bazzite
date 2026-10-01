@@ -3,7 +3,7 @@
 # Install new packages, apply system configuration changes, and set up
 # services for the Bazzite image.
 #
-set -xeuo pipefail
+set -euo pipefail
 
 echo "::group::Install packages"
 trap 'echo "::endgroup::"' EXIT

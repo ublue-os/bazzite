@@ -5,7 +5,7 @@
 # Installs sddm, removes conflicting packages, applies KDE or GNOME
 # presets based on the base image, and enables sddm as the default.
 #
-set -xeuo pipefail
+set -euo pipefail
 
 echo "::group::Configure desktop environments (Deck)"
 trap 'echo "::endgroup::"' EXIT

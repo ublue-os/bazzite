@@ -5,7 +5,7 @@
 # Enables upstream COPR repos (ublue-os, audinux), activates the akmods
 # repo, disables skip-if-unavailable in dnf5, and runs cleanup.
 #
-set -xeuo pipefail
+set -euo pipefail
 
 echo "::group::Setup Copr repos (Deck)"
 trap 'echo "::endgroup::"' EXIT

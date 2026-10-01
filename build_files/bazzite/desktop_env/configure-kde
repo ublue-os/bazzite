@@ -5,7 +5,7 @@
 # Configure KDE desktop environment: Installs/removes/swaps packages 
 # and configures default layout/wallpaper.
 #
-set -xeuo pipefail
+set -euo pipefail
 
 # -- 1. Install KDE packages --
 # Install required KDE packages, input method frameworks, and supporting tools.

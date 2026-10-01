@@ -2,7 +2,7 @@
 #
 # Install Steam, Lutris, and supporting gaming packages for the Bazzite image.
 #
-set -xeuo pipefail
+set -euo pipefail
 
 echo "::group::Install gaming-related packages"
 trap 'echo "::endgroup::"' EXIT

@@ -6,7 +6,7 @@
 # directory.  Only existing files are installed; non-existent matches
 # are skipped with a warning.
 #
-set -xeuo pipefail
+set -euo pipefail
 
 # -- 1. Collect installable RPMs --
 # Iterate over each argument (glob pattern), resolve it, and collect only
