@@ -7,7 +7,7 @@ set -euo pipefail
 echo "::group::Install kernel akmods"
 trap 'echo "::endgroup::"' EXIT
 
-# -- 1. Create shims to bypass kernel install triggers --
+# -- Create shims to bypass kernel install triggers --
 # Create shim scripts to prevent kernel installation from triggering dracut
 # and rpm-ostree, allowing the build to progress with minimal impact.
 echo "==> Creating kernel install shims..."
@@ -20,7 +20,7 @@ pushd /usr/lib/kernel/install.d
     chmod +x 05-rpmostree.install 50-dracut.install
 popd
 
-# -- 2. Remove existing kernel packages --
+# -- Remove existing kernel packages --
 # Erase all existing kernel-related packages to avoid conflicts.
 echo "==> Removing existing kernel packages..."
 declare -a KERNEL_PACKAGES=(
@@ -38,12 +38,12 @@ for pkg in "${KERNEL_PACKAGES[@]}"; do
     rpm --erase "${pkg}" --nodeps
 done
 
-# -- 3. Cleanup leftover modules --
+# -- Cleanup leftover modules --
 # Remove leftover module directories not covered by kernel-* packages.
 echo "==> Cleaning up leftover modules..."
 rm -rf /usr/lib/modules
 
-# -- 4. Install kernel packages --
+# -- Install kernel packages --
 # Install kernel RPMs from /tmp/kernel-rpms using dnf5.
 echo "==> Installing kernel packages..."
 dnf5 -y install \
@@ -52,7 +52,7 @@ dnf5 -y install \
     /tmp/kernel-rpms/kernel-modules-*.rpm \
     /tmp/kernel-rpms/kernel-devel-*.rpm
 
-# -- 5. Versionlock kernel packages --
+# -- Versionlock kernel packages --
 # Prevent kernel packages from being updated by dnf.
 echo "==> Version locking kernel packages..."
 dnf5 versionlock add \
@@ -62,7 +62,7 @@ dnf5 versionlock add \
     kernel-core \
     kernel-modules
 
-# -- 6. Install common akmods --
+# -- Install common akmods --
 # Install common kernel module RPMs (KVMFR, OpenRazer, v4l2loopback, etc.).
 echo "==> Installing common akmods..."
 /ctx/bazzite/install-kmods \
@@ -72,7 +72,7 @@ echo "==> Installing common akmods..."
     /tmp/rpms/{common,kmods}/*xone*.rpm \
     /tmp/rpms/{common,kmods}/*wl*.rpm
 
-# -- 7. Install extra akmods --
+# -- Install extra akmods --
 # Install extra kernel module RPMs (zenergy, gcadapter, evdi, etc.).
 echo "==> Installing extra akmods..."
 /ctx/bazzite/install-kmods \
@@ -90,7 +90,7 @@ echo "==> Installing extra akmods..."
     /tmp/rpms/{extra,kmods-extra}/*system76*.rpm \
     /tmp/rpms/{extra,kmods-extra}/*vhba*.rpm
 
-# -- 8. Restore original kernel install.d scripts --
+# -- Restore original kernel install.d scripts --
 # Move the backed-up install scripts back to their original names.
 echo "==> Restoring original kernel install.d scripts..."
 

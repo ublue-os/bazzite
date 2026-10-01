@@ -10,7 +10,7 @@ set -euo pipefail
 echo "::group::Globally remove packages"
 trap 'echo "::endgroup::"' EXIT
 
-# -- 1. Define packages to remove --
+# -- Define packages to remove --
 # Packages to remove globally across all Bazzite variants.
 # Not quoted in the array so brace expansion and multiple words expand
 # correctly into individual dnf arguments.
@@ -29,7 +29,7 @@ declare -a REMOVE_GNOME=(
              # https://invent.kde.org/utilities/konsole/-/merge_requests/1207
 )
 
-# -- 2. Build the removal list based on the base image --
+# -- Build the removal list based on the base image --
 echo "==> Building removal list for '${BASE_IMAGE_NAME}'..."
 
 if [[ "${BASE_IMAGE_NAME}" == "kinoite" ]]; then
@@ -38,6 +38,6 @@ elif [[ "${BASE_IMAGE_NAME}" == "silverblue" ]]; then
     REMOVE_ALL=( "${REMOVE_GNOME[@]}" "${REMOVE_GLOBAL[@]}" )
 fi
 
-# -- 3. Remove the packages --
+# -- Remove the packages --
 echo "==> Removing packages with dnf5..."
 dnf5 -y remove "${REMOVE_ALL[@]}"

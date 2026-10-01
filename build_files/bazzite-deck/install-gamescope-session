@@ -10,18 +10,18 @@ set -euo pipefail
 echo "::group::Install gamescope session"
 trap 'echo "::endgroup::"' EXIT
 
-# -- 1. Create gamescope-session-plus directory --
+# -- Create gamescope-session-plus directory --
 # Ensure the target directory exists before downloading files.
 echo "==> Creating gamescope-session-plus directory..."
 mkdir -p /usr/share/gamescope-session-plus/
 
-# -- 2. Download Steam bootstrap archive --
+# -- Download Steam bootstrap archive --
 # Fetch the Steam bootstrap tarball used by gamescope-session-plus.
 echo "==> Downloading Steam bootstrap archive..."
 curl --retry 3 -Lo /usr/share/gamescope-session-plus/bootstrap_steam.tar.gz \
     https://large-package-sources.nobaraproject.org/bootstrap_steam.tar.gz
 
-# -- 3. Set component metadata attributes --
+# -- Set component metadata attributes --
 # Tag the bootstrap archive with component and update-interval for tracking.
 echo "==> Setting component metadata attributes..."
 setfattr \

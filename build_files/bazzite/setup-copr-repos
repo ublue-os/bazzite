@@ -8,13 +8,13 @@ set -euo pipefail
 echo "::group::Setup Copr repos"
 trap 'echo "::endgroup::"' EXIT
 
-# -- 1. Cache configuration --
+# -- Cache configuration --
 # Ensure cache directory exists and enable package caching in DNF.
 echo "==> Configuring DNF cache..."
 mkdir -p /var/roothome
 dnf5 config-manager setopt keepcache=1
 
-# -- 2. Enable Copr repositories --
+# -- Enable Copr repositories --
 # Enable each Copr repo and set its priority to 98.
 echo "==> Enabling Copr repositories..."
 
@@ -32,7 +32,7 @@ do
         setopt "copr:copr.fedorainfracloud.org:${copr////:}.priority=98"
 done
 
-# -- 3. Install Terra-release packages --
+# -- Install Terra-release packages --
 # Add the Terra repository and install its release packages.
 echo "==> Installing Terra release packages..."
 dnf5 -y install \
@@ -40,20 +40,20 @@ dnf5 -y install \
     --repofrompath 'terra,https://repos.fyralabs.com/terra$releasever' \
     terra-release{,-extras,-mesa}
 
-# -- 4. Add Tailscale repository --
+# -- Add Tailscale repository --
 echo "==> Adding Tailscale repository..."
 dnf5 -y config-manager \
     addrepo \
     --overwrite \
     --from-repofile=https://pkgs.tailscale.com/stable/fedora/tailscale.repo
 
-# -- 5. Enable negativo17 multimedia repository --
+# -- Enable negativo17 multimedia repository --
 echo "==> Enabling negativo17 multimedia repository..."
 sed -i \
     's@enabled=0@enabled=1@g' \
     /etc/yum.repos.d/negativo17-fedora-multimedia.repo
 
-# -- 6. Configure repository priorities and exclusions --
+# -- Configure repository priorities and exclusions --
 # Set priority and exclusion rules for each repository.
 echo "==> Configuring repository priorities and exclusions..."
 
@@ -77,7 +77,7 @@ dnf5 -y config-manager setopt "*audinux*".exclude="kernel*"
 dnf5 -y config-manager \
     setopt "*staging*".exclude="scx-tools scx-scheds kf6-* mesa* mutter*"
 
-# -- 7. Versionlock KDE packages for Kinoite --
+# -- Versionlock KDE packages for Kinoite --
 # On Kinoite images, lock qt6 and plasma packages to prevent unwanted updates.
 echo "==> Checking for Kinoite image..."
 if [[ "${BASE_IMAGE_NAME}" == "kinoite" ]]; then

@@ -7,7 +7,7 @@ set -euo pipefail
 echo "::group::Install gaming-related packages"
 trap 'echo "::endgroup::"' EXIT
 
-# -- 1. Install dmemcg booster --
+# -- Install dmemcg booster --
 # Install the dmemcg-booster package, with desktop-specific variants.
 echo "==> Installing dmemcg booster..."
 dnf5 -y install dmemcg-booster
@@ -20,7 +20,7 @@ else
         uresourced uresourced-dmemcg
 fi
 
-# -- 2. Install gaming stack --
+# -- Install gaming stack --
 # Install gamescope, Proton, Wine, and related graphics libraries.
 echo "==> Installing gaming stack..."
 dnf5 --enable-repo=terra-mesa \
@@ -50,7 +50,7 @@ dnf5 --enable-repo=terra-mesa \
     openxr \
     openxr-libs
 
-# -- 3. Install Steam and Lutris --
+# -- Install Steam and Lutris --
 # Install the main gaming launchers without weak dependencies.
 echo "==> Installing Steam and Lutris..."
 dnf5 -y --enable-repo=terra-mesa \
@@ -58,12 +58,12 @@ dnf5 -y --enable-repo=terra-mesa \
     --setopt=install_weak_deps=False \
     install steam lutris
 
-# -- 4. Remove conflicting gamemode --
+# -- Remove conflicting gamemode --
 # Remove gamemode as it conflicts with the dmemcg-based approach.
 echo "==> Removing gamemode..."
 dnf5 -y remove gamemode
 
-# -- 5. Install Winetricks --
+# -- Install Winetricks --
 # Download and install the pinned version of Winetricks.
 echo "==> Installing Winetricks..."
 /ctx/ghcurl \

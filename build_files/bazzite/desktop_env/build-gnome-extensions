@@ -8,12 +8,12 @@
 #
 set -euo pipefail
 
-# -- 1. Install build dependencies --
+# -- Install build dependencies --
 # Install glib2-devel which provides glib-compile-schemas and build tooling.
 echo "==> Installing build dependencies..."
 dnf5 -y install glib2-devel
 
-# -- 2. Compile extension schemas --
+# -- Compile extension schemas --
 # Compile GSettings schemas for all installed GNOME shell extensions.
 echo "==> Compiling extension schemas..."
 glib-compile-schemas /usr/share/gnome-shell/extensions/logomenu@aryan_k/schemas
@@ -24,28 +24,28 @@ glib-compile-schemas /usr/share/gnome-shell/extensions/restartto@tiagoporsch.git
 glib-compile-schemas /usr/share/gnome-shell/extensions/appindicatorsupport@rgcjonas.gmail.com/schemas
 glib-compile-schemas /usr/share/gnome-shell/extensions/add-to-steam@pupper.space/schemas
 
-# -- 3. Install Caffeine extension --
+# -- Install Caffeine extension --
 # Move the extracted Caffeine extension to its final location and compile schemas.
 echo "==> Installing Caffeine extension..."
 mv /usr/share/gnome-shell/extensions/tmp/caffeine/caffeine@patapon.info \
     /usr/share/gnome-shell/extensions/caffeine@patapon.info
 glib-compile-schemas /usr/share/gnome-shell/extensions/caffeine@patapon.info/schemas
 
-# -- 4. Build Burn My Windows --
+# -- Build Burn My Windows --
 # Build Burn My Windows from source, compile schemas, and remove the zip archive.
 echo "==> Building Burn My Windows..."
 make -C /usr/share/gnome-shell/extensions/burn-my-windows@schneegans.github.com
 glib-compile-schemas /usr/share/gnome-shell/extensions/burn-my-windows@schneegans.github.com/schemas
 rm /usr/share/gnome-shell/extensions/burn-my-windows@schneegans.github.com/burn-my-windows@schneegans.github.com.zip
 
-# -- 5. Build Desktop Cube --
+# -- Build Desktop Cube --
 # Build Desktop Cube from source, compile schemas, and remove the zip archive.
 echo "==> Building Desktop Cube..."
 make -C /usr/share/gnome-shell/extensions/desktop-cube@schneegans.github.com
 glib-compile-schemas /usr/share/gnome-shell/extensions/desktop-cube@schneegans.github.com/schemas
 rm /usr/share/gnome-shell/extensions/desktop-cube@schneegans.github.com/desktop-cube@schneegans.github.com.zip
 
-# -- 6. Build Blur My Shell --
+# -- Build Blur My Shell --
 # Build Blur My Shell from source, extract the zip bundle, compile schemas, and
 # remove the build directory.
 echo "==> Building Blur My Shell..."
@@ -55,7 +55,7 @@ unzip -o /usr/share/gnome-shell/extensions/blur-my-shell@aunetx/build/blur-my-sh
 glib-compile-schemas /usr/share/gnome-shell/extensions/blur-my-shell@aunetx/schemas
 rm -rf /usr/share/gnome-shell/extensions/blur-my-shell@aunetx/build
 
-# -- 7. Install Bazaar Integration --
+# -- Install Bazaar Integration --
 # Extract the Bazaar Integration extension from the tmp directory to its final
 # location.
 echo "==> Installing Bazaar Integration..."
@@ -63,7 +63,7 @@ mkdir -p /usr/share/gnome-shell/extensions/bazaar-integration@kolunmi.github.io
 mv /usr/share/gnome-shell/extensions/tmp/bazaar-integration@kolunmi.github.io/src/* \
     /usr/share/gnome-shell/extensions/bazaar-integration@kolunmi.github.io/
 
-# -- 8. Install TouchUp extension --
+# -- Install TouchUp extension --
 # Download the latest TouchUp release from GitHub, extract it, compile schemas,
 # and remove the downloaded archive.
 echo "==> Installing TouchUp extension..."
@@ -75,7 +75,7 @@ unzip -o /tmp/touchup.zip -d /usr/share/gnome-shell/extensions/touchup@mityax
 glib-compile-schemas /usr/share/gnome-shell/extensions/touchup@mityax/schemas
 rm /tmp/touchup.zip
 
-# -- 9. Cleanup --
+# -- Cleanup --
 # Remove build dependencies and the temporary extensions directory.
 echo "==> Cleaning up..."
 dnf5 -y remove glib2-devel

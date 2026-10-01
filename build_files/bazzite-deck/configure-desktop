@@ -10,12 +10,12 @@ set -euo pipefail
 echo "::group::Configure desktop environments (Deck)"
 trap 'echo "::endgroup::"' EXIT
 
-# -- 1. Install sddm display manager --
+# -- Install sddm display manager --
 # Replace the default display manager with sddm for Bazzite.
 echo "==> Installing sddm display manager..."
 dnf5 -y install sddm
 
-# -- 2. Remove conflicting packages --
+# -- Remove conflicting packages --
 # Remove packages that conflict with the Bazzite desktop experience.
 echo "==> Removing conflicting packages..."
 dnf5 -y remove \
@@ -23,7 +23,7 @@ dnf5 -y remove \
     ds-inhibit \
     plasma-login-manager
 
-# -- 3. Configure KDE or GNOME presets --
+# -- Configure KDE or GNOME presets --
 # Apply image-specific desktop presets: KDE on Kinoite, GNOME defaults otherwise.
 echo "==> Configuring desktop presets..."
 if [[ "${BASE_IMAGE_NAME}" == "kinoite" ]]; then
@@ -36,14 +36,14 @@ else
     dnf5 -y remove malcontent-control
 fi
 
-# -- 4. Disable GDM on Silverblue --
+# -- Disable GDM on Silverblue --
 # GDM conflicts with sddm; disable it on Silverbase-derived images.
 echo "==> Disabling GDM on Silverblue..."
 if [[ "${BASE_IMAGE_NAME}" == "silverblue" ]]; then
     systemctl disable gdm.service
 fi
 
-# -- 5. Enable sddm --
+# -- Enable sddm --
 # Activate sddm as the default display manager.
 echo "==> Enabling sddm..."
 systemctl enable sddm.service

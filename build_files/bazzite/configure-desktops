@@ -8,7 +8,7 @@ set -euo pipefail
 echo "::group::Configure desktop environments"
 trap 'echo "::endgroup::"' EXIT
 
-# -- 1. Configure desktop environment --
+# -- Configure desktop environment --
 # Install KDE for Kinoite images, or GNOME for all other variants.
 echo "==> Configuring desktop environment..."
 
@@ -18,7 +18,7 @@ else
     /ctx/bazzite/desktop_env/configure-gnome
 fi
 
-# -- 2. Install common packages --
+# -- Install common packages --
 # Install rom-properties-utils for both KDE and GNOME.
 echo "==> Installing common packages..."
 dnf5 -y install rom-properties-utils

@@ -8,7 +8,7 @@
 #
 set -euo pipefail
 
-# -- 1. Collect installable RPMs --
+# -- Collect installable RPMs --
 # Iterate over each argument (glob pattern), resolve it, and collect only
 # files that actually exist on disk.
 echo "==> Collecting RPMs to install..."
@@ -25,7 +25,7 @@ for pattern in "$@"; do
     done
 done
 
-# -- 2. Install collected RPMs --
+# -- Install collected RPMs --
 # Use dnf to install all collected RPMs in one transaction.
 echo "==> Installing ${#INSTALL_RPMS[@]} RPM(s)..."
 

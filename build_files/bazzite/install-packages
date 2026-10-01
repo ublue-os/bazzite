@@ -8,7 +8,7 @@ set -euo pipefail
 echo "::group::Install packages"
 trap 'echo "::endgroup::"' EXIT
 
-# -- 1. Install cicpoffs package from GitHub releases --
+# -- Install cicpoffs package from GitHub releases --
 # Fetch the latest cicpoffs RPM for the current Fedora version.
 echo "==> Installing cicpoffs package..."
 CICPOFFS_URL=$(/ctx/ghcurl \
@@ -19,14 +19,14 @@ CICPOFFS_URL=$(/ctx/ghcurl \
 dnf5 -y install "${CICPOFFS_URL}"
 unset -v CICPOFFS_URL
 
-# -- 2. Install SCX scheduler packages --
+# -- Install SCX scheduler packages --
 # Temporarily enable the kernel-cachyos-addons copr to install scx packages.
 echo "==> Installing SCX scheduler packages..."
 dnf5 -y copr enable bieszczaders/kernel-cachyos-addons
 dnf5 -y install scx-scheds scx-tools
 dnf5 -y copr disable bieszczaders/kernel-cachyos-addons
 
-# -- 3. Install core packages --
+# -- Install core packages --
 # Install the main set of packages required for the Bazzite image.
 echo "==> Installing core packages..."
 dnf5 -y install \
@@ -114,7 +114,7 @@ dnf5 -y install \
     kernel-tools \
     ls-iommu
 
-# -- 4. Replace switcheroo-control with cardwire --
+# -- Replace switcheroo-control with cardwire --
 # Swap in cardwire (and its GUI) from the Terra repository.
 echo "==> Installing cardwire from Terra repository..."
 dnf5 -y swap \
@@ -125,7 +125,7 @@ dnf5 -y install \
     --enable-repo=terra \
     cardwire-gui
 
-# -- 5. Replace ddcutil packages with Terra variants --
+# -- Replace ddcutil packages with Terra variants --
 # Swap in terra-ddcutil and terra-libddcutil from the Terra extras repository.
 echo "==> Installing Terra ddcutil packages..."
 dnf5 -y swap \
@@ -138,7 +138,7 @@ dnf5 -y swap \
     --repo terra-extras \
     libddcutil terra-libddcutil
 
-# -- 6. Disable unnecessary services --
+# -- Disable unnecessary services --
 # Mask services that are not needed on the Bazzite image.
 echo "==> Disabling unnecessary services..."
 ln -s /dev/null /etc/NetworkManager/dispatcher.d/04-iscsi
@@ -146,7 +146,7 @@ systemctl mask iscsi
 systemctl mask systemd-remount-fs.service
 systemctl mask fedora-atomic-desktop-appstream-cache-refresh
 
-# -- 7. Install extest library --
+# -- Install extest library --
 # Download the latest extest shared library and tag it as a Bazzite component.
 echo "==> Installing extest library..."
 mkdir -p /usr/lib/extest
@@ -160,7 +160,7 @@ setfattr \
     -n user.component \
     -v "extest" /usr/lib/extest/libextest.so
 
-# -- 8. Install Sunshine postinst script --
+# -- Install Sunshine postinst script --
 # Download and make executable the Sunshine post-installation script.
 echo "==> Installing Sunshine postinst script..."
 /ctx/ghcurl \
@@ -169,11 +169,11 @@ echo "==> Installing Sunshine postinst script..."
 
 chmod +x /usr/libexec/sunshine-postinst
 
-# -- 9. Create autostart directory --
+# -- Create autostart directory --
 echo "==> Creating autostart directory..."
 mkdir -p /etc/xdg/autostart
 
-# -- 10. Apply system patches --
+# -- Apply system patches --
 # Patch waydroid-network script and btrfs-assistant-launcher for compatibility.
 echo "==> Applying system patches..."
 sed -i~ -E \

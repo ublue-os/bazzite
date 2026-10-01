@@ -10,14 +10,14 @@ set -euo pipefail
 echo "::group::Setup Copr repos (Deck)"
 trap 'echo "::endgroup::"' EXIT
 
-# -- 1. Enable akmods COPR repo --
+# -- Enable akmods COPR repo --
 # The akmods repo is disabled by default; flip enabled=0 → enabled=1.
 echo "==> Enabling akmods COPR repo..."
 sed -i \
     's@enabled=0@enabled=1@g' \
     /etc/yum.repos.d/_copr_ublue-os-akmods.repo
 
-# -- 2. Enable Ublue and Bazzite COPR repos --
+# -- Enable Ublue and Bazzite COPR repos --
 # Install the core set of COPR repositories required for Bazzite.
 echo "==> Enabling Ublue and Bazzite COPR repos..."
 dnf5 -y copr enable ublue-os/staging
@@ -26,7 +26,7 @@ dnf5 -y copr enable ublue-os/bazzite
 dnf5 -y copr enable ublue-os/bazzite-multilib
 dnf5 -y copr enable ycollet/audinux
 
-# -- 3. Configure dnf5 availability handling --
+# -- Configure dnf5 availability handling --
 # Allow dnf5 to proceed even if a repo is temporarily unavailable.
 echo "==> Configuring dnf5 availability handling..."
 dnf5 config-manager unsetopt skip_if_unavailable

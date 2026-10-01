@@ -7,7 +7,7 @@ set -euo pipefail
 echo "::group::Install ujust picker"
 trap 'echo "::endgroup::"' EXIT
 
-# -- 1. Download ujust-picker from GitHub releases --
+# -- Download ujust-picker from GitHub releases --
 # Fetch the latest x86_64 binary from the ublue-os/bazzite-ujust-picker repo.
 echo "==> Downloading ujust-picker..."
 
@@ -18,7 +18,7 @@ RELEASE_URL=$(/ctx/ghcurl \
 
 /ctx/ghcurl "${RELEASE_URL}" -sL -o /usr/bin/ujust-picker
 
-# -- 2. Set permissions and component attribute --
+# -- Set permissions and component attribute --
 echo "==> Configuring ujust-picker..."
 chmod +x /usr/bin/ujust-picker
 setfattr \

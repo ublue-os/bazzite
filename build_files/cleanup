@@ -4,15 +4,15 @@
 #
 set -euo pipefail
 
-# -- 1. Remove temporary files --
+# -- Remove temporary files --
 # Clear all contents of /tmp to reclaim space used by temporary data.
 rm -rf /tmp/* || true
 
-# -- 2. Remove DNF5 log file --
+# -- Remove DNF5 log file --
 # Delete the DNF5 package manager log if it exists.
 rm -rf /var/log/dnf5.log || true
 
-# -- 3. Remove boot files --
+# -- Remove boot files --
 # Clear old kernel images and boot artifacts from /boot.
 rm -rf /boot/* || true
 rm -rf /boot/.* || true

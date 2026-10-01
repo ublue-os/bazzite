@@ -7,7 +7,7 @@
 #
 set -euo pipefail
 
-# -- 1. Install GNOME packages --
+# -- Install GNOME packages --
 # Install GNOME desktop packages including extensions, themes, and tools.
 echo "==> Installing GNOME packages..."
 dnf5 -y install \
@@ -24,7 +24,7 @@ dnf5 -y install \
     openssh-askpass \
     firewall-config
 
-# -- 2. Remove unnecessary GNOME packages --
+# -- Remove unnecessary GNOME packages --
 # Remove GNOME packages not needed for the target desktop experience.
 echo "==> Removing unnecessary GNOME packages..."
 dnf5 -y remove \
@@ -40,12 +40,12 @@ dnf5 -y remove \
     gnome-shell-extension-places-menu \
     gnome-shell-extension-window-list
 
-# -- 3. Build and install GNOME extensions --
+# -- Build and install GNOME extensions --
 # Build and install custom GNOME shell extensions from source.
 echo "==> Building GNOME extensions..."
 /ctx/bazzite/desktop_env/build-gnome-extensions
 
-# -- 4. Enable dconf-update service --
+# -- Enable dconf-update service --
 # Enable the dconf-update service for configuration persistence.
 echo "==> Enabling dconf-update service..."
 systemctl enable dconf-update.service
