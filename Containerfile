@@ -64,17 +64,6 @@ ARG VERSION_PRETTY="${VERSION_PRETTY}"
 COPY system_files/desktop/shared/ system_files/desktop/${BASE_IMAGE_NAME}/ /
 RUN find /usr/share/ublue-os/docs -type f -exec setfattr -n user.component -v "ublue-docs" {} +
 
-# Pin linux-firmware to a known-good version
-RUN --mount=type=cache,dst=/var/cache \
-    --mount=type=cache,dst=/var/cache/libdnf5 \
-    --mount=type=cache,dst=/var/log \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=tmpfs,dst=/tmp \
-    dnf5 -y install --best --allowerasing \
-        "linux-firmware-${LINUX_FIRMWARE_VERSION}*" \
-        "linux-firmware-whence-${LINUX_FIRMWARE_VERSION}*" && \
-    /ctx/cleanup
-
 # Install needed firmware blobs
 RUN --mount=type=bind,src=firmware,dst=/ctx/firmware \
     --mount=type=cache,dst=/var/log \
@@ -142,7 +131,7 @@ RUN --mount=type=cache,dst=/var/cache \
     ; fi && \
     /ctx/cleanup
 
-# Install Valve's patched Mesa, Bluez, and Xwayland
+# Install Valve's patched Mesa, and Xwayland
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/cache/libdnf5 \
     --mount=type=cache,dst=/var/log \
@@ -152,7 +141,7 @@ RUN --mount=type=cache,dst=/var/cache \
         pipewire-config-raop \
         mesa-va-drivers && \
     declare -A toswap=( \
-        ["copr:copr.fedorainfracloud.org:ublue-os:bazzite-multilib"]="bluez xorg-x11-server-Xwayland" \
+        ["copr:copr.fedorainfracloud.org:ublue-os:bazzite-multilib"]="xorg-x11-server-Xwayland" \
         ["terra-mesa"]="mesa-filesystem" \
     ) && \
     dnf5 -y swap --allowerasing \
@@ -162,10 +151,6 @@ RUN --mount=type=cache,dst=/var/cache \
         for package in ${toswap[$repo]}; do dnf5 -y swap --from-repo=$repo $package $package; done; \
     done && unset -v toswap repo package && \
     dnf5 versionlock add \
-        bluez \
-        bluez-cups \
-        bluez-libs \
-        bluez-obexd \
         xorg-x11-server-Xwayland \
         mesa-dri-drivers \
         mesa-filesystem \
