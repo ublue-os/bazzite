@@ -2,7 +2,7 @@
 #
 # Final cleanup, service configuration, and image finalization for Bazzite.
 #
-set -euo pipefail
+set -xeuo pipefail
 
 echo "::group::Finalize bazzite image"
 trap 'echo "::endgroup::"' EXIT

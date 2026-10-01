@@ -4,7 +4,7 @@
 # Removes conflicting packages, swaps in patched versions, locks them, and
 # installs additional multimedia dependencies.
 #
-set -euo pipefail
+set -xeuo pipefail
 
 echo "::group::Install Valve patches"
 trap 'echo "::endgroup::"' EXIT

@@ -5,7 +5,7 @@
 # This script removes packages that are replaced by flatpaks or
 # alternative tools on all Bazzite images.
 #
-set -euo pipefail
+set -xeuo pipefail
 
 echo "::group::Globally remove packages"
 trap 'echo "::endgroup::"' EXIT

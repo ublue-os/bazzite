@@ -6,7 +6,7 @@
 # enhancements; configures gamescope-session-plus and installs the
 # jupiter-dock-updater binary.
 #
-set -euo pipefail
+set -xeuo pipefail
 
 echo "::group::Install packages (Deck)"
 trap 'echo "::endgroup::"' EXIT

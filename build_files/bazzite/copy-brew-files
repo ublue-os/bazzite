@@ -3,7 +3,7 @@
 # Copy Homebrew files from the brew image into the root filesystem,
 # attach security attributes, and clean up temporary files.
 #
-set -euo pipefail
+set -xeuo pipefail
 
 echo "::group::Copy brew files"
 trap 'echo "::endgroup::"' EXIT

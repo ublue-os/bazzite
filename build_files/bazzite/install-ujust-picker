@@ -2,7 +2,7 @@
 #
 # Install ujust-picker from the latest GitHub release for the Bazzite image.
 #
-set -euo pipefail
+set -xeuo pipefail
 
 echo "::group::Install ujust picker"
 trap 'echo "::endgroup::"' EXIT

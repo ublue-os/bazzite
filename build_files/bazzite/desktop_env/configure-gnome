@@ -5,7 +5,7 @@
 # Configure GNOME desktop environment: install packages, remove
 # unnecessary ones, build extensions, and enable services.
 #
-set -euo pipefail
+set -xeuo pipefail
 
 # -- 1. Install GNOME packages --
 # Install GNOME desktop packages including extensions, themes, and tools.

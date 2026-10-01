@@ -5,7 +5,7 @@
 # Disables skip_if_unavailable, removes incompatible firmware and utilities,
 # and swaps cardwire for switcheroo-control on non-deck images.
 #
-set -euo pipefail
+set -xeuo pipefail
 
 echo "::group::Remove Nvidia conflicts"
 trap 'echo "::endgroup::"' EXIT

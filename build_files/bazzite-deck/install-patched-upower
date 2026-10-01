@@ -5,7 +5,7 @@
 # Replaces the default upower with the Bazzite-modified version and
 # versionlocks both upower and upower-libs to prevent unintended updates.
 #
-set -euo pipefail
+set -xeuo pipefail
 
 echo "::group::Install patched UPower"
 trap 'echo "::endgroup::"' EXIT
