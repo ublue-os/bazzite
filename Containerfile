@@ -304,7 +304,7 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    /ctx/bazzite/finalize-image-type \
+    /ctx/bazzite-nvidia/finalize-image-type \
     && /ctx/image-info \
     && /ctx/build-initramfs \
     && /ctx/finalize
