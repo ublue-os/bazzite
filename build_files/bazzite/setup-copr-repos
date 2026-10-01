@@ -18,16 +18,14 @@ dnf5 config-manager setopt keepcache=1
 # Enable each Copr repo and set its priority to 98.
 echo "==> Enabling Copr repositories..."
 
-declare -A COPR_REPOS=(
-    "ublue-os/bazzite"
-    "ublue-os/bazzite-multilib"
-    "ublue-os/staging"
-    "ublue-os/packages"
-    "ycollet/audinux"
-    "che/nerd-fonts"
-)
-
-for copr in "${!COPR_REPOS[@]}"; do
+for copr in \
+    ublue-os/bazzite \
+    ublue-os/bazzite-multilib \
+    ublue-os/staging \
+    ublue-os/packages \
+    ycollet/audinux \
+    che/nerd-fonts; \
+do
     echo "    Enabling copr: ${copr}..."
     dnf5 -y copr enable "${copr}"
     dnf5 -y config-manager \
