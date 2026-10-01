@@ -19,12 +19,12 @@ dnf5 config-manager setopt keepcache=1
 echo "==> Enabling Copr repositories..."
 
 declare -A COPR_REPOS=(
-    ["ublue-os/bazzite"] ""
-    ["ublue-os/bazzite-multilib"] ""
-    ["ublue-os/staging"] ""
-    ["ublue-os/packages"] ""
-    ["ycollet/audinux"] ""
-    ["che/nerd-fonts"] ""
+    "ublue-os/bazzite"
+    "ublue-os/bazzite-multilib"
+    "ublue-os/staging"
+    "ublue-os/packages"
+    "ycollet/audinux"
+    "che/nerd-fonts"
 )
 
 for copr in "${!COPR_REPOS[@]}"; do
