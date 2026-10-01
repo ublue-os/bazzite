@@ -20,9 +20,8 @@ dnf5 -y remove pipewire-config-raop mesa-va-drivers
 # mesa-filesystem from terra-mesa.
 echo "==> Swapping in Valve's patched packages..."
 declare -A TOSWAP=(
-    ["copr:copr.fedorainfracloud.org:ublue-os:bazzite-multilib"] \
-        "bluez xorg-x11-server-Xwayland"
-    ["terra-mesa"] "mesa-filesystem"
+    ["copr:copr.fedorainfracloud.org:ublue-os:bazzite-multilib"]="bluez xorg-x11-server-Xwayland"
+    ["terra-mesa"]="mesa-filesystem"
 )
 
 # Swap wireplumber for terra's patched version
