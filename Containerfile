@@ -70,26 +70,20 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    <<'EOF'
-/ctx/bazzite/pin-linux-firmware
-
-/ctx/cleanup
-EOF
+    /ctx/bazzite/pin-linux-firmware \
+    && /ctx/cleanup
 
 # Install needed firmware blobs
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=bind,src=firmware,dst=/ctx/firmware \
     --mount=type=cache,dst=/var/log \
     --mount=type=tmpfs,dst=/tmp \
-    <<'EOF'
-/ctx/bazzite/install-nonfree-firmware-blobs
-EOF
+    /ctx/bazzite/install-nonfree-firmware-blobs
 
 # Copy Homebrew files from the brew image
 COPY --from=brew /system_files/ /tmp/brew_files/
-RUN  --mount=type=bind,from=ctx,source=/,target=/ctx <<'EOF'
-/ctx/bazzite/copy-brew-files
-EOF
+RUN  --mount=type=bind,from=ctx,source=/,target=/ctx \
+    /ctx/bazzite/copy-brew-files
 
 # Install kernel
 RUN --mount=type=cache,dst=/var/cache \
@@ -101,11 +95,8 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=bind,from=akmods-extra,src=/rpms/kmods,dst=/tmp/rpms/kmods-extra \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    <<'EOF'
-/ctx/bazzite/install-kernel-akmods
-
-/ctx/cleanup
-EOF
+    /ctx/bazzite/install-kernel-akmods \
+    && /ctx/cleanup
 
 # Setup Copr repos
 RUN --mount=type=cache,dst=/var/cache \
@@ -113,11 +104,8 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    <<'EOF'
-/ctx/bazzite/setup-copr-repos
-
-/ctx/cleanup
-EOF
+    /ctx/bazzite/setup-copr-repos \
+    && /ctx/cleanup
 
 # Install Valve's patched Mesa, Bluez, and Xwayland
 RUN --mount=type=cache,dst=/var/cache \
@@ -125,11 +113,8 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    <<'EOF'
-/ctx/bazzite/valve-patches
-
-/ctx/cleanup
-EOF
+    /ctx/bazzite/valve-patches \
+    && /ctx/cleanup
 
 # Remove unneeded packages
 RUN --mount=type=cache,dst=/var/cache \
@@ -137,11 +122,8 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    <<'EOF'
-/ctx/bazzite/global-remove
-
-/ctx/cleanup
-EOF
+    /ctx/bazzite/global-remove \
+    && /ctx/cleanup
 
 # Install new packages
 RUN --mount=type=cache,dst=/var/cache \
@@ -149,11 +131,8 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     --mount=type=secret,id=GITHUB_TOKEN \
-    <<'EOF'
-/ctx/bazzite/install-packages
-
-/ctx/cleanup
-EOF
+    /ctx/bazzite/install-packages \
+    && /ctx/cleanup
 
 # Install Steam & Lutris, plus supporting packages
 RUN --mount=type=cache,dst=/var/cache \
@@ -162,11 +141,8 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     --mount=type=secret,id=GITHUB_TOKEN \
-    <<'EOF'
-/ctx/bazzite/install-steam-lutris
-
-/ctx/cleanup
-EOF
+    /ctx/bazzite/install-steam-lutris \
+    && /ctx/cleanup
 
 # Install ujust-picker from GitHub releases
 RUN --mount=type=cache,dst=/var/cache \
@@ -175,11 +151,8 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     --mount=type=secret,id=GITHUB_TOKEN \
-    <<'EOF'
-/ctx/bazzite/install-ujust-picker
-
-/ctx/cleanup
-EOF
+    /ctx/bazzite/install-ujust-picker \
+    && /ctx/cleanup
 
 # Configure KDE & GNOME
 RUN --mount=type=cache,dst=/var/cache \
@@ -187,11 +160,8 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     --mount=type=secret,id=GITHUB_TOKEN \
-    <<'EOF'
-/ctx/bazzite/configure-desktops
-
-/ctx/cleanup
-EOF
+    /ctx/bazzite/configure-desktops \
+    && /ctx/cleanup
 
 # ublue-os-media-automount-udev, mount non-removable device partitions automatically under /media/media-automount/
 RUN --mount=type=cache,dst=/var/cache \
@@ -199,11 +169,8 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    <<'EOF'
-/ctx/bazzite/ublue-os-media-automount-udev
-
-/ctx/cleanup
-EOF
+    /ctx/bazzite/ublue-os-media-automount-udev \
+    && /ctx/cleanup
 
 # Cleanup & Finalize
 COPY system_files/overrides /
@@ -213,13 +180,10 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     --mount=type=secret,id=GITHUB_TOKEN \
-    <<'EOF'
-/ctx/bazzite/finalize-image-type
-
-/ctx/image-info
-/ctx/build-initramfs
-/ctx/finalize
-EOF
+    /ctx/bazzite/finalize-image-type \
+    && /ctx/image-info \
+    && /ctx/build-initramfs \
+    && /ctx/finalize
 
 RUN --mount=type=tmpfs,target=/run \
     --network=none \
@@ -246,22 +210,16 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    <<'EOF'
-/ctx/bazzite-deck/setup-copr-repos
-
-/ctx/cleanup
-EOF
+    /ctx/bazzite-deck/setup-copr-repos \
+    && /ctx/cleanup
 
 # Configure KDE & GNOME
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    <<'EOF'
-/ctx/bazzite-deck/configure-desktop
-
-/ctx/cleanup
-EOF
+    /ctx/bazzite-deck/configure-desktop \
+    && /ctx/cleanup
 
 # Install new packages
 RUN --mount=type=cache,dst=/var/cache \
@@ -269,22 +227,16 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    <<'EOF'
-/ctx/bazzite-deck/install-packages
-
-/ctx/cleanup
-EOF
+    /ctx/bazzite-deck/install-packages \
+    && /ctx/cleanup
 
 # Install Steam Deck patched UPower
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    <<'EOF'
-/ctx/bazzite-deck/install-patched-upower
-
-/ctx/cleanup
-EOF
+    /ctx/bazzite-deck/install-patched-upower \
+    && /ctx/cleanup
 
 # Install Gamescope Session Supporting changes
 # Add bootstrap_steam.tar.gz used by gamescope-session (Thanks GE & Nobara Project!)
@@ -294,11 +246,8 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     --mount=type=secret,id=GITHUB_TOKEN \
-    <<'EOF'
-/ctx/bazzite-deck/install-gamescope-session
-
-/ctx/cleanup
-EOF
+    /ctx/bazzite-deck/install-gamescope-session \
+    && /ctx/cleanup
 
 # Cleanup & Finalize
 RUN --mount=type=cache,dst=/var/cache \
@@ -306,13 +255,10 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    <<'EOF'
-/ctx/bazzite-deck/finalize-image-type
-
-/ctx/image-info
-/ctx/build-initramfs
-/ctx/finalize
-EOF
+    /ctx/bazzite-deck/finalize-image-type \
+    && /ctx/image-info \
+    && /ctx/build-initramfs \
+    && /ctx/finalize
 
 RUN --mount=type=tmpfs,target=/run \
     --network=none \
@@ -340,11 +286,8 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    <<'EOF'
-/ctx/bazzite-nvidia/remove-nvidia-conflicts
-
-/ctx/cleanup
-EOF
+    /ctx/bazzite-nvidia/remove-nvidia-conflicts \
+    && /ctx/cleanup
 
 # Install NVIDIA driver
 RUN --mount=type=cache,dst=/var/cache \
@@ -353,24 +296,18 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=bind,from=akmods-nvidia,src=/rpms,dst=/tmp/rpms/nvidia \
     --mount=type=tmpfs,dst=/tmp \
     --mount=type=secret,id=GITHUB_TOKEN \
-    <<'EOF'
-/ctx/bazzite-nvidia/install-nvidia-driver
-
-/ctx/cleanup
-EOF
+    /ctx/bazzite-nvidia/install-nvidia-driver \
+    && /ctx/cleanup
 
 # Cleanup & Finalize
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    <<'EOF'
-/ctx/bazzite/finalize-image-type
-
-/ctx/image-info
-/ctx/build-initramfs
-/ctx/finalize
-EOF
+    /ctx/bazzite/finalize-image-type \
+    && /ctx/image-info \
+    && /ctx/build-initramfs \
+    && /ctx/finalize
 
 RUN --mount=type=tmpfs,target=/run \
     --network=none \
