@@ -18,7 +18,7 @@ echo 'import "/usr/share/ublue-os/just/95-bazzite-nvidia.just"' >> /usr/share/ub
 # -- 2. Handle Silverblue dconf overrides --
 # On Silverblue-based images, copy and convert gschema overrides to dconf
 # format, then remove the original gschema override files.
-if grep -q "silverblue" <<< "${BASE_IMAGE_NAME}"; then
+if [[ "${BASE_IMAGE_NAME}" == "silverblue" ]]; then
     echo "    Preparing Silverblue dconf overrides..."
     mkdir -p "/usr/share/ublue-os/dconfs/nvidia-silverblue/"
 

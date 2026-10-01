@@ -12,7 +12,7 @@ trap 'echo "::endgroup::"' EXIT
 # Install KDE for Kinoite images, or GNOME for all other variants.
 echo "==> Configuring desktop environment..."
 
-if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then
+if [[ "${BASE_IMAGE_NAME}" == "kinoite" ]]; then
     /ctx/desktop_env/configure-kde
 else
     /ctx/desktop_env/configure-gnome

@@ -26,7 +26,7 @@ dnf5 -y remove \
 # -- 3. Configure KDE or GNOME presets --
 # Apply image-specific desktop presets: KDE on Kinoite, GNOME defaults otherwise.
 echo "==> Configuring desktop presets..."
-if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then
+if [[ "${BASE_IMAGE_NAME}" == "kinoite" ]]; then
     dnf5 -y remove steamdeck-kde-presets-desktop
     dnf5 -y install steamdeck-kde-presets
 else
@@ -39,7 +39,7 @@ fi
 # -- 4. Disable GDM on Silverblue --
 # GDM conflicts with sddm; disable it on Silverbase-derived images.
 echo "==> Disabling GDM on Silverblue..."
-if grep -q "silverblue" <<< "${BASE_IMAGE_NAME}"; then
+if [[ "${BASE_IMAGE_NAME}" == "silverblue" ]]; then
     systemctl disable gdm.service
 fi
 

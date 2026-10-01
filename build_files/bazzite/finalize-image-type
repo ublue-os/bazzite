@@ -97,7 +97,7 @@ EOF
 # -- 10. Handle Silverblue dconf overrides --
 # Convert gschema overrides to dconf format for Silverblue images.
 echo "==> Configuring Silverblue dconf overrides..."
-if grep -q "silverblue" <<< "${BASE_IMAGE_NAME}"; then
+if [[ "${BASE_IMAGE_NAME}" == "silverblue" ]]; then
     mkdir -p "/usr/share/ublue-os/dconfs/desktop-silverblue/"
     cp "/usr/share/glib-2.0/schemas/zz0-"*"-bazzite-desktop-silverblue-"*".gschema.override" \
         "/usr/share/ublue-os/dconfs/desktop-silverblue/"

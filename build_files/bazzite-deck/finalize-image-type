@@ -30,7 +30,7 @@ sed -i \
     's|/usr/lib/|/usr/libexec/|g' \
     /usr/share/steamos-manager/platform.toml
 
-if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then
+if [[ "${BASE_IMAGE_NAME}" == "kinoite" ]]; then
     sed -i \
         's|Exec=.*|Exec=/usr/bin/return-to-gamemode|' \
         /etc/skel/Desktop/Return.desktop

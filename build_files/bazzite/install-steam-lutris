@@ -12,7 +12,7 @@ trap 'echo "::endgroup::"' EXIT
 echo "==> Installing dmemcg booster..."
 dnf5 -y install dmemcg-booster
 
-if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then
+if [[ "${BASE_IMAGE_NAME}" == "kinoite" ]]; then
     dnf5 -y install plasma-foreground-booster-dmemcg
 else
     dnf5 -y swap \

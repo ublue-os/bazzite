@@ -45,7 +45,7 @@ dnf5 -y install --enable-repo=terra \
 # -- 2. Install KDE-specific packages --
 # Add the TDP control applet when building for Kinoite.
 echo "==> Installing KDE-specific packages..."
-if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then
+if [[ "${BASE_IMAGE_NAME}" == "kinoite" ]]; then
     dnf5 -y install --enable-repo=terra plasma-applet-tdp-control
 fi
 
