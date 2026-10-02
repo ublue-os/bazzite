@@ -49,7 +49,7 @@ screens:
         status_script: "ujust asus status"
         options:
           - id: "install"
-            label: "Install asusctl & ROG Control Center"
+            label: "Install asusctl & ROG Control Center - Intended for ASUS Laptops"
             script: 'ujust asus install; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
           - id: "uninstall"
             label: "Uninstall asusctl & ROG Control Center"
@@ -295,7 +295,7 @@ screens:
             script: "ujust setup-sunshine portal"
           - id: "vmon"
             label: "Setup Virtual Monitor"
-            script: "ujust setup-sunshine virtual-monitor"
+            script: "yad --info --title=\"Info\" --image=dialog-information --text \"Virtual monitors are only supported in KDE's KWin compositor! After applying the Error 503 Fix please reboot your system.\" --button=\"Ok\"!gtk-ok! && ujust setup-sunshine virtual-monitor"
       - id: "visual-studio-code-linux"
         title: "Visual Studio Code"
         description: "Open source code editor and debugger from Microsoft — installed using Brew."

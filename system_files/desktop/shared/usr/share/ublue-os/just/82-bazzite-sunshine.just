@@ -103,7 +103,7 @@ setup-sunshine ACTION="":
       local BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
       local IMAGE_NAME=$(jq -r '."image-name"' < $IMAGE_INFO)
       if [[ "$BASE_IMAGE_NAME" != "kinoite" ]]; then
-        echo "Virtual monitors are only supported in KDE's KWin compositor!"
+        echo "Virtual monitors are only supported in KDE's KWin compositor! After applying the Error 503 Fix please reboot your system."
         echo "See ${bold}https://docs.bazzite.gg/Advanced/custom_resolution/${normal} for more information."
         press_any_key
         return 0
