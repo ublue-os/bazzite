@@ -16,6 +16,11 @@ if [[ "$PRODUCT_NAME" == "ROG Xbox Ally"* ]]; then
 	exit 0
 fi
 
+# ASUS ROG XBOX Ally
+if [[ "$PRODUCT_NAME" == "ROG XBOX Ally"* ]]; then
+	exit 0
+fi
+
 # Lenovo Legion Go / Legion Go S
 case "$PRODUCT_NAME" in
 	83E1 | 83N0 | 83N1 | 83L3 | 83N6 | 83Q2 | 83Q3)
