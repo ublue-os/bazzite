@@ -8,7 +8,7 @@ fi
 
 # Install bbrew if not already installed
 if ! command -v bbrew >/dev/null 2>&1; then
-    brew install "Valkyrie00/homebrew-bbrew/bbrew"
+    brew install bbrew
 fi
 
 bbrew "$@"
