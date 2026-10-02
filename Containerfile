@@ -286,7 +286,8 @@ RUN --mount=type=cache,dst=/var/cache \
         gmodpatchtool \
         bazzite-portal \
         kernel-tools \
-        ls-iommu && \
+        ls-iommu \
+        xdg-native-messaging-proxy && \
     dnf5 -y swap \
         --repo terra \
             switcheroo-control cardwire && \

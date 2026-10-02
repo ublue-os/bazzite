@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 # Script version
-VER=35
+VER=36
 # Allows to version the manager based on its contents.
 # Bump VER whenever we want to trigger a run explicitly event though the script is not changed.
 SCRIPT_HASH=$(tr -d '[:space:]' <"$0" | sha256sum | cut -d ' ' -f 1)
@@ -52,6 +52,12 @@ flatpak override \
 flatpak override \
   --system \
   --env=MOZ_USE_XINPUT2=1 \
+  org.mozilla.firefox
+
+# Native Messaging Proxy for Firefox
+flatpak override \
+  --system \
+  --talk-name=org.freedesktop.NativeMessagingProxy \
   org.mozilla.firefox
 
 # Fix printing on LibreOffice
