@@ -1,0 +1,21 @@
+#!/bin/bash
+# help — keybinding cheatsheet from config.conf's bind= lines, in rofi.
+# A comment line directly above a bind becomes its description.
+CONF="$HOME/.config/mango/config.conf"
+THEME="$HOME/.config/mango/rofi/keybinds.rasi"
+rows=$(awk -F'[=,]' '
+    /^#/ { desc = $0; sub(/^#+[ \t]*/, "", desc); next }
+    /^bind=/ {
+        mods = $2; key = $3; cmd = $4
+        for (i = 5; i <= NF; i++) cmd = cmd " " $i
+        gsub(/\+/, " + ", mods)
+        mods = toupper(substr(mods,1,1)) tolower(substr(mods,2))
+        gsub(/Super/, "Super", mods)
+        label = (desc != "" ? desc : cmd)
+        printf "%-24s %s\n", mods " + " key, label
+        desc = ""
+        next
+    }
+    /^$/ { desc = "" }
+' "$CONF")
+printf '%s\n' "$rows" | rofi -dmenu -i -p "Keybindings" -theme "$THEME" >/dev/null

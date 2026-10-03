@@ -1,0 +1,69 @@
+#!/bin/sh
+
+# menu — the Omarchy-style system menu behind the Debian logo (left click)
+# and Super+Alt+Space. rofi, one level of submenus; `menu <section>` jumps
+# straight into a section (e.g. `menu style`).
+
+set -u
+
+CONFIG_DIR="$(dirname "$(dirname "$(readlink -f "$0")")")"
+S="$CONFIG_DIR/scripts"
+QS="qs -p $CONFIG_DIR/quickshell ipc call"
+
+pick() {
+    # $1 prompt, then "glyph  Label" entries; prints the chosen label
+    p="$1"; shift
+    printf '%s\n' "$@" | rofi -dmenu -i -p "$p" -no-custom \
+        -theme "$CONFIG_DIR/rofi/config.rasi" \
+        -theme-str 'window { width: 340px; } listview { lines: 10; }' \
+    | sed 's/^[^ ]* *//'
+}
+
+term() { kitty -e sh -c "$1; printf '\\ndone - press enter to close '; read _" & }
+
+section() {
+    case "$1" in
+    Apps)   rofi -show drun -show-icons -theme "$CONFIG_DIR/rofi/config.rasi" ;;
+    Style)
+        case "$(pick Style '󰸌  Theme' '󰸉  Background' '󰋩  Wallpaper (palette from image)' '󰕮  Layout & tweaks')" in
+            Theme)       exec "$S/theme-menu" theme ;;
+            Background)  exec "$S/theme-menu" bg ;;
+            Wallpaper*)  $QS wallpapers toggle ;;
+            Layout*)     $QS layouts toggle ;;
+        esac ;;
+    Setup)
+        case "$(pick Setup '󰖩  Network' '󰂯  Bluetooth' '󰕾  Audio' '󰍹  Display' '󰖐  Weather location' '󰌌  Keybindings')" in
+            Network)     exec "$S/network" ;;
+            Bluetooth)   exec blueman-manager ;;
+            Audio)       exec pavucontrol ;;
+            Display)     command -v wdisplays >/dev/null && exec wdisplays || notify-send "Display" "Install wdisplays for a display settings GUI" ;;
+            "Weather location") $QS weather toggle ;;
+            Keybindings) exec "$S/help" ;;
+        esac ;;
+    Trigger)
+        case "$(pick Trigger '󰹑  Screenshot (region)' '󰍹  Screenshot (full)' '󰘳  Quick settings' '󰔛  Pomodoro' '󰌢  Screen off')" in
+            "Screenshot (region)") exec "$S/screenshot" region ;;
+            "Screenshot (full)")   exec "$S/screenshot" full ;;
+            "Quick settings")      $QS commands toggle ;;
+            Pomodoro)              exec gnome-pomodoro ;;
+            "Screen off")          exec "$S/screen-off" ;;
+        esac ;;
+    Update)
+        case "$(pick Update '󰚰  System update' '󰑓  Restart bar' '󰑓  Reload mango')" in
+            "System update") term "ujust update" ;;
+            "Restart bar")   exec "$S/bar" restart ;;
+            "Reload mango")  exec "$S/mango-reload" ;;
+        esac ;;
+    About)  kitty --hold -e fastfetch & ;;
+    System) exec "$S/power" ;;
+    esac
+}
+
+pretty() { printf %s "$1" | sed 's/\b\(.\)/\u\1/'; }
+
+if [ $# -gt 0 ]; then
+    section "$(pretty "$1")"
+else
+    choice="$(pick Go '󰀻  Apps' '󰏘  Style' '󰒓  Setup' '󱐋  Trigger' '󰚰  Update' '󰋽  About' '󰐥  System')"
+    [ -n "$choice" ] && section "$choice"
+fi

@@ -1,0 +1,56 @@
+#!/bin/sh
+
+# theme-set — apply an Omarchy theme (palette + background) to the whole
+# desktop through wallpaper-theme, the single theming pipeline (bar, rofi,
+# dunst, kitty, GTK, mango borders, wallpaper).
+#
+# usage: theme-set <theme> [background-path]
+#   Themes live in ~/.config/mango/omarchy-themes/<name>/ (colors.toml +
+#   backgrounds/). Without a background the theme's first one is used.
+#   The choice is remembered in theme/current-theme for theme-bg.
+
+set -eu
+
+CONFIG_DIR="$(dirname "$(dirname "$(readlink -f "$0")")")"
+THEMES="$CONFIG_DIR/omarchy-themes"
+NAME="${1:?usage: theme-set <theme> [background]}"
+DIR="$THEMES/$NAME"
+TOML="$DIR/colors.toml"
+
+[ -f "$TOML" ] || { echo "no such theme: $NAME" >&2; exit 1; }
+
+IMG="${2:-}"
+if [ -z "$IMG" ]; then
+    IMG="$(find "$DIR/backgrounds" -maxdepth 1 -type f | sort | head -n1)"
+fi
+[ -f "$IMG" ] || { echo "no background for theme $NAME" >&2; exit 1; }
+
+# key = "#hex" → shell var c_<key>; mode = "dark|light" → c_mode
+eval "$(sed -n 's/^\([a-z_]*\) *= *"\(#[0-9a-fA-F]*\|dark\|light\)".*/c_\1="\2"/p' "$TOML")"
+
+v() { eval "printf %s \"\${c_$1:-}\""; }
+# first non-empty of the named keys
+pick() { for k in "$@"; do val="$(v "$k")"; [ -n "$val" ] && { printf %s "$val"; return; }; done; }
+
+BG="$(pick background)"
+ALTBG="$(pick lighter_background selection)"
+FG="$(pick foreground)"
+BORDER="$(pick selection muted)"
+PRIMARY="$(pick accent blue)"
+SECONDARY="$(pick blue cyan)"
+[ "$SECONDARY" = "$PRIMARY" ] && SECONDARY="$(pick cyan magenta)"
+ALERT="$(pick red)"
+DISABLED="$(pick muted dark_foreground)"
+
+# ANSI 0-15, the mapping Omarchy's own kitty template uses
+set -- \
+    "$BG" "$(pick red)" "$(pick green)" "$(pick yellow)" \
+    "$(pick blue)" "$(pick magenta)" "$(pick cyan)" "$FG" \
+    "$(pick muted dark_foreground)" "$(pick bright_red red)" "$(pick bright_green green)" "$(pick bright_yellow yellow)" \
+    "$(pick bright_blue blue)" "$(pick bright_magenta magenta)" "$(pick bright_cyan cyan)" "$(pick bright_foreground foreground)"
+
+mkdir -p "$CONFIG_DIR/theme"
+printf '%s\n' "$NAME" > "$CONFIG_DIR/theme/current-theme"
+
+THEME_MODE="${c_mode:-dark}" THEME_NAME="$NAME" exec "$CONFIG_DIR/scripts/wallpaper-theme" \
+    "$IMG" "$BG" "$ALTBG" "$FG" "$BORDER" "$PRIMARY" "$SECONDARY" "$ALERT" "$DISABLED" "$@"

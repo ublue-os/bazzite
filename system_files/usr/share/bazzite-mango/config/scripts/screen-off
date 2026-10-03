@@ -1,0 +1,11 @@
+#!/bin/sh
+# screen-off — power the outputs down now; the next keypress or mouse move
+# brings them back.
+#
+# A one-shot swayidle does the wake: one second without input counts as
+# idle (outputs off), the first activity after that fires resume (outputs
+# on) and ends this swayidle. The login swayidle from config.conf (15 min)
+# is a separate process and keeps running. A bare `wlopm --off` would stay
+# dark until that one's own resume, up to 15 minutes later.
+# shellcheck disable=SC2016  # $PPID must expand in swayidle's own sh -c, not here
+exec swayidle -w timeout 1 'wlopm --off \*' resume 'wlopm --on \*; kill $PPID'

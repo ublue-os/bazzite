@@ -1,0 +1,16 @@
+/* Generated from wallpaper: 2-shaded-entrance.webp */
+
+* {
+    bg:          #111c18;
+    fg:          #C1C497;
+    accent:      #509475;
+    accent-2:    #2DD5B7;
+    border:      #509475;
+    urgent:      #FF5345;
+    selected-fg: #C1C497;
+    entry-fg:    #2DD5B7;
+    prompt-fg:   #509475;
+    header:      #2DD5B7;
+
+    background-color: @bg;
+}

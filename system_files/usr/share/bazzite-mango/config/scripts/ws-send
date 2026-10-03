@@ -1,0 +1,18 @@
+#!/bin/sh
+
+# ws-send <tag> — move the focused window to a tag on its home monitor:
+# tags 1-5 live on the laptop panel (eDP), 6-10 on the external monitor.
+# With no external monitor attached everything stays on the laptop.
+# (Viewing needs no script: viewcrossmon already falls back to the
+# focused monitor when the named one is missing.)
+
+N="${1:?usage: ws-send <tag>}"
+IPC="$(dirname "$(readlink -f "$0")")/mango-ipc"
+
+if [ "$N" -ge 6 ] && [ "$N" -le 10 ] && "$IPC" get all-monitors | grep -qE '"name":"(HDMI|DP)'; then
+    exec "$IPC" dispatch "tagcrossmon,$N,^(HDMI|DP)"
+elif [ "$N" -le 5 ]; then
+    exec "$IPC" dispatch "tagcrossmon,$N,^eDP"
+else
+    exec "$IPC" dispatch "tag,$N"
+fi

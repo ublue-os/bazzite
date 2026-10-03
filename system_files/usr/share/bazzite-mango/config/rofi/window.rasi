@@ -1,0 +1,7 @@
+@import "config.rasi"
+
+/* Window-switcher overrides on top of config.rasi */
+
+listview {
+    columns: 1;
+}

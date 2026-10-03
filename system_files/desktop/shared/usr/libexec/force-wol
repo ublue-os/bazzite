@@ -1,7 +1,0 @@
-#!/usr/bin/bash
-INTERFACES=$(ip link show | awk '/state UP/ {print $2}' | tr -d ':' | grep -E '^(en|eth)')
-if [ -n "$INTERFACES" ]; then
-  for INTERFACE in $INTERFACES; do
-    /sbin/ethtool -s $INTERFACE wol g
-  done
-fi
