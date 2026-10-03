@@ -82,7 +82,7 @@ system_files/                    copied onto / in the image
 
 ## Install
 
-From an existing Bazzite install (any variant):
+Step-by-step for a fresh machine: [INSTALL.md](INSTALL.md). In short, from an existing Bazzite install (any variant):
 
 ```bash
 sudo bootc switch ghcr.io/pauljamesharper/bazzite_mango:latest
