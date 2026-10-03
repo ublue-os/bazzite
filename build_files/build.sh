@@ -20,7 +20,7 @@ PACKAGES=(
     # core
     mangowc awww xorg-x11-server-Xwayland
     # bar (power-profiles-daemon is left out: Bazzite's tuned-ppd provides it)
-    quickshell rofi dunst libnotify
+    quickshell qt6-qtsvg rofi dunst libnotify
     pamixer playerctl brightnessctl wlsunset network-manager-applet
     # wayland
     grim slurp wl-clipboard cliphist wlr-randr swayidle swaylock wlopm

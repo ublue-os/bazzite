@@ -32,14 +32,16 @@ PanelWindow {
     WlrLayershell.namespace: "quickshell-popup"
     WlrLayershell.keyboardFocus: visible ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
 
-    // anchor's position inside the bar window == on-screen position, since
-    // the bar is anchored to the top edge and this overlay covers the output
+    // anchor's position inside the bar window == position on this output,
+    // since the bar is anchored to the top edge and this overlay covers the
+    // output. Not mapToGlobal: that adds the output's offset in the layout,
+    // which shoves every card to the right edge on a second monitor.
     property real ax: 0
     property real ay: 0
 
     onVisibleChanged: {
         if (visible && anchorItem) {
-            const p = anchorItem.mapToGlobal(0, 0)
+            const p = anchorItem.mapToItem(null, 0, 0)
             ax = p.x
             ay = p.y
             inner.forceActiveFocus()
