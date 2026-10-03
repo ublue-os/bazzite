@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# timezone — pick the system timezone (clock middle click, as in Omarchy).
+# timedatectl asks polkit for the password through lxpolkit.
+
+CONFIG_DIR="$(dirname "$(dirname "$(readlink -f "$0")")")"
+cur="$(timedatectl show -p Timezone --value)"
+tz="$(timedatectl list-timezones | rofi -dmenu -i -p "Timezone ($cur)" -no-custom \
+    -theme "$CONFIG_DIR/rofi/config.rasi")" || exit 0
+[ -n "$tz" ] && timedatectl set-timezone "$tz" && notify-send -a Clock "Timezone" "$tz"

@@ -1,0 +1,69 @@
+#!/bin/bash
+
+# dns — show or set the DNS provider, like Omarchy's `omarchy dns`.
+#   dns                         print the current provider
+#   dns DHCP|Cloudflare|Google|Quad9|OpenDNS
+#   dns Custom "1.1.1.1 9.9.9.9"
+#
+# This system has no systemd-resolved: NetworkManager writes resolv.conf,
+# so the servers go on every saved Wi-Fi / Ethernet profile (the choice
+# follows you between networks) and the active devices are reapplied.
+# netdev-group users may modify connections without a password.
+# While ExpressVPN is connected it supplies its own DNS; this applies
+# whenever the VPN is off.
+
+set -euo pipefail
+
+declare -A V4=(
+    [Cloudflare]="1.1.1.2 1.0.0.2"
+    [Google]="8.8.8.8 8.8.4.4"
+    [Quad9]="9.9.9.9 149.112.112.112"
+    [OpenDNS]="208.67.222.222 208.67.220.220"
+)
+declare -A V6=(
+    [Cloudflare]="2606:4700:4700::1112 2606:4700:4700::1002"
+    [Google]="2001:4860:4860::8888 2001:4860:4860::8844"
+    [Quad9]="2620:fe::fe 2620:fe::9"
+    [OpenDNS]="2620:119:35::35 2620:119:53::53"
+)
+
+profiles() { nmcli -t -f UUID,TYPE connection show | awk -F: '$2=="802-11-wireless"||$2=="802-3-ethernet"{print $1}'; }
+
+current() {
+    local uuid dns
+    uuid=$(nmcli -t -f UUID,TYPE connection show --active | awk -F: '$2=="802-11-wireless"||$2=="802-3-ethernet"{print $1; exit}')
+    [[ -n $uuid ]] || { echo DHCP; return; }
+    dns=$(nmcli -g ipv4.dns connection show "$uuid" | tr ',' ' ')
+    [[ -n ${dns// } ]] || { echo DHCP; return; }
+    for p in "${!V4[@]}"; do
+        [[ $dns == "${V4[$p]}" ]] && { echo "$p"; return; }
+    done
+    echo "Custom $dns"
+}
+
+apply() {  # $1 ipv4 list, $2 ipv6 list, $3 ignore-auto (yes|no)
+    local uuid
+    while read -r uuid; do
+        nmcli connection modify "$uuid" \
+            ipv4.ignore-auto-dns "$3" ipv4.dns "$1" \
+            ipv6.ignore-auto-dns "$3" ipv6.dns "$2"
+    done < <(profiles)
+    nmcli -t -f DEVICE,TYPE,STATE device status | awk -F: '($2=="wifi"||$2=="ethernet")&&$3=="connected"{print $1}' |
+        while read -r dev; do nmcli device reapply "$dev" >/dev/null 2>&1 || true; done
+}
+
+case "${1:-}" in
+    "")          current ;;
+    DHCP)        apply "" "" no ;;
+    Custom)
+        servers=$(printf '%s' "${2:-}" | tr ',\t' '  ' | xargs)
+        [[ -n $servers ]] || { echo "usage: dns Custom \"<servers>\"" >&2; exit 1; }
+        v4=""; v6=""
+        for s in $servers; do
+            if [[ $s == *:* ]]; then v6+="${v6:+ }$s"; else v4+="${v4:+ }$s"; fi
+        done
+        apply "$v4" "$v6" yes ;;
+    *)
+        [[ -n ${V4[$1]:-} ]] || { echo "usage: dns [DHCP|Cloudflare|Google|Quad9|OpenDNS|Custom <servers>]" >&2; exit 1; }
+        apply "${V4[$1]}" "${V6[$1]}" yes ;;
+esac

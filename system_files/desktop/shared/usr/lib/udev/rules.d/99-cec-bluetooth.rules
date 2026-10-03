@@ -1,1 +1,0 @@
-ACTION=="add", SUBSYSTEM=="bluetooth", RUN+="/usr/bin/cec-control onboot"

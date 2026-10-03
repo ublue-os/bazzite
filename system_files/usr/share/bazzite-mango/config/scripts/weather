@@ -1,0 +1,48 @@
+#!/bin/sh
+
+# weather — rofi front-end for the bar weather module's config. One prompt:
+# TYPE a city/zip/airport and press Enter to set the location, or pick a
+# row: "location · …" resets to automatic (by IP), "units · …" opens the
+# °F/°C/auto picker. State is two plain live-watched files, so changes
+# apply instantly and `echo`/`rm` on the files work identically:
+#   ~/.config/bspwm/weather-location   (absent = auto by IP)
+#   ~/.config/bspwm/weather-units      "f" or "c" (absent = locale auto)
+
+CONFIG_DIR="$(dirname "$(dirname "$(readlink -f "$0")")")"
+LOC_FILE="$CONFIG_DIR/weather-location"
+UNITS_FILE="$CONFIG_DIR/weather-units"
+ROFI_THEME="$CONFIG_DIR/rofi/config.rasi"
+
+cur_loc=$(cat "$LOC_FILE" 2>/dev/null)
+cur_units=$(cat "$UNITS_FILE" 2>/dev/null)
+case "$cur_units" in
+    f) cur_units="°F" ;;
+    c) cur_units="°C" ;;
+    *) cur_units="auto" ;;
+esac
+
+choice=$(printf '%s\n' \
+    "location · ${cur_loc:-auto} (pick = reset to auto)" \
+    "units · $cur_units" \
+    | rofi -dmenu -i -p "Weather · type a city/zip" -theme "$ROFI_THEME") || exit 0
+
+case "$choice" in
+    "location ·"*)
+        rm -f "$LOC_FILE"
+        ;;
+    "units ·"*)
+        u=$(printf 'auto\n°F\n°C\n' | rofi -dmenu -p "Units" -theme "$ROFI_THEME") || exit 0
+        case "$u" in
+            auto) rm -f "$UNITS_FILE" ;;
+            °F)   echo f > "$UNITS_FILE" ;;
+            °C)   echo c > "$UNITS_FILE" ;;
+        esac
+        ;;
+    "")
+        exit 0
+        ;;
+    *)
+        # anything typed is a location
+        printf '%s\n' "$choice" | sed 's/^ *//; s/ *$//' > "$LOC_FILE"
+        ;;
+esac

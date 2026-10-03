@@ -1,0 +1,19 @@
+#!/bin/sh
+# bar — quickshell helper. Plain `qs` can't find this config (it lives in
+# ~/.config/mango/quickshell, not the default path), so every invocation
+# needs -p; this saves typing it.
+#   bar restart   kill + relaunch the bar (default)
+#   bar log       tail the instance log
+#   bar <args>    any other qs subcommand, e.g. `bar ipc show`
+P="$(dirname "$(dirname "$(readlink -f "$0")")")/quickshell"
+
+# The daemon inherits this shell's cwd and passes it to everything it
+# spawns; launched from a directory that later gets deleted, every child
+# `sh` warns "getcwd() failed". Home outlives any terminal's cwd.
+cd "$HOME" || cd /
+
+case "${1:-restart}" in
+    restart) qs -p "$P" kill 2>/dev/null; sleep 0.5; exec qs -p "$P" -d -n ;;
+    log)     exec qs -p "$P" log ;;
+    *)       exec qs -p "$P" "$@" ;;
+esac

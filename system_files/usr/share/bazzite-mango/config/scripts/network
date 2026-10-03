@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# network — toggle the network manager window (its own quickshell instance,
+# separate from the bar).
+
+
+P="$(dirname "$(dirname "$(readlink -f "$0")")")/quickshell-network"
+
+if pgrep -f "qs -p $P" >/dev/null 2>&1; then
+    qs -p "$P" kill
+else
+    # mango: config.conf floats org.quickshell windows (windowrule)
+    exec qs -p "$P" -d -n
+fi

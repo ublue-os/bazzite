@@ -1,0 +1,27 @@
+#!/bin/sh
+# mango-session — what the session entry (mango.desktop) runs.
+#
+# Sources ~/.config/mango/env, if present, before starting the compositor,
+# so session-wide environment reaches everything mango itself spawns
+# (terminals, launchers, scratchpads). An exec-once in config.conf can't do
+# that: it only reaches what that one line launches. Plain KEY=VALUE lines
+# are exported as-is (set -a); `export` lines work too.
+#
+# With no env file this is exactly `mango`. Works under any display manager
+# and from a TTY, since every one of them runs the session entry's Exec.
+#
+# The file is user-edited, and a syntax error in a sourced file would abort
+# this script before exec — an unbootable session with nothing in a log —
+# so it is syntax-checked first and skipped (loudly, on stderr) if broken.
+ENV_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/mango/env"
+if [ -r "$ENV_FILE" ]; then
+    if sh -n "$ENV_FILE" 2>/dev/null; then
+        set -a
+        # shellcheck disable=SC1090
+        . "$ENV_FILE"
+        set +a
+    else
+        echo "mango-session: syntax error in $ENV_FILE, ignoring it" >&2
+    fi
+fi
+exec /usr/bin/mango "$@"

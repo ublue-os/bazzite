@@ -1,0 +1,65 @@
+#!/bin/bash
+
+# changevolume - volume control with on-screen notification.
+# Uses dunst's `progress_bar = true` rendering via the int:value hint so the
+# bar responds to per-theme `progress_bar_*` settings (height, frame width,
+# colors). Pairs with the theme switcher.
+#
+# Usage: changevolume {up|down|mute}
+
+VOL_STEP=2
+
+get_icon() {
+    # Pick icon based on level + mute state.
+    if [ "$(pamixer --get-mute)" = "true" ]; then
+        echo "audio-volume-muted"
+    elif [ "$1" -le 30 ]; then
+        echo "audio-volume-low"
+    elif [ "$1" -le 70 ]; then
+        echo "audio-volume-medium"
+    else
+        echo "audio-volume-high"
+    fi
+}
+
+notify_volume() {
+    local volume icon
+    volume=$(pamixer --get-volume)
+    icon=$(get_icon "$volume")
+    notify-send -a changevolume -u low \
+        -h string:x-canonical-private-synchronous:volume \
+        -h "int:value:$volume" \
+        -i "$icon" \
+        -t 2000 \
+        "Volume ${volume}%"
+}
+
+case "$1" in
+    up)
+        pamixer -u
+        pamixer -i "$VOL_STEP" --allow-boost
+        notify_volume
+        ;;
+    down)
+        pamixer -u
+        pamixer -d "$VOL_STEP" --allow-boost
+        notify_volume
+        ;;
+    mute)
+        pamixer -t
+        if [ "$(pamixer --get-mute)" = "true" ]; then
+            notify-send -a changevolume -u low \
+                -h string:x-canonical-private-synchronous:volume \
+                -h int:value:0 \
+                -i audio-volume-muted \
+                -t 2000 \
+                "Volume Muted"
+        else
+            notify_volume
+        fi
+        ;;
+    *)
+        echo "Usage: $0 {up|down|mute}" >&2
+        exit 1
+        ;;
+esac

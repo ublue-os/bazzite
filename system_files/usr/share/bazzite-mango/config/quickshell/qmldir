@@ -1,0 +1,40 @@
+singleton Theme Theme.qml
+singleton Wm Wm.qml
+singleton Sys Sys.qml
+Bar Bar.qml
+BarModule BarModule.qml
+Tags Tags.qml
+LayoutButton LayoutButton.qml
+LayoutPicker LayoutPicker.qml
+Commands Commands.qml
+Title Title.qml
+Media Media.qml
+MediaPopup MediaPopup.qml
+Metrics Metrics.qml
+Volume Volume.qml
+VolumePopup VolumePopup.qml
+Network Network.qml
+Tray Tray.qml
+Clock Clock.qml
+CalendarPopup CalendarPopup.qml
+Launcher Launcher.qml
+WallpaperPicker WallpaperPicker.qml
+PowerButton PowerButton.qml
+Screenshot Screenshot.qml
+CapsLock CapsLock.qml
+MicMute MicMute.qml
+Updates Updates.qml
+Bell Bell.qml
+Popout Popout.qml
+TweakSlider TweakSlider.qml
+TogglePill TogglePill.qml
+Weather Weather.qml
+WeatherPopup WeatherPopup.qml
+NotifyPopup NotifyPopup.qml
+singleton VpnState VpnState.qml
+ExpressVpn ExpressVpn.qml
+BluetoothButton BluetoothButton.qml
+Display Display.qml
+Power Power.qml
+Pomodoro Pomodoro.qml
+ExpressVpnIcon ExpressVpnIcon.qml

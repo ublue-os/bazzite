@@ -1,0 +1,113 @@
+@import "colors.rasi"
+
+* {
+    font: "JetBrainsMono Nerd Font 12";
+}
+
+configuration {
+    show-icons: true;
+    icon-theme: "Papirus";
+    location: 0;
+    display-drun: "Launch:";
+}
+
+window {
+    width: 45%;
+    transparency: "real";
+    orientation: vertical;
+    border-color: @accent;
+    border-radius: 10px;
+}
+
+mainbox {
+    children: [inputbar, listview];
+}
+
+// ELEMENT
+// -----------------------------------
+
+element {
+    padding: 4 8;
+    text-color: @fg;
+    background-color: @bg;
+    border-radius: 5px;
+}
+
+element.selected {
+    text-color: @fg;
+    background-color: @accent;
+}
+
+element-text {
+    background-color: inherit;
+    text-color: inherit;
+}
+
+element-icon {
+    size: 16 px;
+    background-color: inherit;
+    padding: 0 6 0 0;
+    alignment: vertical;
+}
+
+element.selected.active {
+    background-color: @bg;
+    text-color: @fg;
+}
+
+element.alternate.normal {
+    background-color: @bg;
+    text-color: @fg;
+}
+
+element.alternate.active {
+    background-color: @accent;
+    text-color: @fg;
+}
+
+element.selected.normal {
+    background-color: @accent;
+    text-color: @bg;
+}
+
+element.normal.active {
+    background-color: @bg;
+    text-color: @fg;
+}
+
+element.normal.normal {
+    background-color: @bg;
+    text-color: @fg;
+}
+
+element.normal.urgent {
+    background-color: @urgent;
+    text-color: @bg;
+}
+
+listview {
+    columns: 1;
+    lines: 24;
+    padding: 8 0;
+    fixed-height: true;
+    fixed-columns: true;
+    fixed-lines: true;
+    border: 0 10 6 10;
+}
+
+inputbar {
+    padding: 10 0 0;
+    margin: 0 0 0 0;
+}
+
+entry {
+    text-color: @entry-fg;
+    padding: 10 10 0 0;
+    margin: 0 -2 0 0;
+}
+
+prompt {
+    text-color: @prompt-fg;
+    padding: 10 6 0 10;
+    margin: 0 -2 0 0;
+}

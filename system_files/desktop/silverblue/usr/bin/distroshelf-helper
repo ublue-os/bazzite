@@ -1,7 +1,0 @@
-#!/usr/bin/bash
-
-if ! flatpak list --system --columns=application | grep -q '^com\.ranfdev\.DistroShelf$'; then
-    flatpak install --system -y com.ranfdev.DistroShelf
-fi
-
-/usr/bin/flatpak run com.ranfdev.DistroShelf "$@"

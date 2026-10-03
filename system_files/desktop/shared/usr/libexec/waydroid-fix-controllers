@@ -1,3 +1,0 @@
-#!/usr/bin/bash
-
-echo add | exec sudo tee /sys/devices/virtual/input/input*/event*/uevent

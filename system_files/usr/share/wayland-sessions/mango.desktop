@@ -1,0 +1,8 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Mango
+DesktopNames=mango;wlroots
+Comment=mango WM
+Exec=mango-session
+Icon=mango
+Type=Application

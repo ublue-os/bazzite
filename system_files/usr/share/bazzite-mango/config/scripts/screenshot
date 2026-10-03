@@ -1,0 +1,11 @@
+#!/bin/sh
+# screenshot [region|full] — grim (+ slurp for a region), saved to ~/Screenshots.
+DIR="$HOME/Screenshots"
+mkdir -p "$DIR"
+OUT="$DIR/screenshot-$(date +%Y%m%d-%H%M%S).png"
+case "${1:-region}" in
+    full)   grim "$OUT" ;;
+    *)      geom=$(slurp) || exit 0; grim -g "$geom" "$OUT" ;;
+esac
+[ -f "$OUT" ] || exit 1
+notify-send -a screenshot -i "$OUT" "Screenshot saved" "$(basename "$OUT")"

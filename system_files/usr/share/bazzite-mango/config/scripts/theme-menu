@@ -1,0 +1,58 @@
+#!/bin/sh
+
+# theme-menu — Omarchy-style pickers on rofi.
+#   theme-menu theme   pick a theme (preview thumbnails)      Super+Ctrl+Shift+Space
+#   theme-menu bg      pick a background of the current theme Super+Ctrl+Space
+#   theme-menu next    next background of the current theme   Super+Ctrl+Alt+Space
+
+set -u
+
+CONFIG_DIR="$(dirname "$(dirname "$(readlink -f "$0")")")"
+THEMES="$CONFIG_DIR/omarchy-themes"
+SET="$CONFIG_DIR/scripts/theme-set"
+CUR="$(cat "$CONFIG_DIR/theme/current-theme" 2>/dev/null || echo tokyo-night)"
+CUR_BG="$(cat "$HOME/.cache/mango/current_wallpaper" 2>/dev/null || true)"
+
+rofi_grid() {
+    # $1 prompt, $2 columns — icon grid, one entry per line on stdin
+    rofi -dmenu -i -show-icons -p "$1" -format i \
+        -theme "$CONFIG_DIR/rofi/config.rasi" \
+        -theme-str "window { width: 70%; } listview { columns: $2; lines: 3; flow: horizontal; }
+                    element { orientation: vertical; padding: 8px; }
+                    element-icon { size: 9em; } element-text { horizontal-align: 0.5; }"
+}
+
+pretty() { printf %s "$1" | sed 's/-/ /g; s/\b\(.\)/\u\1/g'; }
+
+case "${1:-theme}" in
+theme)
+    names="$(ls "$THEMES")"
+    i="$(for n in $names; do
+            icon="$THEMES/$n/preview.png"
+            [ -f "$icon" ] || icon="$(find "$THEMES/$n/backgrounds" -type f | sort | head -n1)"
+            mark=""; [ "$n" = "$CUR" ] && mark="  ●"
+            printf '%s%s\0icon\037%s\n' "$(pretty "$n")" "$mark" "$icon"
+         done | rofi_grid "Theme" 4)" || exit 0
+    [ -n "$i" ] || exit 0
+    name="$(printf '%s\n' $names | sed -n "$((i + 1))p")"
+    exec "$SET" "$name"
+    ;;
+bg)
+    bgs="$(find "$THEMES/$CUR/backgrounds" -maxdepth 1 -type f | sort)"
+    i="$(printf '%s\n' "$bgs" | while read -r f; do
+            mark=""; [ "$f" = "$CUR_BG" ] && mark="  ●"
+            printf '%s%s\0icon\037%s\n' "$(basename "${f%.*}")" "$mark" "$f"
+         done | rofi_grid "Background" 3)" || exit 0
+    [ -n "$i" ] || exit 0
+    exec "$SET" "$CUR" "$(printf '%s\n' "$bgs" | sed -n "$((i + 1))p")"
+    ;;
+next)
+    bgs="$(find "$THEMES/$CUR/backgrounds" -maxdepth 1 -type f | sort)"
+    next="$(printf '%s\n' "$bgs" | awk -v cur="$CUR_BG" 'NR==1{first=$0} found{print; exit} $0==cur{found=1} END{if(!found||NR==0)print first}' | head -n1)"
+    # wrapped past the last one
+    [ -n "$next" ] || next="$(printf '%s\n' "$bgs" | head -n1)"
+    exec "$SET" "$CUR" "$next"
+    ;;
+*)
+    echo "usage: theme-menu theme|bg|next" >&2; exit 1 ;;
+esac

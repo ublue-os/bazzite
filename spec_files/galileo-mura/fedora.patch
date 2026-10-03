@@ -1,8 +1,0 @@
---- a/galileo-mura-setup
-+++ b/galileo-mura-setup
-@@ -1,4 +1,4 @@
--#!/bin/bash
-+#!/usr/bin/bash
- 
- set -euo pipefail
- 

@@ -1,2 +1,0 @@
-SUBSYSTEM=="dmi", ATTR{board_vendor}=="AYANEO", ATTR{board_name}=="AIR",TAG+="systemd", ENV{SYSTEMD_WANTS}+="kmod-sleep-workaround@mt7921e.service"
-SUBSYSTEM=="dmi", ATTR{board_vendor}=="AYANEO", ATTR{board_name}=="AIR Pro",TAG+="systemd", ENV{SYSTEMD_WANTS}+="kmod-sleep-workaround@mt7921e.service"

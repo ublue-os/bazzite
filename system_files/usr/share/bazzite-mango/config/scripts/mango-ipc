@@ -1,0 +1,9 @@
+#!/bin/sh
+# mango-ipc — mmsg with the socket found when the environment lacks it
+# (a bar restarted from a terminal that predates this compositor run).
+if [ -z "${MANGO_INSTANCE_SIGNATURE:-}" ] || [ ! -S "$MANGO_INSTANCE_SIGNATURE" ]; then
+    for s in "${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"/mango-*.sock; do
+        [ -S "$s" ] && MANGO_INSTANCE_SIGNATURE="$s" && export MANGO_INSTANCE_SIGNATURE
+    done
+fi
+exec mmsg "$@"

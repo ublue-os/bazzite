@@ -1,5 +1,0 @@
-[resilio-sync]
-name=Resilio Sync
-baseurl=https://linux-packages.resilio.com/resilio-sync/rpm/$basearch
-enabled=1
-gpgcheck=1

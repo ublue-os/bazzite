@@ -1,3 +1,0 @@
-# wireplumber
-
-The wireplumber package
