@@ -17,14 +17,17 @@ if [[ "$PRODUCT_NAME" == *AOKZOE* ]]; then
 	exit 0
 fi
 
-# Mysten / SuiPlay (Ayaneo 2S rebadge)
-if [[ "$sys_vendor_lc" == *"mysten"* ]] || [[ "$PRODUCT_NAME" == "SuiPlay0X1" ]]; then
-    exit 0
+# ASUS ROG XBOX Ally (Ryzen AI Z2 Extreme)
+if [[ "$PRODUCT_NAME" == "ROG XBOX Ally"* ]]; then
+	exit 0
 fi
 
-# AYANEO
+# AYANEO & Mysten / SuiPlay (Ayaneo 2S rebadge)
 if [[ "$board_vendor_lc" == *ayaneo* ]]; then
 	exit 0
+fi
+if [[ "$sys_vendor_lc" == *"mysten"* ]] || [[ "$PRODUCT_NAME" == "SuiPlay0X1" ]]; then
+    exit 0
 fi
 case "$PRODUCT_NAME" in
 	AIR | "AIR Pro" | "AIR Plus" | "AIR 1S" | "AIR 1S Limited" | \
