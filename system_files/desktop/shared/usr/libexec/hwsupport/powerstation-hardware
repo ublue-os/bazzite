@@ -17,11 +17,6 @@ if [[ "$PRODUCT_NAME" == *AOKZOE* ]]; then
 	exit 0
 fi
 
-# ASUS ROG XBOX Ally (Ryzen AI Z2 Extreme)
-if [[ "$PRODUCT_NAME" == "ROG XBOX Ally"* ]]; then
-	exit 0
-fi
-
 # AYANEO & Mysten / SuiPlay (Ayaneo 2S rebadge)
 if [[ "$board_vendor_lc" == *ayaneo* ]]; then
 	exit 0
