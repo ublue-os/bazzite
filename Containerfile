@@ -650,7 +650,9 @@ RUN --mount=type=cache,dst=/var/cache \
         acpid && \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         dnf5 -y install --enable-repo=terra \
-            plasma-applet-tdp-control \
+            plasma-applet-tdp-control && \
+        dnf5 -y remove \
+            plasma-setup \
     ; fi && \
     chmod +x /usr/share/gamescope-session-plus/gamescope-session-plus && \
     sed -i \
@@ -756,7 +758,6 @@ RUN --mount=type=cache,dst=/var/cache \
     systemctl disable jupiter-biosupdate.service && \
     systemctl disable jupiter-controller-update.service && \
     systemctl disable acpid.service && \
-    systemctl disable plasma-setup.service && \
     find /etc/acpi/events -mindepth 1 -delete && \
     dnf5 config-manager setopt skip_if_unavailable=1 && \
     /ctx/image-info && \
