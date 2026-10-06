@@ -596,7 +596,8 @@ RUN --mount=type=cache,dst=/var/cache \
     dnf5 -y remove \
         jupiter-sd-mounting-btrfs \
         ds-inhibit \
-        plasma-login-manager && \
+        plasma-login-manager \
+        plasma-setup && \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         dnf5 -y remove \
             steamdeck-kde-presets-desktop && \
@@ -650,9 +651,7 @@ RUN --mount=type=cache,dst=/var/cache \
         acpid && \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         dnf5 -y install --enable-repo=terra \
-            plasma-applet-tdp-control && \
-        dnf5 -y remove \
-            plasma-setup \
+            plasma-applet-tdp-control \
     ; fi && \
     chmod +x /usr/share/gamescope-session-plus/gamescope-session-plus && \
     sed -i \
