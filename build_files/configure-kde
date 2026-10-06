@@ -22,6 +22,7 @@ dnf5 -y remove \
   plasma-drkonqi \
   plasma-welcome{,-fedora} \
   plasma-discover-kns \
+  plasma-setup \
   kcharselect \
   kde-partitionmanager \
   plasma-discover{,-libs}
