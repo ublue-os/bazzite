@@ -5,7 +5,7 @@
 */
 
 window {
-  border-radius: 4px 4px 0 0;
+  border-radius: 7px;
   border-width: 0px;
   margin: 0px;
 }
@@ -21,11 +21,11 @@ window.maximized {
 }
 
 .popup window {
-  border-radius: 4px;
+  border-radius: 7px;
 }
 
 .csd window {
-  border-radius: 4px;
+  border-radius: 7px;
 }
 
 .solid-csd window {
