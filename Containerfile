@@ -681,8 +681,8 @@ RUN --mount=type=cache,dst=/var/cache \
     --repo terra-extras \
         upower terra-upower && \
     dnf5 versionlock add \
-        upower \
-        upower-libs && \
+        terra-upower \
+        terra-upower-libs && \
     /ctx/cleanup
 
 # Install Gamescope Session Supporting changes
