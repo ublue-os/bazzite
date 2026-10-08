@@ -141,15 +141,17 @@ RUN --mount=type=cache,dst=/var/cache \
         pipewire-config-raop \
         mesa-va-drivers && \
     declare -A toswap=( \
-        ["copr:copr.fedorainfracloud.org:ublue-os:bazzite-multilib"]="xorg-x11-server-Xwayland" \
         ["terra-mesa"]="mesa-filesystem" \
     ) && \
+     for repo in "${!toswap[@]}"; do \
+        for package in ${toswap[$repo]}; do dnf5 -y swap --from-repo=$repo $package $package; done; \
+    done && unset -v toswap repo package && \
+    dnf5 -y swap --allowerasing \
+        --repo terra-extras \
+            xorg-x11-server-Xwayland terra-xorg-x11-server-Xwayland && \
     dnf5 -y swap --allowerasing \
         --repo terra-extras \
             wireplumber terra-wireplumber && \
-    for repo in "${!toswap[@]}"; do \
-        for package in ${toswap[$repo]}; do dnf5 -y swap --from-repo=$repo $package $package; done; \
-    done && unset -v toswap repo package && \
     dnf5 versionlock add \
         xorg-x11-server-Xwayland \
         mesa-dri-drivers \
@@ -621,7 +623,7 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    dnf5 -y install --enable-repo=terra \
+    dnf5 -y install --enable-repo=terra --enable-repo=terra-extras \
         jupiter-fan-control \
         jupiter-hw-support-btrfs \
         galileo-mura \
@@ -674,9 +676,9 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    dnf5 -y swap \
-    --repo copr:copr.fedorainfracloud.org:ublue-os:bazzite \
-        upower upower && \
+    dnf5 -y swap --allowerasing \
+    --repo terra-extras \
+        upower terra-upower && \
     dnf5 versionlock add \
         upower \
         upower-libs && \
