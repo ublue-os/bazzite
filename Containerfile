@@ -324,7 +324,7 @@ RUN --mount=type=cache,dst=/var/cache \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         dnf5 -y install \
             plasma-foreground-booster-dmemcg && \
-            desktop-file-edit --set-key=Hidden --set-value=true /usr/share/applications/org.kde.foreground-booster.desktop \
+        desktop-file-edit --set-key=Hidden --set-value=true /usr/share/applications/org.kde.foreground-booster.desktop \
     ; else \
         dnf5 -y swap \
         --repo terra-extras \
