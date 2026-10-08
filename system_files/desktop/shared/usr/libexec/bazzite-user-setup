@@ -18,7 +18,7 @@ BAZZITE_CONFIG_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/bazzite"
 mkdir -p "$BAZZITE_CONFIG_DIR"
 
 # SCRIPT VERSION
-USER_SETUP_VER=56
+USER_SETUP_VER=57
 USER_SETUP_VER_FILE="$BAZZITE_CONFIG_DIR/version"
 USER_SETUP_FEDORA_VER_FILE="$BAZZITE_CONFIG_DIR/fedora_version"
 USER_SETUP_IMAGE_VER_FILE=$BAZZITE_CONFIG_DIR/image_name""
@@ -200,6 +200,17 @@ if [[ $IMAGE_NAME =~ "deck" ]]; then
     systemctl --user mask cecd.service
     systemctl --user mask steamos-manager-configure-cecd.service
   fi
+
+  # Forcefully set steamos-manager default session. *Should* help
+  # combat steamos-manager not switching to desktop from a gamescope
+  # session.
+  if [[ "${BASE_IMAGE_NAME}" == "kinoite" ]]; then
+    DEFAULT_DESKTOP_SESSION="plasma.desktop"
+  else
+    DEFAULT_DESKTOP_SESSION="gnome.desktop"
+  fi
+  steamosctl set-default-desktop-session "${DEFAULT_DESKTOP_SESSION}"
+  echo "Set default desktop session to: ${DEFAULT_DESKTOP_SESSION}"
 
   # Enable desktop TDP control extension/applet
   if /usr/libexec/hwsupport/powerstation-hardware || \
