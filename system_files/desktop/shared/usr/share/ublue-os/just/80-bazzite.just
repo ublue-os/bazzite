@@ -69,7 +69,7 @@ ssh ACTION="":
       fi
       # Prompt user for action
       echo "Choose an option:"
-      OPTION=$(ugum choose "Enable SSH" "Disable SSH" "Just start" "Exit without saving")
+      OPTION=$(ugum choose "Enable SSH" "Disable SSH" "Start until restart" "Exit without saving")
     fi
     case "$OPTION" in
       "Enable SSH"|enable)
@@ -85,7 +85,7 @@ ssh ACTION="":
         echo -e "SSH is now ${yellow}Disabled${normal}."
         echo " "
         ;;
-      "Just start"|start)
+      "Start until restart"|start)
         echo "Starting SSH for this boot only..."
         sudo systemctl disable sshd || exit $?
         sudo systemctl start sshd || exit $?

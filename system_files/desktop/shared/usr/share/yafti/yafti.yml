@@ -537,7 +537,7 @@ screens:
             label: "Disable SSH Access"
             script: "ujust ssh disable"
           - id: "start"
-            label: "Start for this session only (Disabled on Reboot)"
+            label: "Start until restart"
             script: "ujust ssh start"
       - id: "hide-grub"
         title: "Manage GRUB menu visibility"
