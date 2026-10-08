@@ -615,6 +615,19 @@ RUN --mount=type=cache,dst=/var/cache \
     systemctl enable sddm.service && \
     /ctx/cleanup
 
+# Install Steam Deck patched UPower
+RUN --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/log \
+    --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=tmpfs,dst=/tmp \
+    dnf5 -y swap --allowerasing \
+    --repo terra-extras \
+        upower terra-upower && \
+    dnf5 versionlock add \
+        terra-upower \
+        terra-upower-libs && \
+    /ctx/cleanup
+
 # Install new packages
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/cache/libdnf5 \
@@ -667,19 +680,6 @@ RUN --mount=type=cache,dst=/var/cache \
     ln -s /usr/bin/steamos-logger /usr/bin/steamos-info && \
     ln -s /usr/bin/steamos-logger /usr/bin/steamos-notice && \
     ln -s /usr/bin/steamos-logger /usr/bin/steamos-warning && \
-    /ctx/cleanup
-
-# Install Steam Deck patched UPower
-RUN --mount=type=cache,dst=/var/cache \
-    --mount=type=cache,dst=/var/log \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=tmpfs,dst=/tmp \
-    dnf5 -y swap --allowerasing \
-    --repo terra-extras \
-        upower terra-upower && \
-    dnf5 versionlock add \
-        terra-upower \
-        terra-upower-libs && \
     /ctx/cleanup
 
 # Install Gamescope Session Supporting changes
