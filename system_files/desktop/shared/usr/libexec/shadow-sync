@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# Read users
+mapfile -t users < <(cut -d: -f1 /etc/passwd /lib/passwd 2>/dev/null | sort -u || true)
+declare -A usermap
+for user in "${users[@]}"; do
+    [[ -n $user ]] && usermap["$user"]=1
+done
+
+# read shadow users
+mapfile -t shadow < <(cut -d: -f1 /etc/shadow | sort -u)
+declare -A shadowmap
+for user in "${shadow[@]}"; do
+    [[ -n $user ]] && shadowmap["$user"]=1
+done
+
+# Add missing shadow users
+[[ -n $(tail -c1 /etc/shadow) ]] && echo "" >> /etc/shadow
+for user in "${users[@]}"; do
+    [[ -v shadowmap[$user] ]] && continue
+    echo "Adding $user to /etc/shadow"
+    echo "$user:!*:::::::" >> /etc/shadow
+done
+
+# Delete extra shadow users
+for user in "${shadow[@]}"; do
+    [[ -v usermap[$user] ]] && continue
+    echo "Removing $user from /etc/shadow"
+    sed -i "/^${user}:/d" /etc/shadow
+done
+
+# Read groups
+mapfile -t groups < <(cut -d: -f1 /etc/group /lib/group 2>/dev/null | sort -u || true)
+declare -A groupmap
+for group in "${groups[@]}"; do
+    [[ -n $group ]] && groupmap["$group"]=1
+done
+
+# read shadow groups
+mapfile -t gshadow < <(cut -d: -f1 /etc/gshadow | sort -u)
+declare -A gshadowmap
+for group in "${gshadow[@]}"; do
+    [[ -n $group ]] && gshadowmap["$group"]=1
+done
+
+# Add missing shadow groups
+[[ -n $(tail -c1 /etc/gshadow) ]] && echo "" >> /etc/gshadow
+for group in "${groups[@]}"; do
+    [[ -v gshadowmap[$group] ]] && continue
+    echo "Adding $group to /etc/gshadow"
+    echo "$group:!*::" >> /etc/gshadow
+done
+
+# Delete extra shadow groups
+for group in "${gshadow[@]}"; do
+    [[ -v groupmap[$group] ]] && continue
+    echo "Removing $group from /etc/gshadow"
+    sed -i "/^${group}:/d" /etc/gshadow
+done
