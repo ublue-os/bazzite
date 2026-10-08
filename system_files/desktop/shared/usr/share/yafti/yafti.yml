@@ -526,7 +526,7 @@ screens:
             script: "ujust cockpit disable"
       - id: "ssh-service"
         title: "Enable SSH remote access"
-        description: "Toggle the secure shell (SSH) service for advanced remote management."
+        description: "Enable SSH remote access on every boot, disable it, or just start it until restart."
         default: false
         status_script: "ujust ssh status"
         options:
@@ -536,6 +536,9 @@ screens:
           - id: "disable"
             label: "Disable SSH Access"
             script: "ujust ssh disable"
+          - id: "start"
+            label: "Start for this session only (Disabled on Reboot)"
+            script: "ujust ssh start"
       - id: "hide-grub"
         title: "Manage GRUB menu visibility"
         description: "Configure if the GRUB menu should appear during the system boot sequence."

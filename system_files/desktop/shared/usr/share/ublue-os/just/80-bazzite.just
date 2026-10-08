@@ -21,7 +21,7 @@ _install-system-flatpaks:
 
 alias toggle-ssh := ssh
 
-# Manage SSH availability on boot. Options: status | enable | disable
+# Manage SSH availability. Options: status | enable | disable | start
 [group("network")]
 ssh ACTION="":
     #!/usr/bin/bash
@@ -32,6 +32,8 @@ ssh ACTION="":
         return 1
       elif [[ "$SSH_STATE" == *enabled* ]]; then
         echo "enable"
+      elif systemctl is-active --quiet sshd; then
+        echo "start"
       else
         echo "disable"
       fi
@@ -54,6 +56,7 @@ ssh ACTION="":
       echo "  <option>: Specify the option to skip the interactive prompt"
       echo "  Use 'enable' to enable SSH on boot"
       echo "  Use 'disable' to disable SSH on boot"
+      echo "  Use 'start' to start SSH for this boot only, disabling SSH on boot"
       exit 0
     elif [ "$OPTION" == "" ]; then
       # Display current status
@@ -66,7 +69,7 @@ ssh ACTION="":
       fi
       # Prompt user for action
       echo "Choose an option:"
-      OPTION=$(ugum choose "Enable SSH" "Disable SSH" "Exit without saving")
+      OPTION=$(ugum choose "Enable SSH" "Disable SSH" "Just start" "Exit without saving")
     fi
     case "$OPTION" in
       "Enable SSH"|enable)
@@ -80,6 +83,14 @@ ssh ACTION="":
         echo "Disabling SSH on boot..."
         sudo systemctl disable --now sshd
         echo -e "SSH is now ${yellow}Disabled${normal}."
+        echo " "
+        ;;
+      "Just start"|start)
+        echo "Starting SSH for this boot only..."
+        sudo systemctl disable sshd || exit $?
+        sudo systemctl start sshd || exit $?
+        echo -e "SSH is now ${green}Running${normal} until restart. You can SSH using:"
+        echo -e "${bold}${USER}@${IP_ADDRESS}${normal}"
         echo " "
         ;;
       "Exit without saving"|*)
