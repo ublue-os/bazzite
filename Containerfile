@@ -153,16 +153,13 @@ RUN --mount=type=cache,dst=/var/cache \
         --repo terra-extras \
             wireplumber terra-wireplumber && \
     dnf5 versionlock add \
-        xorg-x11-server-Xwayland \
+        terra-xorg-x11-server-Xwayland \
         mesa-dri-drivers \
         mesa-filesystem \
         mesa-libEGL \
         mesa-libGL \
         mesa-libgbm \
-        mesa-vulkan-drivers \
-        NetworkManager \
-        NetworkManager-wifi \
-        NetworkManager-libnm && \
+        mesa-vulkan-drivers && \
     dnf5 --enable-repo=terra-mesa -y install \
         mesa-libEGL.i686 \
         intel-opencl \
