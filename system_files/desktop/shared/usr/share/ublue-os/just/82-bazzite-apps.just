@@ -363,7 +363,7 @@ asus ACTION="":
             sudo udevadm control --reload
             sudo udevadm trigger
             systemctl --user daemon-reload
-            systemctl --user enable --now asusd-user.service
+            systemctl --user disable --now asusd-user.service
             echo 'Complete, all required services are enabled.'
         else
             echo "No changes were made."
