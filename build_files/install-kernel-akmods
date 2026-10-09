@@ -51,7 +51,6 @@ dnf5 versionlock add kernel kernel-devel kernel-devel-matched kernel-core kernel
     /tmp/rpms/{extra,kmods-extra}/*sc0710*.rpm \
     /tmp/rpms/{extra,kmods-extra}/*nct6687d*.rpm \
     /tmp/rpms/{extra,kmods-extra}/*system76*.rpm \
-    /tmp/rpms/{extra,kmods-extra}/*ayaneo*.rpm \
     /tmp/rpms/{extra,kmods-extra}/*vhba*.rpm
 
 pushd /usr/lib/kernel/install.d
