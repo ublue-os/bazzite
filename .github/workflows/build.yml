@@ -129,10 +129,10 @@ jobs:
             arch: x86_64
           - image: bazzite-nvidia
             kernel_flavor: ogc-lts
-            kernel_version: 6.18.52-ogc1.1.fc44
+            kernel_version: 6.18.56-ogc1.1.fc44
           - image: bazzite-gnome-nvidia
             kernel_flavor: ogc-lts
-            kernel_version: 6.18.52-ogc1.1.fc44
+            kernel_version: 6.18.56-ogc1.1.fc44
     steps:
       - name: Show disk space
         run: sudo df -h
