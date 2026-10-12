@@ -127,6 +127,49 @@ command:
     stdout:
       - "/^(OK|SKIP):/"
 
+  uupd_manual_service_exists:
+    exec: |
+      sh -lc '
+      for dir in /usr/lib/systemd/system /etc/systemd/system; do
+        if [ -e "$dir/uupd-manual.service" ]; then
+          echo "OK: uupd-manual.service found in $dir"
+          exit 0
+        fi
+      done
+      echo "FAIL: uupd-manual.service not found"
+      exit 1
+      '
+    exit-status: 0
+    stdout:
+      - "/^OK:/"
+
+  # Deck images disable uupd.timer in the Containerfile.
+  uupd_timer_enabled:
+    exec: |
+      sh -lc '
+      info=/usr/share/ublue-os/image-info.json
+      name=$(sed -n "s/.*\"image-name\"[[:space:]]*:[[:space:]]*\"\([^\"]*\)\".*/\1/p" "$info" 2>/dev/null)
+      if [ -z "$name" ]; then
+        name=$(. /usr/lib/os-release 2>/dev/null; printf "%s" "$VARIANT_ID")
+      fi
+      if [ -z "$name" ]; then
+        echo "FAIL: unable to determine image name from $info or /usr/lib/os-release"
+        exit 1
+      fi
+      case "$name" in
+        *deck*) echo "SKIP: $name is a deck image, uupd.timer is disabled" ; exit 0 ;;
+      esac
+      state=$(systemctl is-enabled uupd.timer 2>&1)
+      if [ "$state" != "enabled" ]; then
+        echo "FAIL: uupd.timer is ${state:-<unknown>}, expected enabled"
+        exit 1
+      fi
+      echo "OK: uupd.timer is enabled"
+      '
+    exit-status: 0
+    stdout:
+      - "/^(OK|SKIP):/"
+
   kernel_modules_match_uname:
     exec: |
       sh -lc '
