@@ -48,7 +48,7 @@ jobs:
 
       - uses: Zeglius/ghcr-oci-retagger@1e08f1dac27d25efe1377d9a35f133731bf3d986
         env:
-          ver: "43"
+          ver: "45"
         with:
           GITHUB_TOKEN: ${{ github.token }}
           PREFIX: ghcr.io/${{ steps.repo_owner_case.outputs.lowercase }}/

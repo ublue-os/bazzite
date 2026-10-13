@@ -122,17 +122,17 @@ jobs:
           - bazzite-nvidia-open
           - bazzite-gnome-nvidia-open
         include:
-          - fedora_version: 44
+          - fedora_version: 45
             kernel_flavor: ogc
-            kernel_version: 7.2.9-ogc3.1.fc44
+            kernel_version: 7.2.9-ogc3.1.fc45
             base_image_flavor: main
             arch: x86_64
           - image: bazzite-nvidia
             kernel_flavor: ogc-lts
-            kernel_version: 6.18.56-ogc1.1.fc44
+            kernel_version: 6.18.56-ogc1.1.fc45
           - image: bazzite-gnome-nvidia
             kernel_flavor: ogc-lts
-            kernel_version: 6.18.56-ogc1.1.fc44
+            kernel_version: 6.18.56-ogc1.1.fc45
     steps:
       - name: Show disk space
         run: sudo df -h
