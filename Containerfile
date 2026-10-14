@@ -282,7 +282,6 @@ RUN --mount=type=cache,dst=/var/cache \
         waydroid \
         cage \
         wlr-randr \
-        gmodpatchtool \
         bazzite-portal \
         kernel-tools \
         ls-iommu \
