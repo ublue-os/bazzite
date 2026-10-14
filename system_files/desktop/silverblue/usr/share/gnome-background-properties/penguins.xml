@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!DOCTYPE wallpapers SYSTEM "gnome-wp-list.dtd">
+<wallpapers>
+  <wallpaper deleted="false">
+    <name>100K Penguins</name>
+    <filename>/usr/share/backgrounds/penguins.jxl</filename>
+    <filename-dark>/usr/share/backgrounds/penguins.jxl</filename-dark>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#310042</pcolor>
+    <scolor>#000622</scolor>
+  </wallpaper>
+</wallpapers>
