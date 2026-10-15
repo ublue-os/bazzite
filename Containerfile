@@ -801,8 +801,10 @@ RUN --mount=type=cache,dst=/var/cache \
             cardwire-gui && \
         dnf5 -y swap \
             cardwire switcheroo-control && \
-        dnf5 -y install --enable-repo=terra \
-            supergfxctl \
+        dnf5 -y copr enable ublue-os/staging && \
+        dnf5 -y install \
+            supergfxctl && \
+        dnf5 -y copr disable ublue-os/staging \    
     ; fi && \
     if ! grep -q "deck" <<< "${IMAGE_NAME}"; then \
         rm -f /usr/lib/modprobe.d/nvidia-deck.conf \
