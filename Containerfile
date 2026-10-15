@@ -279,6 +279,9 @@ RUN --mount=type=cache,dst=/var/cache \
         lsb_release \
         uupd \
         ds-inhibit \
+        rocm-opencl \
+        rocm-clinfo \
+        rocm-smi \
         waydroid \
         cage \
         wlr-randr \
@@ -788,7 +791,10 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=tmpfs,dst=/tmp \
     dnf5 config-manager unsetopt skip_if_unavailable && \
     dnf5 -y remove \
-        nvidia-gpu-firmware && \
+        nvidia-gpu-firmware \
+        rocm-opencl \
+        rocm-clinfo \
+        rocm-smi && \
     if [ "${NVIDIA_FLAVOR}" = "nvidia-lts" ]; then \
         systemctl disable cardwired.service && \
         dnf5 -y remove \
