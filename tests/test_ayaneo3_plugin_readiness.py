@@ -20,10 +20,18 @@ class ReadinessTests(unittest.TestCase):
             "usr/lib/systemd/system/inputplumber.service": "StateDirectory=inputplumber\nStateDirectoryMode=0700\n",
             "usr/share/polkit-1/actions/org.shadowblip.InputPlumber.policy": '<action id="org.shadowblip.Input.Source.LEDDevice.SetConfig"/>',
             "usr/share/powerstation/platform/fan-ayaneo-3.yaml": "ayaneo_ec k10temp Quiet:",
-            "usr/share/dbus-1/system-services/org.shadowblip.PowerStation.service": "Name=org.shadowblip.PowerStation\nUser=root\nSystemdService=powerstation.service\nExec=/usr/bin/powerstation\n",
+            "usr/share/dbus-1/system-services/org.shadowblip.PowerStation.service": (
+                "Name=org.shadowblip.PowerStation\nUser=root\n"
+                "SystemdService=powerstation.service\nExec=/usr/bin/powerstation\n"
+            ),
             "usr/lib/systemd/system/powerstation.service": "ExecStopPost=/usr/bin/powerstation --restore-fans-auto\nWatchdogSec=5s\n",
-            "usr/share/inputplumber/devices/50-ayaneo_3.yaml": "product_name: AYANEO 3\ngroup: gamepad\ngroup: imu\ngroup: led\n*:rgb:joystick_rings\npersistent_id: ayaneo-3-joystick-rings\nhardware_cycle_only: true\n",
-            "usr/lib/udev/rules.d/70-steam-jupiter-leds.rules": (Path(__file__).parents[1] / "system_files/deck/shared/usr/lib/udev/rules.d/70-steam-jupiter-leds.rules").read_text(),
+            "usr/share/inputplumber/devices/50-ayaneo_3.yaml": (
+                "product_name: AYANEO 3\ngroup: gamepad\ngroup: imu\ngroup: led\n"
+                "*:rgb:joystick_rings\npersistent_id: ayaneo-3-joystick-rings\nhardware_cycle_only: true\n"
+            ),
+            "usr/lib/udev/rules.d/70-steam-jupiter-leds.rules": (
+                Path(__file__).parents[1] / "system_files/deck/shared/usr/lib/udev/rules.d/70-steam-jupiter-leds.rules"
+            ).read_text(),
             "usr/lib/modules/fixture/kernel/drivers/hid/hid-ayaneo.ko": "",
             "usr/lib/modules/fixture/kernel/drivers/platform/x86/ayaneo-ec.ko": "",
         }

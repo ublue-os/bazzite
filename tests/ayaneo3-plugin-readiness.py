@@ -6,47 +6,53 @@ import json
 from pathlib import Path
 
 
-def check_image(root):
-    root = Path(root)
-    def read(relative, binary=False):
-        target = root / relative
-        if not target.is_file():
-            raise ValueError("Missing required image file: " + relative)
-        return target.read_bytes() if binary else target.read_text()
+def read(root, relative, binary=False):
+    target = root / relative
+    if not target.is_file():
+        raise ValueError("Missing required image file: " + relative)
+    return target.read_bytes() if binary else target.read_text()
 
-    executable = read("usr/bin/powerstation", binary=True)
+
+def check_powerstation(root):
+    executable = read(root, "usr/bin/powerstation", binary=True)
     for marker in (b"org.shadowblip.Fan.Device", b"EnumerateFans", b"CustomCurve"):
         if marker not in executable:
             raise ValueError("PowerStation lacks the required fan API marker: " + marker.decode())
-    platform = read("usr/share/powerstation/platform/fan-ayaneo-3.yaml")
+    platform = read(root, "usr/share/powerstation/platform/fan-ayaneo-3.yaml")
     if "ayaneo_ec" not in platform or "k10temp" not in platform or "Quiet:" not in platform:
         raise ValueError("The AYANEO fan platform definition is incomplete")
-    activation = read("usr/share/dbus-1/system-services/org.shadowblip.PowerStation.service")
+    activation = read(root, "usr/share/dbus-1/system-services/org.shadowblip.PowerStation.service")
     for setting in ("Name=org.shadowblip.PowerStation", "User=root", "SystemdService=powerstation.service", "Exec=/usr/bin/powerstation"):
         if setting not in activation.splitlines():
             raise ValueError("PowerStation D-Bus activation lacks " + setting)
-    service = read("usr/lib/systemd/system/powerstation.service")
+    service = read(root, "usr/lib/systemd/system/powerstation.service")
     if "ExecStopPost=/usr/bin/powerstation --restore-fans-auto" not in service or "WatchdogSec=5s" not in service:
         raise ValueError("PowerStation fan recovery and supervision are missing")
-    profile = read("usr/share/inputplumber/devices/50-ayaneo_3.yaml")
+
+
+def check_managed_lighting(root):
+    profile = read(root, "usr/share/inputplumber/devices/50-ayaneo_3.yaml")
     for marker in ("group: led", "*:rgb:joystick_rings", "persistent_id: ayaneo-3-joystick-rings", "hardware_cycle_only: true"):
         if marker not in profile:
             raise ValueError("InputPlumber managed lighting profile is incomplete")
     if "initial_config:" in profile:
         raise ValueError("First-use lighting must remain unchanged until Apply")
-    lighting = read("usr/bin/inputplumber", binary=True)
+    lighting = read(root, "usr/bin/inputplumber", binary=True)
     for marker in (b"org.shadowblip.Input.Source.LEDDevice", b"SetConfig", b"unconfigured"):
         if marker not in lighting:
             raise ValueError("InputPlumber lacks managed lighting support")
-    policy = read("usr/share/polkit-1/actions/org.shadowblip.InputPlumber.policy")
+    policy = read(root, "usr/share/polkit-1/actions/org.shadowblip.InputPlumber.policy")
     if 'id="org.shadowblip.Input.Source.LEDDevice.SetConfig"' not in policy:
         raise ValueError("InputPlumber lighting authorization is missing")
-    lighting_service = read("usr/lib/systemd/system/inputplumber.service")
+    lighting_service = read(root, "usr/lib/systemd/system/inputplumber.service")
     if "StateDirectory=inputplumber" not in lighting_service or "StateDirectoryMode=0700" not in lighting_service:
         raise ValueError("InputPlumber managed state directory is missing")
     if "product_name: AYANEO 3" not in profile or "group: gamepad" not in profile or "group: imu" not in profile:
         raise ValueError("AYANEO input/IMU configuration is missing")
-    rule = read("usr/lib/udev/rules.d/70-steam-jupiter-leds.rules")
+
+
+def check_rgb_permissions(root):
+    rule = read(root, "usr/lib/udev/rules.d/70-steam-jupiter-leds.rules")
     if 'KERNEL=="*:rgb:*"' not in rule or "brightness" not in rule or "effect" not in rule:
         raise ValueError("The existing Steam RGB permission rule is missing")
     managed_rule = next((line for line in rule.splitlines() if 'KERNEL=="*:rgb:joystick_rings"' in line), "")
@@ -57,11 +63,22 @@ def check_image(root):
     generic_rule = next(line for line in rule.splitlines() if 'KERNEL=="*:rgb:*"' in line)
     if rule.index(managed_rule) >= rule.index(generic_rule) or rule.index('LABEL="bazzite_rgb_permissions_end"') <= rule.index(generic_rule):
         raise ValueError("AYANEO ownership must bypass the generic writable RGB rule")
+
+
+def check_kernel_modules(root):
     modules = root / "usr/lib/modules"
     if not list(modules.glob("*/kernel/drivers/hid/hid-ayaneo.ko*")):
         raise ValueError("The image lacks the AYANEO HID driver")
     if not list(modules.glob("*/kernel/drivers/platform/x86/ayaneo-ec.ko*")):
         raise ValueError("The image lacks the AYANEO EC driver")
+
+
+def check_image(root):
+    root = Path(root)
+    check_powerstation(root)
+    check_managed_lighting(root)
+    check_rgb_permissions(root)
+    check_kernel_modules(root)
     return {"static_image_checks": "passed", "device_validation": "required", "public_release_qualified": False}
 
 
