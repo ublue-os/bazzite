@@ -25,7 +25,8 @@ dnf5 -y remove \
   plasma-setup \
   kcharselect \
   kde-partitionmanager \
-  plasma-discover{,-libs}
+  plasma-discover{,-libs} \
+  xwaylandvideobridge
 
 sed -i '$r /usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates/bazzite-pins.js' /usr/share/plasma/layout-templates/org.kde.plasma.desktop.defaultPanel/contents/layout.js
 ln -sf /usr/share/wallpapers/convergence.jxl /usr/share/backgrounds/default.jxl
