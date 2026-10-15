@@ -152,11 +152,16 @@ RUN --mount=type=cache,dst=/var/cache \
     dnf5 -y swap --allowerasing \
         --repo terra-extras \
             wireplumber terra-wireplumber && \
-    dnf5 -y swap --allowerasing \
+    dnf5 -y install \
+        --allowerasing \
         --repo terra-extras \
-            bluez terra-bluez && \
+            terra-bluez \
+            terra-bluez-libs \
+            terra-bluez-obexd \
+            terra-bluez-cups && \
     dnf5 versionlock add \
         terra-xorg-x11-server-Xwayland \
+        terra-bluez \
         mesa-dri-drivers \
         mesa-filesystem \
         mesa-libEGL \
@@ -297,12 +302,11 @@ RUN --mount=type=cache,dst=/var/cache \
             switcheroo-control cardwire && \
     dnf5 -y install --enable-repo=terra \
         cardwire-gui && \
-    dnf5 -y swap --allowerasing \
+    dnf5 -y install \
+        --allowerasing \
         --repo terra-extras \
-            ddcutil terra-ddcutil && \
-    dnf5 -y swap --allowerasing \
-        --repo terra-extras \
-            libddcutil terra-libddcutil && \
+            terra-ddcutil \
+            terra-libddcutil && \
     ln -s /dev/null /etc/NetworkManager/dispatcher.d/04-iscsi && \
     systemctl mask iscsi && \
     systemctl mask systemd-remount-fs.service && \
