@@ -17,7 +17,7 @@ class ReadinessTests(unittest.TestCase):
         files = {
             "usr/bin/powerstation": (
                 "org.shadowblip.Fan.Device org.shadowblip.Fan.Sensor EnumerateSensors "
-                "LoadProfileJson CurrentProfileName PercentValid --record-fan-startup"
+                "LoadProfileJson CurrentProfileName PercentValid --record-fan-startup untrusted fan startup attempt"
             ),
             "usr/bin/inputplumber": "org.shadowblip.Input.Source.LEDDevice SetConfig unconfigured",
             "usr/lib/systemd/system/inputplumber.service": "StateDirectory=inputplumber\nStateDirectoryMode=0700\n",
@@ -66,6 +66,12 @@ class ReadinessTests(unittest.TestCase):
         path = self.root / "usr/lib/systemd/system/powerstation.service"
         path.write_text(path.read_text().replace("RuntimeDirectoryPreserve=yes", "RuntimeDirectoryPreserve=restart"))
         with self.assertRaisesRegex(ValueError, "startup safeguard"):
+            readiness.check_image(self.root)
+
+    def test_startup_helper_without_precreation_fence_is_rejected(self):
+        path = self.root / "usr/bin/powerstation"
+        path.write_text(path.read_text().replace("untrusted fan startup attempt", ""))
+        with self.assertRaisesRegex(ValueError, "fan API marker"):
             readiness.check_image(self.root)
 
     def test_missing_quiet_profile_or_policy_is_rejected(self):

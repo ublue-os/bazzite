@@ -17,7 +17,7 @@ def check_powerstation(root):
     executable = read(root, "usr/bin/powerstation", binary=True)
     for marker in (
         b"org.shadowblip.Fan.Device", b"org.shadowblip.Fan.Sensor", b"EnumerateSensors",
-        b"LoadProfileJson", b"CurrentProfileName", b"PercentValid", b"--record-fan-startup",
+        b"LoadProfileJson", b"CurrentProfileName", b"PercentValid", b"--record-fan-startup", b"untrusted fan startup attempt",
     ):
         if marker not in executable:
             raise ValueError("PowerStation lacks the required fan API marker: " + marker.decode())
