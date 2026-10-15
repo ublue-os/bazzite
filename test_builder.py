@@ -15,6 +15,12 @@ import pytest
 
 import build as b
 
+# The release being built is data, not something the tests pin: they read
+# it from build.py so a Fedora or kernel bump only touches build.py.
+FEDORA = b.DEFAULTS["fedora_version"]
+KERNEL = b.DEFAULTS["kernel_version"]
+LTS_KERNEL = b.LTS_KERNEL_VERSION
+
 # Hand-derived by reading the base_image_name/nvidia/kernel rules directly
 # off each image name, independent of build.py's IMAGES table, so this
 # can't just echo a bug back.
@@ -22,52 +28,52 @@ EXPECTED_VARIANTS = {
     "bazzite": {
         "base_image_name": "kinoite", "container_target": "bazzite",
         "nvidia_base": "bazzite", "nvidia_flavor": "nvidia-lts", "install_nvidia": False,
-        "kernel_flavor": "ogc", "kernel_version": "7.2.9-ogc4.1.fc45",
+        "kernel_flavor": "ogc", "kernel_version": KERNEL,
     },
     "bazzite-gnome": {
         "base_image_name": "silverblue", "container_target": "bazzite",
         "nvidia_base": "bazzite", "nvidia_flavor": "nvidia-lts", "install_nvidia": False,
-        "kernel_flavor": "ogc", "kernel_version": "7.2.9-ogc4.1.fc45",
+        "kernel_flavor": "ogc", "kernel_version": KERNEL,
     },
     "bazzite-deck": {
         "base_image_name": "kinoite", "container_target": "bazzite-deck",
         "nvidia_base": "bazzite-deck", "nvidia_flavor": "nvidia-lts", "install_nvidia": False,
-        "kernel_flavor": "ogc", "kernel_version": "7.2.9-ogc4.1.fc45",
+        "kernel_flavor": "ogc", "kernel_version": KERNEL,
     },
     "bazzite-deck-gnome": {
         "base_image_name": "silverblue", "container_target": "bazzite-deck",
         "nvidia_base": "bazzite-deck", "nvidia_flavor": "nvidia-lts", "install_nvidia": False,
-        "kernel_flavor": "ogc", "kernel_version": "7.2.9-ogc4.1.fc45",
+        "kernel_flavor": "ogc", "kernel_version": KERNEL,
     },
     "bazzite-deck-nvidia": {
         "base_image_name": "kinoite", "container_target": "bazzite-nvidia",
         "nvidia_base": "bazzite-deck", "nvidia_flavor": "nvidia-open", "install_nvidia": True,
-        "kernel_flavor": "ogc", "kernel_version": "7.2.9-ogc4.1.fc45",
+        "kernel_flavor": "ogc", "kernel_version": KERNEL,
     },
     "bazzite-deck-nvidia-gnome": {
         "base_image_name": "silverblue", "container_target": "bazzite-nvidia",
         "nvidia_base": "bazzite-deck", "nvidia_flavor": "nvidia-open", "install_nvidia": True,
-        "kernel_flavor": "ogc", "kernel_version": "7.2.9-ogc4.1.fc45",
+        "kernel_flavor": "ogc", "kernel_version": KERNEL,
     },
     "bazzite-nvidia": {
         "base_image_name": "kinoite", "container_target": "bazzite-nvidia",
         "nvidia_base": "bazzite", "nvidia_flavor": "nvidia-lts", "install_nvidia": True,
-        "kernel_flavor": "ogc-lts", "kernel_version": "6.18.56-ogc1.1.fc45",
+        "kernel_flavor": "ogc-lts", "kernel_version": LTS_KERNEL,
     },
     "bazzite-gnome-nvidia": {
         "base_image_name": "silverblue", "container_target": "bazzite-nvidia",
         "nvidia_base": "bazzite", "nvidia_flavor": "nvidia-lts", "install_nvidia": True,
-        "kernel_flavor": "ogc-lts", "kernel_version": "6.18.56-ogc1.1.fc45",
+        "kernel_flavor": "ogc-lts", "kernel_version": LTS_KERNEL,
     },
     "bazzite-nvidia-open": {
         "base_image_name": "kinoite", "container_target": "bazzite-nvidia",
         "nvidia_base": "bazzite", "nvidia_flavor": "nvidia-open", "install_nvidia": True,
-        "kernel_flavor": "ogc", "kernel_version": "7.2.9-ogc4.1.fc45",
+        "kernel_flavor": "ogc", "kernel_version": KERNEL,
     },
     "bazzite-gnome-nvidia-open": {
         "base_image_name": "silverblue", "container_target": "bazzite-nvidia",
         "nvidia_base": "bazzite", "nvidia_flavor": "nvidia-open", "install_nvidia": True,
-        "kernel_flavor": "ogc", "kernel_version": "7.2.9-ogc4.1.fc45",
+        "kernel_flavor": "ogc", "kernel_version": KERNEL,
     },
 }
 
@@ -87,8 +93,14 @@ def test_variant_matches_ci_derivation(image):
     assert variant.install_nvidia == expected["install_nvidia"]
     assert variant.kernel_flavor == expected["kernel_flavor"]
     assert variant.kernel_version == expected["kernel_version"]
-    assert variant.fedora_version == 45
-    assert variant.base_image == f"ghcr.io/ublue-os/{expected['base_image_name']}-main:45"
+    assert variant.fedora_version == FEDORA
+    assert variant.base_image == f"ghcr.io/ublue-os/{expected['base_image_name']}-main:{FEDORA}"
+
+
+@pytest.mark.parametrize("kernel", [KERNEL, LTS_KERNEL])
+def test_kernels_are_built_for_the_fedora_release(kernel):
+    """Catches a Fedora bump that forgets a kernel, or the reverse."""
+    assert kernel.endswith(f".fc{FEDORA}")
 
 
 def test_unknown_image_raises_with_valid_list():
@@ -259,7 +271,7 @@ def test_scratch_dir_prefers_runner_temp(monkeypatch, tmp_path):
 
 def test_version_dedups_against_tags_from_every_image(monkeypatch, capsys):
     """A tag taken by only one image still bumps the point release for all."""
-    today = b.release_version(ref_name="unstable", fedora_version=45)
+    today = b.release_version(ref_name="unstable", fedora_version=FEDORA)
     taken = {"bazzite-deck": {today, f"{today}.1"}}
     monkeypatch.setattr(b, "list_tags", lambda ref: taken.get(ref.rsplit("/", 1)[1], set()))
     args = b.build_parser().parse_args(["version", "--ref-name", "unstable"])
@@ -270,18 +282,18 @@ def test_version_dedups_against_tags_from_every_image(monkeypatch, capsys):
 def test_resolve_uses_precomputed_version(capsys):
     args = b.build_parser().parse_args([
         "resolve", "--image", "bazzite-deck", "--ref-name", "unstable",
-        "--upstream-tag", "45.20260820.0", "--version", "unstable-45.20260820.3",
+        "--upstream-tag", f"{FEDORA}.20260820.0", "--version", f"unstable-{FEDORA}.20260820.3",
     ])
     assert b.cmd_resolve(args) == 0
     out = json.loads(capsys.readouterr().out)
-    assert out["version"] == "unstable-45.20260820.3"
-    assert out["labels"]["org.opencontainers.image.version"] == "unstable-45.20260820.3"
+    assert out["version"] == f"unstable-{FEDORA}.20260820.3"
+    assert out["labels"]["org.opencontainers.image.version"] == f"unstable-{FEDORA}.20260820.3"
 
 
 def test_resolve_rejects_version_for_another_fedora_release():
     args = b.build_parser().parse_args([
-        "resolve", "--image", "bazzite", "--upstream-tag", "45.20260820.0",
-        "--version", "43.20260820",
+        "resolve", "--image", "bazzite", "--upstream-tag", f"{FEDORA}.20260820.0",
+        "--version", f"{FEDORA - 1}.20260820",
     ])
     assert b.cmd_resolve(args) == 1
 
@@ -294,7 +306,7 @@ def test_build_local_mode_uses_dev_version(caplog):
         ["--dry-run", "build", "--image", "bazzite-deck", "--container-mgr", "podman"]
     )
     assert b.cmd_build(args) == 0
-    assert "--build-arg=VERSION_TAG=45.dev" in caplog.text
+    assert f"--build-arg=VERSION_TAG={FEDORA}.dev" in caplog.text
     assert "--build-arg=IMAGE_BRANCH=local" in caplog.text
     assert "--tag localhost/bazzite-deck:build" in caplog.text
     assert "--secret" not in caplog.text
@@ -464,7 +476,7 @@ def test_sbom_attach_dry_run_emits_placeholder_digest(capsys):
 def test_resolve_bakes_image_vendor_into_build_args(capsys):
     """CI passes the lowercased repo owner, so fork builds identify as the fork."""
     args = b.build_parser().parse_args([
-        "resolve", "--image", "bazzite", "--upstream-tag", "45.20260820.0",
+        "resolve", "--image", "bazzite", "--upstream-tag", f"{FEDORA}.20260820.0",
         "--skip-registry", "--image-vendor", "tedohayer",
     ])
     assert b.cmd_resolve(args) == 0

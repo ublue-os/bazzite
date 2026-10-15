@@ -63,6 +63,9 @@ DEFAULTS = {
     "arch": "x86_64",
 }
 
+#: Kernel for the nvidia-lts images, which stay on the LTS series.
+LTS_KERNEL_VERSION = "6.18.56-ogc1.1.fc45"
+
 IMAGES: dict[str, dict] = {
     "bazzite": {
         "base_image_name": "kinoite",
@@ -113,7 +116,7 @@ IMAGES: dict[str, dict] = {
         "nvidia_flavor": "nvidia-lts",
         "install_nvidia": True,
         "kernel_flavor": "ogc-lts",
-        "kernel_version": "6.18.56-ogc1.1.fc45",
+        "kernel_version": LTS_KERNEL_VERSION,
     },
     "bazzite-gnome-nvidia": {
         "base_image_name": "silverblue",
@@ -122,7 +125,7 @@ IMAGES: dict[str, dict] = {
         "nvidia_flavor": "nvidia-lts",
         "install_nvidia": True,
         "kernel_flavor": "ogc-lts",
-        "kernel_version": "6.18.56-ogc1.1.fc45",
+        "kernel_version": LTS_KERNEL_VERSION,
     },
     "bazzite-nvidia-open": {
         "base_image_name": "kinoite",
