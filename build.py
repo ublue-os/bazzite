@@ -56,9 +56,9 @@ IMAGE_VENDOR_DEFAULT = "ublue-os"
 # ---------------------------------------------------------------------------
 
 DEFAULTS = {
-    "fedora_version": 44,
+    "fedora_version": 45,
     "kernel_flavor": "ogc",
-    "kernel_version": "7.2.4-ogc3.1.fc44",
+    "kernel_version": "7.2.9-ogc4.1.fc45",
     "base_image_flavor": "main",
     "arch": "x86_64",
 }
@@ -113,7 +113,7 @@ IMAGES: dict[str, dict] = {
         "nvidia_flavor": "nvidia-lts",
         "install_nvidia": True,
         "kernel_flavor": "ogc-lts",
-        "kernel_version": "6.18.49-ogc1.1.fc44",
+        "kernel_version": "6.18.56-ogc1.1.fc45",
     },
     "bazzite-gnome-nvidia": {
         "base_image_name": "silverblue",
@@ -122,7 +122,7 @@ IMAGES: dict[str, dict] = {
         "nvidia_flavor": "nvidia-lts",
         "install_nvidia": True,
         "kernel_flavor": "ogc-lts",
-        "kernel_version": "6.18.49-ogc1.1.fc44",
+        "kernel_version": "6.18.56-ogc1.1.fc45",
     },
     "bazzite-nvidia-open": {
         "base_image_name": "kinoite",
@@ -698,16 +698,22 @@ def cmd_build(args: argparse.Namespace) -> int:
 
 
 #: Labels stamped onto the raw build that shouldn't survive into the
-#: rechunked image -- ostree/rpm-ostree bookkeeping from intermediate
-#: layers, buildah's own version stamp, and registry expiry hints that
-#: don't apply once the image is actually published.
+#: rechunked image -- ostree bookkeeping from intermediate layers.
 STALE_RECHUNK_LABELS = (
     "ostree.commit",
     "ostree.final-diffid",
-    "rpmostree.inputhash",
-    "quay.expires-after",
-    "io.buildah.version",
 )
+
+#: Empties /run and /tmp in the raw image while keeping the directories
+#: themselves, then commits the result back under the same name. $1 is the
+#: raw image name.
+SCRUB_RUN_TMP = """
+container=$(buildah from "$1")
+mnt=$(buildah mount "$container")
+rm -rf "$mnt"/run/.* "$mnt"/run/* "$mnt"/tmp/.* "$mnt"/tmp/* || true
+buildah umount "$container"
+buildah commit --identity-label=false --rm "$container" "$1"
+"""
 
 
 def cmd_rechunk(args: argparse.Namespace) -> int:
@@ -716,9 +722,16 @@ def cmd_rechunk(args: argparse.Namespace) -> int:
     the same OCI layer (needed for efficient delta updates). chunkah's own
     image is cosign-verified before use, same as the common/brew image
     verification pattern used elsewhere in the ublue-os pipelines. Unlike
-    the old rpm-ostree-based rechunk this doesn't need --privileged, and
-    chunkah prunes /run and /tmp itself so there's no separate squash step.
+    the old rpm-ostree-based rechunk this doesn't need --privileged. /run
+    and /tmp are emptied in the raw image first rather than pruned by
+    chunkah, so the directories themselves stay in the image.
     """
+    with group("Emptying /run and /tmp"):
+        run(
+            ["buildah", "unshare", "bash", "-euo", "pipefail", "-c", SCRUB_RUN_TMP, "bash", args.raw_image],
+            dry_run=args.dry_run,
+        )
+
     run(["podman", "pull", args.chunkah_image], dry_run=args.dry_run)
 
     if args.dry_run:
@@ -768,8 +781,6 @@ def cmd_rechunk(args: argparse.Namespace) -> int:
                     "--verbose", "--compressed",
                     "--max-layers", str(args.max_layers),
                     "--prune", "/sysroot/",
-                    "--prune", "/run/",
-                    "--prune", "/tmp/",
                     *labels,
                     "--config", "/chunkah-config.json",
                     "--output", "oci:/run/out/chunked",
@@ -852,7 +863,11 @@ def cmd_push(args: argparse.Namespace) -> int:
     try:
         for _ in range(2):
             run(
-                ["podman", "push", f"--digestfile={digestfile}", rechunk_ref, f"docker://{target}"],
+                [
+                    "podman", "push", f"--digestfile={digestfile}",
+                    "--compression-format=zstd", "--compression-level=3",
+                    rechunk_ref, f"docker://{target}",
+                ],
                 dry_run=args.dry_run,
             )
         summary.append(target)
@@ -1025,9 +1040,13 @@ def build_parser() -> argparse.ArgumentParser:
     p_rechunk = sub.add_parser("rechunk", help="rechunk a raw build into an OCI image via chunkah")
     p_rechunk.add_argument("--raw-image", default="raw-img")
     p_rechunk.add_argument("--chunked-image", default="localhost/chunked-img")
-    p_rechunk.add_argument("--chunkah-image", default="quay.io/coreos/chunkah:latest")
+    p_rechunk.add_argument(
+        "--chunkah-image",
+        # https://github.com/coreos/chunkah
+        default="quay.io/coreos/chunkah:latest@sha256:8b56578258d1d10d3e1c7b0f71a4d05317c5fde331c4f483576a1b60e65f0cea",
+    )
     p_rechunk.add_argument("--labels-file", default=None)
-    p_rechunk.add_argument("--max-layers", type=int, default=128)
+    p_rechunk.add_argument("--max-layers", type=int, default=256)
     p_rechunk.set_defaults(func=cmd_rechunk)
 
     p_sbom = sub.add_parser("sbom", help="generate a syft SBOM for a rechunked image")
