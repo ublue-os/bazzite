@@ -12,6 +12,8 @@ The managed source uses persistent identity ayaneo-3-joystick-rings and requires
 
 Bazzite 44.20261012.1 contains kernel interfaces but ships InputPlumber 0.82.0-2 and PowerStation 0.8.4-1 without the complete candidate features. Do not claim that image is qualified. Record actual official testing/stable package versions and image digest after maintainer delivery; none is guessed in advance.
 
+PowerStation #54 at cb75669e488784d095229c0681b332809b1698c2 now proposes API v2 and removes the preset/custom-curve contract used by the private dev.3 fan client. This lighting change preserves that client's API v1 behavior. A separate fan-client, persistence and readiness-check migration to the accepted upstream contract is required before public delivery; these preliminary checks intentionally reject incompatible API v2 assets. The physical lighting evidence uses the previously validated private API v1 fan runtime and does not qualify API v2.
+
 Test the private candidate with backups, then an official testing image, and finally a clean supported stable installation without private namespaces, replacement packages or legacy fan prerequisites. Verify every native effect/transition, colours/brightness/Off, five-minute Breathing/Rainbow observations on both rings, persistence, restart, reconnect, suspend/reboot, denied/failed/uncertain requests, input/motion/rumble/module recovery, plugin upgrade/removal and rollback. Existing whole-plugin thermal and recovery gates remain required.
 
 Target both 8840U and HX 370. Physical acceptance uses the available 8840U; the user explicitly accepts assumed HX 370 compatibility from the shared interfaces. Documentation must distinguish that assumption from separate HX 370 physical testing.
