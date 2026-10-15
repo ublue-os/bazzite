@@ -119,7 +119,7 @@ RUN --mount=type=cache,dst=/var/cache \
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
     dnf5 -y config-manager setopt "*terra*".priority=1 "*terra*".exclude="nerd-fonts scx-tools scx-scheds" && \
     dnf5 -y config-manager setopt "terra-mesa".enabled=false && \
-    dnf5 -y config-manager setopt "*bazzite*".priority=2.exclude="bluez*" && \
+    dnf5 -y config-manager setopt "*bazzite*".priority=2 && \
     eval "$(/ctx/dnf5-setopt setopt '*negativo17*' priority=4 exclude='mesa-* *xone*')" && \
     dnf5 -y config-manager setopt "*fedora*".exclude="mesa-* kernel-core-* kernel-modules-* kernel-uki-virt-* steam noopenh264" && \
     dnf5 -y config-manager setopt "updates*".exclude="noopenh264" && \
@@ -152,6 +152,9 @@ RUN --mount=type=cache,dst=/var/cache \
     dnf5 -y swap --allowerasing \
         --repo terra-extras \
             wireplumber terra-wireplumber && \
+    dnf5 -y swap --allowerasing \
+        --repo terra-extras \
+            bluez terra-bluez && \
     dnf5 versionlock add \
         terra-xorg-x11-server-Xwayland \
         mesa-dri-drivers \
