@@ -1,13 +1,5 @@
 # vim: set ft=make :
 
-alias patch-gmod := fix-gmod
-
-# Patch GMod's 64-bit beta to work properly on Linux (https://github.com/solsticegamestudios/GModPatchTool)
-[group("gaming")]
-fix-gmod:
-    #!/usr/bin/bash
-    /usr/bin/gmodpatchtool
-
 # Kills all processes related to wine and proton. This forces it to restart next time you launch the game (you might still have to press STOP in steam to kill the game binary)
 [group("gaming")]
 fix-proton-hang:

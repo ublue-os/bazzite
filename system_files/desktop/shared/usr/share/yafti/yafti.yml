@@ -853,11 +853,6 @@ screens:
         description: "Send «kill» signal to processes pertaining to Wine/Proton. May be useful if a task seems to be stuck."
         default: false
         script: "ujust fix-proton-hang"
-      - id: "fix-gmod"
-        title: "Patch 64-bit beta version for Garry's Mod"
-        description: "Fix over many issues with the native 64-bit Linux version of Garry's Mod through a third-party patch."
-        default: false
-        script: "ujust fix-gmod"
       - id: "fix-reset-steam"
         title: "Reset Steam installation"
         description: "Remove local Steam files and reacquire them fresh from Valve servers. Will not delete game or save files!"
