@@ -15,12 +15,22 @@ def read(root, relative, binary=False):
 
 def check_powerstation(root):
     executable = read(root, "usr/bin/powerstation", binary=True)
-    for marker in (b"org.shadowblip.Fan.Device", b"EnumerateFans", b"CustomCurve"):
+    for marker in (
+        b"org.shadowblip.Fan.Device", b"org.shadowblip.Fan.Sensor", b"EnumerateSensors",
+        b"LoadProfileJson", b"CurrentProfileName", b"PercentValid", b"--record-fan-startup",
+    ):
         if marker not in executable:
             raise ValueError("PowerStation lacks the required fan API marker: " + marker.decode())
     platform = read(root, "usr/share/powerstation/platform/fan-ayaneo-3.yaml")
-    if "ayaneo_ec" not in platform or "k10temp" not in platform or "Quiet:" not in platform:
+    if "ayaneo_ec" not in platform or "k10temp" not in platform or "ayaneo-3" not in platform or "system" not in platform or "cpu" not in platform:
         raise ValueError("The AYANEO fan platform definition is incomplete")
+    quiet = read(root, "usr/powerstation/platform/fan_curves/quiet.yaml")
+    if "ayaneo-3/system" not in quiet or "software_curve" not in quiet or "ayaneo-3/system/cpu" not in quiet:
+        raise ValueError("The packaged Quiet fan profile is missing or incomplete")
+    check_powerstation_service(root)
+
+
+def check_powerstation_service(root):
     activation = read(root, "usr/share/dbus-1/system-services/org.shadowblip.PowerStation.service")
     for setting in ("Name=org.shadowblip.PowerStation", "User=root", "SystemdService=powerstation.service", "Exec=/usr/bin/powerstation"):
         if setting not in activation.splitlines():
@@ -28,6 +38,15 @@ def check_powerstation(root):
     service = read(root, "usr/lib/systemd/system/powerstation.service")
     if "ExecStopPost=/usr/bin/powerstation --restore-fans-auto" not in service or "WatchdogSec=5s" not in service:
         raise ValueError("PowerStation fan recovery and supervision are missing")
+    for setting in (
+        "ExecStartPre=/usr/bin/powerstation --record-fan-startup", "RuntimeDirectory=powerstation-fan-startup",
+        "RuntimeDirectoryMode=0700", "RuntimeDirectoryPreserve=yes",
+    ):
+        if setting not in service.splitlines():
+            raise ValueError("PowerStation first-invocation startup safeguard is missing: " + setting)
+    policy = read(root, "usr/share/dbus-1/system.d/org.shadowblip.PowerStation.conf")
+    if 'user="root"' not in policy or 'own="org.shadowblip.PowerStation"' not in policy:
+        raise ValueError("PowerStation D-Bus ownership policy is missing")
 
 
 def check_managed_lighting(root):
@@ -36,7 +55,7 @@ def check_managed_lighting(root):
         if marker not in profile:
             raise ValueError("InputPlumber managed lighting profile is incomplete")
     if "initial_config:" in profile:
-        raise ValueError("First-use lighting must remain unchanged until Apply")
+        raise ValueError("First-use lighting must remain unchanged until the user selects an effect")
     lighting = read(root, "usr/bin/inputplumber", binary=True)
     for marker in (b"org.shadowblip.Input.Source.LEDDevice", b"SetConfig", b"unconfigured"):
         if marker not in lighting:
