@@ -5,6 +5,7 @@ on:
       - "tests/ayaneo3-plugin-readiness.py"
       - "tests/test_ayaneo3_plugin_readiness.py"
       - ".github/workflows/ayaneo3-plugin-readiness.yml"
+      - "system_files/deck/shared/usr/lib/udev/rules.d/70-steam-jupiter-leds.rules"
   workflow_dispatch:
 permissions:
   contents: read

@@ -16,11 +16,14 @@ class ReadinessTests(unittest.TestCase):
         self.root = Path(self.directory.name)
         files = {
             "usr/bin/powerstation": "org.shadowblip.Fan.Device EnumerateFans CustomCurve",
+            "usr/bin/inputplumber": "org.shadowblip.Input.Source.LEDDevice SetConfig unconfigured",
+            "usr/lib/systemd/system/inputplumber.service": "StateDirectory=inputplumber\nStateDirectoryMode=0700\n",
+            "usr/share/polkit-1/actions/org.shadowblip.InputPlumber.policy": '<action id="org.shadowblip.Input.Source.LEDDevice.SetConfig"/>',
             "usr/share/powerstation/platform/fan-ayaneo-3.yaml": "ayaneo_ec k10temp Quiet:",
             "usr/share/dbus-1/system-services/org.shadowblip.PowerStation.service": "Name=org.shadowblip.PowerStation\nUser=root\nSystemdService=powerstation.service\nExec=/usr/bin/powerstation\n",
             "usr/lib/systemd/system/powerstation.service": "ExecStopPost=/usr/bin/powerstation --restore-fans-auto\nWatchdogSec=5s\n",
-            "usr/share/inputplumber/devices/50-ayaneo_3.yaml": "product_name: AYANEO 3\ngroup: gamepad\ngroup: imu\n",
-            "usr/lib/udev/rules.d/70-steam-jupiter-leds.rules": 'KERNEL=="*:rgb:*" brightness effect',
+            "usr/share/inputplumber/devices/50-ayaneo_3.yaml": "product_name: AYANEO 3\ngroup: gamepad\ngroup: imu\ngroup: led\n*:rgb:joystick_rings\npersistent_id: ayaneo-3-joystick-rings\nhardware_cycle_only: true\n",
+            "usr/lib/udev/rules.d/70-steam-jupiter-leds.rules": (Path(__file__).parents[1] / "system_files/deck/shared/usr/lib/udev/rules.d/70-steam-jupiter-leds.rules").read_text(),
             "usr/lib/modules/fixture/kernel/drivers/hid/hid-ayaneo.ko": "",
             "usr/lib/modules/fixture/kernel/drivers/platform/x86/ayaneo-ec.ko": "",
         }
@@ -42,10 +45,36 @@ class ReadinessTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "CustomCurve"):
             readiness.check_image(self.root)
 
-    def test_competing_lighting_ownership_is_rejected(self):
+    def test_automatic_first_use_change_is_rejected(self):
         with (self.root / "usr/share/inputplumber/devices/50-ayaneo_3.yaml").open("a") as stream:
-            stream.write("group: led\n")
-        with self.assertRaisesRegex(ValueError, "still owns"):
+            stream.write("initial_config: {}\n")
+        with self.assertRaisesRegex(ValueError, "First-use"):
+            readiness.check_image(self.root)
+
+    def test_missing_managed_profile_or_api_is_rejected(self):
+        self.write("usr/share/inputplumber/devices/50-ayaneo_3.yaml", "product_name: AYANEO 3\ngroup: gamepad\ngroup: imu\n")
+        with self.assertRaisesRegex(ValueError, "managed lighting profile"):
+            readiness.check_image(self.root)
+
+    def test_old_inputplumber_is_rejected(self):
+        self.write("usr/bin/inputplumber", "org.shadowblip.Input.Source.LEDDevice")
+        with self.assertRaisesRegex(ValueError, "managed lighting support"):
+            readiness.check_image(self.root)
+
+    def test_ownership_exception_cannot_follow_the_generic_rule(self):
+        path = self.root / "usr/lib/udev/rules.d/70-steam-jupiter-leds.rules"
+        rules = path.read_text().splitlines()
+        managed = next(line for line in rules if 'KERNEL=="*:rgb:joystick_rings"' in line)
+        rules.remove(managed)
+        rules.insert(-1, managed)
+        path.write_text("\n".join(rules))
+        with self.assertRaisesRegex(ValueError, "bypass"):
+            readiness.check_image(self.root)
+
+    def test_permission_exception_must_match_ayaneo_usb_identity(self):
+        path = self.root / "usr/lib/udev/rules.d/70-steam-jupiter-leds.rules"
+        path.write_text(path.read_text().replace('ATTRS{idVendor}=="1c4f", ', ""))
+        with self.assertRaisesRegex(ValueError, "ownership rule"):
             readiness.check_image(self.root)
 
     def test_placeholder_activation_service_is_rejected(self):

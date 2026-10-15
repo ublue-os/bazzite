@@ -1,26 +1,19 @@
-# AYANEO 3 plugin installation readiness
+# AYANEO 3 plugin image readiness
 
-This candidate adds an opt-in static image inspection tool and fixture CI. It does not declare an image ready for public distribution. Run the tool against an extracted official testing image filesystem:
+The public installation target is a normal Bazzite update, Decky if absent, and the plugin ZIP. No manual kernel/package/service installation is part of that flow. The coordinated dependencies are PowerStation #54, revised InputPlumber #734 and the targeted RGB permission exception in this PR. Closed #735 and the OGC naming experiment are not dependencies; Steam lighting is deferred.
 
-```sh
-python3 tests/ayaneo3-plugin-readiness.py /path/to/image/root
-```
+## Preliminary image checks
 
-The tool reads files only. It never starts services, calls device D-Bus methods or writes sysfs. Its output always records device_validation=required and public_release_qualified=false. Byte markers and file presence are a preliminary packaging check, not proof of runtime D-Bus behavior.
+Run python3 tests/ayaneo3-plugin-readiness.py IMAGE_ROOT. It reads files only and never activates services or writes hardware. It checks fan API/activation/recovery assets, the AYANEO kernel modules and input mappings, managed lighting profile/API/authorization/state-directory assets, and the AYANEO USB-matched ownership exception before the unchanged generic RGB rule. Its result always retains device_validation=required and public_release_qualified=false. Byte markers cannot establish runtime correctness.
 
-As of 2026-10-14, official stable 44.20261012.1 has kernel 7.2.9-ogc3.1, InputPlumber 0.82.0-2 and PowerStation 0.8.4-1. The kernel includes OGC #123; stable still needs the PowerStation fan subsystem/CustomCurve/activation assets and removal of InputPlumber's AYANEO LED entries.
+The managed source uses persistent identity ayaneo-3-joystick-rings and requires native firmware effects. A missing saved setting leaves lighting untouched until Apply. Native monocolor/breathe/rainbow modes supply Solid/Breathing/Rainbow; speed is fixed. InputPlumber owns writes and settings. Decky has no direct sysfs or settings-file writer. Other LEDs retain their existing writable rule and controller-output paths.
 
-## Delivery dependencies
+## Packaging and acceptance
 
-- [PowerStation #54](https://github.com/ShadowBlip/PowerStation/pull/54): AYANEO fan YAML, API 1 with CustomCurve, D-Bus activation, systemd watchdog and ExecStopPost recovery.
-- [InputPlumber #735](https://github.com/ShadowBlip/InputPlumber/pull/735): remove only AYANEO LED entries, preserving gamepad/IMU/DMI configuration.
-- [OGC #123](https://github.com/OpenGamingCollective/linux/pull/123): AYANEO HID/EC support. The generic device-generated RGB name must first be tested with Steam. An OGC-only name compatibility patch is conditional on discovery failure; it is not required by this checker.
-- Existing generic 70-steam-jupiter-leds.rules permissions should cover RGB brightness/effects. No device-specific udev ownership exception is introduced.
+Bazzite 44.20261012.1 contains kernel interfaces but ships InputPlumber 0.82.0-2 and PowerStation 0.8.4-1 without the complete candidate features. Do not claim that image is qualified. Record actual official testing/stable package versions and image digest after maintainer delivery; none is guessed in advance.
 
-After these sources have been reviewed and packaged, pin their actual RPM versions and an official testing image digest in the coordinated release record. Validate the testing image on the device, promote through normal Bazzite delivery, and repeat the clean-install check on official stable. Package release numbers and accepted image digests remain unset until those artifacts exist.
+Test the private candidate with backups, then an official testing image, and finally a clean supported stable installation without private namespaces, replacement packages or legacy fan prerequisites. Verify every native effect/transition, colours/brightness/Off, five-minute Breathing/Rainbow observations on both rings, persistence, restart, reconnect, suspend/reboot, denied/failed/uncertain requests, input/motion/rumble/module recovery, plugin upgrade/removal and rollback. Existing whole-plugin thermal and recovery gates remain required.
 
-## Attended acceptance
+Target both 8840U and HX 370. Physical acceptance uses the available 8840U; the user explicitly accepts assumed HX 370 compatibility from the shared interfaces. Documentation must distinguish that assumption from separate HX 370 physical testing.
 
-Check native fan modes, saved custom curve versus Quiet, thresholds, telemetry failure, suspend, reboot and automatic recovery; Steam lighting discovery/effects/persistence on both rings; normal input/IMU and module detach/refit/recovery; plugin upgrade/removal and rollback. A clean supported stable image must require only Decky and the plugin ZIP after its normal OS update. Separate device variants require separate thermal acceptance.
-
-There is no official image build or device acceptance in this PR. Public plugin visibility remains gated on those results.
+Keep the repository private until all applicable release gates pass. Only then publish the qualified ZIP, corresponding GPL source and checksums. Static checker success, an open/merged PR, or a private patched runtime cannot qualify stock installation.
