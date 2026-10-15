@@ -576,7 +576,7 @@ jobs:
 
             push_version() {
               podman push --digestfile=/tmp/digestfile \
-                --compression-format=zstd:chunked --compression-level=3 \
+                --compression-format=zstd --compression-level=3 \
                 "${RECHUNK_REF#containers-storage:}" "docker://${OUTPUT_IMAGE}:${VERSION}"
             }
             push_version
