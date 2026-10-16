@@ -58,3 +58,90 @@ rm -rf \
     /etc/gshadow- \
     /etc/subuid- \
     /etc/subgid- \
+
+# See: https://github.com/coreos/chunkah#customizing-the-layers
+RPM_OSTREE_TMPFILES=/usr/lib/rpm-ostree/tmpfiles.d
+setfattr -n user.component -v "rpm-ostree-tmpfiles.d" "${RPM_OSTREE_TMPFILES}"
+setfattr -n user.update-interval -v "quarterly" "${RPM_OSTREE_TMPFILES}"
+
+UBLUE_OS_FILES=/usr/share/ublue-os
+setfattr -n user.component -v "ublue-os" "${UBLUE_OS_FILES}"
+setfattr -n user.update-interval -v "quarterly" "${UBLUE_OS_FILES}"
+setfattr -n user.component -v "ublue-os" "/usr/bin/ujust-picker"
+setfattr -n user.update-interval -v "quarterly" "/usr/bin/ujust-picker"
+setfattr -n user.component -v "ublue-os" "/etc/distrobox/docker.ini"
+setfattr -n user.update-interval -v "quarterly" "/etc/distrobox/docker.ini"
+setfattr -n user.component -v "ublue-os" "/etc/distrobox/incus.ini"
+setfattr -n user.update-interval -v "quarterly" "/etc/distrobox/incus.ini"
+setfattr -n user.component -v "ublue-os" "/usr/share/bash-prexec"
+setfattr -n user.update-interval -v "quarterly" "/usr/share/bash-prexec"
+
+BAZZITE_CONFIG=(/usr/libexec/bazzite-* /usr/libexec/hwsupport /usr/share/bazzite-cli)
+setfattr -n user.component -v "bazzite-init" "${BAZZITE_CONFIG[@]}"
+setfattr -n user.update-interval -v "monthly" "${BAZZITE_CONFIG[@]}"
+
+for WALLPAPERS in /usr/share/wallpapers /usr/share/backgrounds /usr/share/gnome-background-properties; do
+    if [[ -d "${WALLPAPERS}" ]]; then
+        setfattr -n user.component -v "bazzite-wallpapers" "${WALLPAPERS}"
+        setfattr -n user.update-interval -v "quarterly" "${WALLPAPERS}"
+    fi
+done
+
+BAZZITE_ASSETS=(
+    /etc/favicon.png
+    /usr/share/pixmaps/faces
+    /usr/share/pixmaps/bootloader
+    /usr/share/pixmaps/fedora*
+    /usr/share/pixmaps/system-logo-white.png
+    /usr/share/plasma/avatars
+    /usr/share/plymouth/themes/spinner/watermark.png
+    /usr/share/ublue-os/bazaar
+)
+setfattr -n user.component -v "bazzite-assets" "${BAZZITE_ASSETS[@]}"
+setfattr -n user.update-interval -v "quarterly" "${BAZZITE_ASSETS[@]}"
+find /usr/share/icons/hicolor -type f \
+    \( -name 'bazzite-logo*' -o -name 'distributor-logo*' -o -name 'framework.svg' \) \
+    -exec setfattr -n user.component -v "bazzite-assets" {} + \
+    -exec setfattr -n user.update-interval -v "yearly" {} +
+
+FRAMEWORK_ICC=(/usr/share/color/icc/colord/framework{13,16}.icc)
+setfattr -n user.component -v "bazzite-color-profiles" "${FRAMEWORK_ICC[@]}"
+setfattr -n user.update-interval -v "yearly" "${FRAMEWORK_ICC[@]}"
+for HANDHELD_ICC in /usr/share/color/icc/colord/{Legion_GO_BT1886,Steam_Deck,Steam_Deck_Matte}.icc; do
+    if [[ -f "${HANDHELD_ICC}" ]]; then
+        setfattr -n user.component -v "bazzite-color-profiles" "${HANDHELD_ICC}"
+        setfattr -n user.update-interval -v "yearly" "${HANDHELD_ICC}"
+    fi
+done
+
+FONTCONFIG_CACHE=/usr/lib/fontconfig/cache
+setfattr -n user.component -v "fontconfig-cache" "${FONTCONFIG_CACHE}"
+setfattr -n user.update-interval -v "daily" "${FONTCONFIG_CACHE}"
+
+JUPITER_DOCK_UPDATER_FILES=/usr/libexec/jupiter-dock-updater
+if [[ -d "${JUPITER_DOCK_UPDATER_FILES}" ]]; then
+    setfattr -n user.component -v "jupiter-dock-updater" "${JUPITER_DOCK_UPDATER_FILES}"
+    setfattr -n user.update-interval -v "quarterly" "${JUPITER_DOCK_UPDATER_FILES}"
+fi
+
+DOCS_FILES=/usr/share/ublue-os/docs
+setfattr -n user.component -v "ublue-docs" "${DOCS_FILES}"
+setfattr -n user.update-interval -v "quarterly" "${DOCS_FILES}"
+
+setfattr -n user.component -v "extest" "/usr/lib/extest/libextest.so"
+setfattr -n user.component -v "extest" "/usr/lib64/extest/libextest.so"
+setfattr -n user.update-interval -v "quarterly" "/usr/lib/extest/libextest.so"
+setfattr -n user.update-interval -v "quarterly" "/usr/lib64/extest/libextest.so"
+
+setfattr -n user.component -v "winetricks" "/usr/bin/winetricks"
+setfattr -n user.update-interval -v "yearly" "/usr/bin/winetricks"
+
+STEAM_BOOTSTRAP=/usr/share/gamescope-session-plus/bootstrap_steam.tar.gz
+if [[ -f "${STEAM_BOOTSTRAP}" ]]; then
+    setfattr -n user.component -v "steam-bootstrap" "${STEAM_BOOTSTRAP}"
+    setfattr -n user.update-interval -v "yearly" "${STEAM_BOOTSTRAP}"
+fi
+
+# Normalize filesystem timestamps without affecting chunkah's layer plan.
+# See: https://github.com/coreos/chunkah/issues/160
+find /usr /etc /opt -exec touch -h -a -m -d '1970-01-01T00:00:00Z' {} +
