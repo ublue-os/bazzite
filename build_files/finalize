@@ -66,7 +66,7 @@ rm -rf \
     /etc/shadow- \
     /etc/gshadow- \
     /etc/subuid- \
-    /etc/subgid- \
+    /etc/subgid-
 
 # See: https://github.com/coreos/chunkah#customizing-the-layers
 RPM_OSTREE_TMPFILES=/usr/lib/rpm-ostree/tmpfiles.d

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Install Valve's patched Mesa, Bluez, and Xwayland
+# Install Valve's patched Mesa and Xwayland
 # Removes conflicting packages, swaps in patched versions, locks them, and
 # installs additional multimedia dependencies.
 #
@@ -16,44 +16,30 @@ echo "==> Removing conflicting packages..."
 dnf5 -y remove pipewire-config-raop mesa-va-drivers
 
 # -- Swap in Valve's patched packages --
-# bluez and Xwayland from the bazzite-multilib COPR,
-# mesa-filesystem from terra-mesa.
+# Xwayland and wireplumber from Terra extras; mesa-filesystem from terra-mesa.
 echo "==> Swapping in Valve's patched packages..."
-declare -A TOSWAP=(
-    ["copr:copr.fedorainfracloud.org:ublue-os:bazzite-multilib"]="bluez xorg-x11-server-Xwayland"
-    ["terra-mesa"]="mesa-filesystem"
-)
+dnf5 -y swap --from-repo=terra-mesa mesa-filesystem mesa-filesystem
+
+echo "    Swapping Xwayland → terra-xorg-x11-server-Xwayland..."
+dnf5 -y swap --allowerasing \
+    --repo terra-extras \
+    xorg-x11-server-Xwayland terra-xorg-x11-server-Xwayland
 
 # Swap wireplumber for terra's patched version
 echo "    Swapping wireplumber → terra-wireplumber..."
 dnf5 -y swap --allowerasing --repo terra-extras wireplumber terra-wireplumber
 
-# Swap each package from its designated repo into the patched version
-for repo in "${!TOSWAP[@]}"; do
-    for package in ${TOSWAP[$repo]}; do
-        echo "    Swapping '$package' from '$repo'..."
-        dnf5 -y swap --from-repo="$repo" "$package" "$package"
-    done
-done
-
 # -- Version-lock patched packages --
-# Prevent dnf from overwriting Valve's patched Mesa, Bluez, and Xwayland.
+# Prevent dnf from overwriting Valve's patched Mesa and Xwayland.
 echo "==> Locking package versions..."
 dnf5 versionlock add \
-    bluez \
-    bluez-cups \
-    bluez-libs \
-    bluez-obexd \
-    xorg-x11-server-Xwayland \
+    terra-xorg-x11-server-Xwayland \
     mesa-dri-drivers \
     mesa-filesystem \
     mesa-libEGL \
     mesa-libGL \
     mesa-libgbm \
-    mesa-vulkan-drivers \
-    NetworkManager \
-    NetworkManager-wifi \
-    NetworkManager-libnm
+    mesa-vulkan-drivers
 
 # -- Install Mesa OpenCL & 32-bit EGL --
 # intel-opencl and clinfo for OpenCL support; mesa-libEGL.i686 for 32-bit compat.

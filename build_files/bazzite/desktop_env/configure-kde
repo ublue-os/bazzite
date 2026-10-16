@@ -2,7 +2,7 @@
 #
 # Apply KDE-specific modifications for Bazzite.
 #
-# Configure KDE desktop environment: Installs/removes/swaps packages 
+# Configure KDE desktop environment: Installs/removes/swaps packages
 # and configures default layout/wallpaper.
 #
 set -euo pipefail
@@ -38,13 +38,12 @@ dnf5 -y remove \
     kde-partitionmanager \
     plasma-discover{,-libs}
 
-# -- Swap conflicting packages --
-# Replace kio-extras with the Bazzite version from the multilib COPR.
-echo "==> Swapping kio-extras for Bazzite version..."
-
+# -- Swap kio-extras --
+# Swaps Fedora's kio-extras with our version.
+echo "==> Swap kio-extras..."
 dnf5 -y swap \
     --repo copr:copr.fedorainfracloud.org:ublue-os:bazzite-multilib \
-    kio-extras kio-extras
+        kio-extras kio-extras
 
 # -- Configure layout and wallpaper --
 # Apply Bazzite pin configuration, set default wallpapers, and clean up legacy files.

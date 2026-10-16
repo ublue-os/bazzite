@@ -112,7 +112,8 @@ dnf5 -y install \
     gmodpatchtool \
     bazzite-portal \
     kernel-tools \
-    ls-iommu
+    ls-iommu \
+    xdg-native-messaging-proxy
 
 # -- Replace switcheroo-control with cardwire --
 # Swap in cardwire (and its GUI) from the Terra repository.
@@ -146,19 +147,22 @@ systemctl mask iscsi
 systemctl mask systemd-remount-fs.service
 systemctl mask fedora-atomic-desktop-appstream-cache-refresh
 
-# -- Install extest library --
-# Download the latest extest shared library and tag it as a Bazzite component.
-echo "==> Installing extest library..."
-mkdir -p /usr/lib/extest
+# -- Install extest libraries for both architectures --
+echo "==> Installing extest libraries..."
+mkdir -p /usr/lib/extest /usr/lib64/extest
 
-EXTEST_URL=$(/ctx/ghcurl \
-    https://api.github.com/repos/ublue-os/extest/releases/latest \
-    | jq -r '.assets[] | select(.name| test(".*so$")).browser_download_url')
-
-/ctx/ghcurl "${EXTEST_URL}" -Lo /usr/lib/extest/libextest.so
-setfattr \
-    -n user.component \
-    -v "extest" /usr/lib/extest/libextest.so
+EXTEST_RELEASE=$(/ctx/ghcurl https://api.github.com/repos/ublue-os/extest/releases/latest)
+for asset in libextest.so libextest64.so; do
+    url=$(jq -r --arg name "${asset}" \
+        '.assets[] | select(.name == $name).browser_download_url' <<< "${EXTEST_RELEASE}")
+    if [[ "${asset}" == "libextest64.so" ]]; then
+        destination=/usr/lib64/extest/libextest.so
+    else
+        destination=/usr/lib/extest/libextest.so
+    fi
+    /ctx/ghcurl "${url}" -Lo "${destination}"
+done
+unset -v EXTEST_RELEASE asset url destination
 
 # -- Install Sunshine postinst script --
 # Download and make executable the Sunshine post-installation script.

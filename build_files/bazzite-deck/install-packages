@@ -14,7 +14,7 @@ trap 'echo "::endgroup::"' EXIT
 # -- Install core packages from Terra repo --
 # Install hardware support, input tools, language packs, and utilities.
 echo "==> Installing core packages from Terra repo..."
-dnf5 -y install --enable-repo=terra \
+dnf5 -y install --enable-repo=terra --enable-repo=terra-extras \
     jupiter-fan-control \
     jupiter-hw-support-btrfs \
     galileo-mura \
@@ -53,6 +53,7 @@ fi
 # Set executable permissions and update bootstrap paths and client command.
 echo "==> Configuring gamescope-session-plus..."
 chmod +x /usr/share/gamescope-session-plus/gamescope-session-plus
+sed -i 's/LOG_LEVEL=info/LOG_LEVEL=debug/g' /usr/lib/systemd/system/inputplumber.service
 
 sed -i \
     -e 's|^export GAMESCOPE_SESSION_STEAM_BOOTSTRAP_ARCHIVE=.*$|export GAMESCOPE_SESSION_STEAM_BOOTSTRAP_ARCHIVE="/usr/share/gamescope-session-plus/bootstrap_steam.tar.gz"|' \

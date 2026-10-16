@@ -59,7 +59,7 @@ echo "==> Configuring repository priorities and exclusions..."
 
 dnf5 -y config-manager \
     setopt "*terra*".priority=1 \
-           "*terra*".exclude="nerd-fonts scx-tools scx-scheds python3-protobuf zlib-devel uupd"
+           "*terra*".exclude="nerd-fonts scx-tools scx-scheds"
 
 dnf5 -y config-manager setopt "terra-mesa".enabled=false
 

@@ -95,7 +95,7 @@ sed -i \
     /usr/lib/systemd/user/gamemode-news-hook.service
 
 sed -i \
-    '/^\[Service\]$/a KillSignal=SIGKILL\nTimeoutStopSec=2s\nTimeoutStopFailureMode=kill' \
+    '/^\[Service\]$/a KillSignal=SIGKILL\nSuccessExitStatus=SIGKILL\nTimeoutStopSec=2s\nTimeoutStopFailureMode=kill' \
     /usr/lib/systemd/user/gamemode-news-hook.service
 
 systemctl enable --global steamos-manager.service

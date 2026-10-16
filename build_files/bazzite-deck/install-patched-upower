@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 #
-# Install the Steam Deck-patched UPower and lock its version.
+# Install Terra's Steam Deck-patched UPower and lock its version.
 #
-# Replaces the default upower with the Bazzite-modified version and
-# versionlocks both upower and upower-libs to prevent unintended updates.
+# Replaces the default upower with Terra's patched version and
+# versionlocks both terra-upower and terra-upower-libs.
 #
 set -euo pipefail
 
@@ -11,15 +11,15 @@ echo "::group::Install patched UPower"
 trap 'echo "::endgroup::"' EXIT
 
 # -- Swap to Steam Deck-patched UPower --
-# Replace the default upower with the Bazzite-modified version from the COPR repo.
+# Replace the default upower with the patched version from Terra extras.
 echo "==> Installing Steam Deck-patched UPower..."
-dnf5 -y swap \
-    --repo copr:copr.fedorainfracloud.org:ublue-os:bazzite \
-    upower upower
+dnf5 -y swap --allowerasing \
+    --repo terra-extras \
+    upower terra-upower
 
 # -- Versionlock UPower packages --
-# Prevent package manager from updating upower and upower-libs beyond the patched version.
+# Lock the patched UPower packages.
 echo "==> Versionlocking UPower packages..."
 dnf5 versionlock add \
-    upower \
-    upower-libs
+    terra-upower \
+    terra-upower-libs
