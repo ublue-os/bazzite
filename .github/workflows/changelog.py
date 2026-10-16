@@ -2,26 +2,24 @@ from itertools import product
 import subprocess
 import json
 import os
+import sys
 import tempfile
 import time
+from pathlib import Path
 from typing import Any
 import re
 from collections import defaultdict
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+# build.py (repo root) is the single source of truth for the published
+# image list -- also used by build.yml, build_iso.yml, and clean.yml. This
+# used to be its own hand-maintained copy here, which could (and did) drift
+# from the real list.
+from build import IMAGES as _BUILD_IMAGES
+
 REGISTRY = "ghcr.io/ublue-os/"
 
-IMAGES = [
-    "bazzite",
-    "bazzite-gnome",
-    "bazzite-deck",
-    "bazzite-deck-gnome",
-    "bazzite-deck-nvidia",
-    "bazzite-deck-nvidia-gnome",
-    "bazzite-nvidia",
-    "bazzite-gnome-nvidia",
-    "bazzite-nvidia-open",
-    "bazzite-gnome-nvidia-open",
-]
+IMAGES = sorted(_BUILD_IMAGES)
 
 RETRIES = 3
 RETRY_WAIT = 5
