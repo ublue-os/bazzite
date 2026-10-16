@@ -1,0 +1,11 @@
+[Unit]
+Description=Reset GPU DPM after resume from sleep
+After=suspend.target hibernate.target hybrid-sleep.target suspend-then-hibernate.target
+
+[Service]
+Type=oneshot
+ExecCondition=/usr/libexec/hwsupport/non-valve-handheld-hardware
+ExecStart=-/usr/libexec/bazzite-gpu-dpm-resume-reset
+
+[Install]
+WantedBy=suspend.target hibernate.target hybrid-sleep.target suspend-then-hibernate.target
