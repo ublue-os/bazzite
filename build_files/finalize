@@ -101,7 +101,7 @@ setfattr -n user.component -v "bazzite-assets" "${BAZZITE_ASSETS[@]}"
 setfattr -n user.update-interval -v "quarterly" "${BAZZITE_ASSETS[@]}"
 find /usr/share/icons/hicolor -type f \
     \( -name 'bazzite-logo*' -o -name 'distributor-logo*' -o -name 'framework.svg' \) \
-    -exec setfattr -n user.component -v "bazzite-assets" {} + \
+    -exec setfattr -n user.component -v "bazzite-icons" {} + \
     -exec setfattr -n user.update-interval -v "yearly" {} +
 
 FRAMEWORK_ICC=(/usr/share/color/icc/colord/framework{13,16}.icc)
