@@ -71,7 +71,7 @@ dnf5 -y remove gamemode
 # Download and install the pinned version of Winetricks.
 echo "==> Installing Winetricks..."
 /ctx/ghcurl \
-    "https://raw.githubusercontent.com/Winetricks/winetricks/5a59ea07513b24093bd90fad943ecf9543cf05bc/src/winetricks" \
+    "https://raw.githubusercontent.com/Winetricks/winetricks/b76e1ee79ac57d7aceb384f74518fc423265810c/src/winetricks" \
     -Lo /usr/bin/winetricks
 
 chmod +x /usr/bin/winetricks

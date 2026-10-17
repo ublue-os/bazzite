@@ -34,16 +34,11 @@ dnf5 -y remove \
     plasma-drkonqi \
     plasma-welcome{,-fedora} \
     plasma-discover-kns \
+    plasma-setup \
     kcharselect \
     kde-partitionmanager \
-    plasma-discover{,-libs}
-
-# -- Swap kio-extras --
-# Swaps Fedora's kio-extras with our version.
-echo "==> Swap kio-extras..."
-dnf5 -y swap \
-    --repo copr:copr.fedorainfracloud.org:ublue-os:bazzite-multilib \
-        kio-extras kio-extras
+    plasma-discover{,-libs} \
+    xwaylandvideobridge
 
 # -- Configure layout and wallpaper --
 # Apply Bazzite pin configuration, set default wallpapers, and clean up legacy files.

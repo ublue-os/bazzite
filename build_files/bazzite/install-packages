@@ -106,12 +106,16 @@ dnf5 -y install \
     lsb_release \
     uupd \
     ds-inhibit \
+    rocm-opencl \
+    rocm-clinfo \
+    rocm-smi \
     waydroid \
     cage \
     wlr-randr \
     bazzite-portal \
     kernel-tools \
     ls-iommu \
+    sbsigntools \
     xdg-native-messaging-proxy
 
 # -- Replace switcheroo-control with cardwire --
@@ -126,17 +130,13 @@ dnf5 -y install \
     cardwire-gui
 
 # -- Replace ddcutil packages with Terra variants --
-# Swap in terra-ddcutil and terra-libddcutil from the Terra extras repository.
+# Install terra-ddcutil and terra-libddcutil from the Terra extras repository.
 echo "==> Installing Terra ddcutil packages..."
-dnf5 -y swap \
+dnf5 -y install \
     --allowerasing \
     --repo terra-extras \
-    ddcutil terra-ddcutil
-
-dnf5 -y swap \
-    --allowerasing \
-    --repo terra-extras \
-    libddcutil terra-libddcutil
+    terra-ddcutil \
+    terra-libddcutil
 
 # -- Disable unnecessary services --
 # Mask services that are not needed on the Bazzite image.

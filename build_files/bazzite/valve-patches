@@ -29,11 +29,21 @@ dnf5 -y swap --allowerasing \
 echo "    Swapping wireplumber → terra-wireplumber..."
 dnf5 -y swap --allowerasing --repo terra-extras wireplumber terra-wireplumber
 
+echo "==> Installing Terra BlueZ packages..."
+dnf5 -y install \
+    --allowerasing \
+    --repo terra-extras \
+    terra-bluez \
+    terra-bluez-libs \
+    terra-bluez-obexd \
+    terra-bluez-cups
+
 # -- Version-lock patched packages --
 # Prevent dnf from overwriting Valve's patched Mesa and Xwayland.
 echo "==> Locking package versions..."
 dnf5 versionlock add \
     terra-xorg-x11-server-Xwayland \
+    terra-bluez \
     mesa-dri-drivers \
     mesa-filesystem \
     mesa-libEGL \

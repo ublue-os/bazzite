@@ -15,10 +15,14 @@ trap 'echo "::endgroup::"' EXIT
 echo "==> Disabling skip_if_unavailable..."
 dnf5 config-manager unsetopt skip_if_unavailable
 
-# -- Remove conflicting firmware --
+# -- Remove conflicting firmware and ROCm packages --
 # nvidia-gpu-firmware conflicts with NVIDIA proprietary drivers.
 echo "==> Removing conflicting firmware..."
-dnf5 -y remove nvidia-gpu-firmware
+dnf5 -y remove \
+    nvidia-gpu-firmware \
+    rocm-opencl \
+    rocm-clinfo \
+    rocm-smi
 
 # -- Replace cardwire with switcheroo-control (nvidia-lts only) --
 # On nvidia-lts, cardwire doesn't work well; swap it for switcheroo-control

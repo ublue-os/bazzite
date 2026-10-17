@@ -48,8 +48,7 @@ desktop-file-edit --set-key=Hidden --set-value=true \
     /usr/share/applications/btop.desktop
 desktop-file-edit --set-key=Hidden --set-value=true \
     /usr/share/applications/yad-icon-browser.desktop
-desktop-file-edit --set-key=Hidden --set-value=true \
-    /usr/share/applications/com.microsoft.edit.desktop
+rm /usr/share/applications/com.microsoft.edit.desktop
 
 # -- Configure Bluetooth input --
 echo "==> Configuring Bluetooth input..."
@@ -92,6 +91,7 @@ import "/usr/share/ublue-os/just/92-bazzite-verify.just"
 import "/usr/share/ublue-os/just/93-bazzite-update.just"
 import "/usr/share/ublue-os/just/94-bazzite-protonplus.just"
 import "/usr/share/ublue-os/just/95-bazzite-deck-session.just"
+import "/usr/share/ublue-os/just/96-bazzite-anticheat.just"
 EOF
 
 # -- Handle Silverblue dconf overrides --
@@ -224,6 +224,7 @@ systemctl --global enable ntfs-nag.service
 systemctl enable dmemcg-booster-system.service
 systemctl --global enable dmemcg-booster-user.service
 systemctl enable cardwired.service
+systemctl enable bluetooth.service
 
 # -- Download DXVK example config --
 echo "==> Downloading DXVK example config..."
