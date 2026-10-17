@@ -34,7 +34,9 @@ if [[ "${NVIDIA_FLAVOR}" = "nvidia-lts" ]]; then
     dnf5 -y swap cardwire switcheroo-control
 
     echo "    Installing supergfxctl from terra repo..."
-    dnf5 -y install --enable-repo=terra supergfxctl
+    dnf5 -y copr enable ublue-os/staging
+    dnf5 -y install supergfxctl
+    dnf5 -y copr disable ublue-os/staging
 fi
 
 # -- Remove nvidia-deck configuration on non-deck images --
