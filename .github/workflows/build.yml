@@ -408,6 +408,14 @@ jobs:
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
 
+      - name: Disk usage summary
+        if: always()
+        run: |
+          echo "### Disk usage" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          df -h >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
   generate_release:
     name: Generate Release
     needs: [push-ghcr]
