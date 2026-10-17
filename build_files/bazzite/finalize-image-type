@@ -140,6 +140,15 @@ for repo in \
         "/etc/yum.repos.d/${repo}.repo"
 done
 
+for repo in \
+    fedora-cisco-openh264 \
+    terra \
+    terra-extras; do
+    sed -i \
+        's@enabled=1@enabled=0@g' \
+        "/usr/share/dnf5/repos.d/${repo}.repo"
+done
+
 # -- Disable Copr repositories --
 echo "==> Disabling Copr repositories..."
 for copr in \
