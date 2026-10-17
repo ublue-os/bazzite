@@ -134,7 +134,7 @@ sed -i \
 # -- Disable repositories --
 echo "==> Disabling repositories..."
 dnf5 config-manager disable \
-    tailscale \
+    tailscale-stable \
     copr:copr.fedorainfracloud.org:ublue-os:akmods \
     'fedora-multimedia*' \
     fedora-cisco-openh264 \
