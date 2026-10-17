@@ -139,7 +139,9 @@ dnf5 config-manager disable \
     'fedora-multimedia*' \
     fedora-cisco-openh264 \
     terra \
-    terra-extras
+    terra-extras \
+    terra-mesa \
+    terra-source
 
 # -- Disable Copr repositories --
 echo "==> Disabling Copr repositories..."
