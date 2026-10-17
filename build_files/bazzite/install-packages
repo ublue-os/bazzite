@@ -109,7 +109,6 @@ dnf5 -y install \
     waydroid \
     cage \
     wlr-randr \
-    gmodpatchtool \
     bazzite-portal \
     kernel-tools \
     ls-iommu \
