@@ -5,7 +5,7 @@
 # Configures desktop autostart, Waydroid integration, steamos-manager,
 # systemd services, and COPR repos before running final image steps.
 #
-set -euo pipefail
+set -xeuo pipefail
 
 echo "::group::Finalize bazzite-deck image"
 trap 'echo "::endgroup::"' EXIT

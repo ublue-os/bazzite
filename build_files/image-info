@@ -2,7 +2,7 @@
 #
 # Generate image metadata and update os-release for the Bazzite image.
 #
-set -euo pipefail
+set -xeuo pipefail
 
 echo "::group::Set image metadata"
 trap 'echo "::endgroup::"' EXIT

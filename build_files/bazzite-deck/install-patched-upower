@@ -5,7 +5,7 @@
 # Replaces the default upower with Terra's patched version and
 # versionlocks both terra-upower and terra-upower-libs.
 #
-set -euo pipefail
+set -xeuo pipefail
 
 echo "::group::Install patched UPower"
 trap 'echo "::endgroup::"' EXIT

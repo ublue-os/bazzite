@@ -6,7 +6,7 @@
 # NVIDIA installer, removes Nouveau Vulkan ICDs, and sets up Waydroid
 # with NVIDIA support.
 #
-set -euo pipefail
+set -xeuo pipefail
 
 echo "::group::Install Nvidia drivers"
 trap 'echo "::endgroup::"' EXIT

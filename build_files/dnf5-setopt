@@ -4,7 +4,7 @@
 #
 # Usage: dnf5-setopt <setopt|unsetopt> <repo_name|repo_id> <option>=<value>...
 #
-set -euo pipefail
+set -xeuo pipefail
 
 die() {
     local frame=0

@@ -3,7 +3,7 @@
 # Finalize the system image: clean caches, relocate accounts, and remove
 # stale lock files to produce a minimal, portable root filesystem.
 #
-set -euo pipefail
+set -xeuo pipefail
 
 echo "::group::Finalize image"
 trap 'echo "::endgroup::"' EXIT

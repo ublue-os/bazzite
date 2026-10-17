@@ -4,6 +4,6 @@
 #
 # Usage: dnf5-search [REPO_NAME_OR_ID...]
 #
-set -euo pipefail
+set -xeuo pipefail
 
 dnf5 repo info --all --json "$@" | jq -r '.[].id'

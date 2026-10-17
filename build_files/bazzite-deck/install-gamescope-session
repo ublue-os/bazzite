@@ -5,7 +5,7 @@
 # Downloads the Steam bootstrap archive used by gamescope-session-plus
 # and sets component metadata attributes for tracking.
 #
-set -euo pipefail
+set -xeuo pipefail
 
 echo "::group::Install gamescope session"
 trap 'echo "::endgroup::"' EXIT

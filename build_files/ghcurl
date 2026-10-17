@@ -4,7 +4,7 @@
 #
 # Reads GITHUB_TOKEN from a Podman secret mount for authentication.
 #
-set -euo pipefail
+set -xeuo pipefail
 
 # Check for GITHUB_TOKEN in the Podman secret mount and set the auth header.
 if [[ -s "/run/secrets/GITHUB_TOKEN" ]]; then

@@ -2,7 +2,7 @@
 #
 # Clean up temporary, log, and boot files to free disk space.
 #
-set -euo pipefail
+set -xeuo pipefail
 
 # -- Remove temporary files --
 # Clear all contents of /tmp to reclaim space used by temporary data.

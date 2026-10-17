@@ -4,7 +4,7 @@
 #
 # Supports kernel flavors (e.g. "surface") and integrates with ostree/fido2.
 #
-set -euo pipefail
+set -xeuo pipefail
 
 echo "::group::Build initramfs"
 trap 'echo "::endgroup::"' EXIT
