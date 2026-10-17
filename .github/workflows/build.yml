@@ -106,15 +106,6 @@ jobs:
       - name: Show disk space
         run: sudo df -h
 
-      - name: Check if /mnt is there
-        id: check_mnt
-        run: |
-          if sudo mountpoint /mnt; then
-            echo "mnt_is_there=1" >>$GITHUB_OUTPUT
-          else
-            echo "mnt_is_there=0" >>$GITHUB_OUTPUT
-          fi
-
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@ceedf095f4ec1a097402bc6bd80831f2e1a6fde6 # v2.0.0
 
