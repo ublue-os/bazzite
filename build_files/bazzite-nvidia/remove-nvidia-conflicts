@@ -33,7 +33,7 @@ if [[ "${NVIDIA_FLAVOR}" = "nvidia-lts" ]]; then
     echo "    Swapping cardwire for switcheroo-control..."
     dnf5 -y swap cardwire switcheroo-control
 
-    echo "    Installing supergfxctl from terra repo..."
+    echo "    Installing supergfxctl from ublue repo..."
     dnf5 -y copr enable ublue-os/staging
     dnf5 -y install supergfxctl
     dnf5 -y copr disable ublue-os/staging
