@@ -131,25 +131,15 @@ sed -i \
     's/stage/none/g' \
     /etc/rpm-ostreed.conf
 
-# -- Disable repository files --
-echo "==> Disabling repository files..."
-for repo in \
+# -- Disable repositories --
+echo "==> Disabling repositories..."
+dnf5 config-manager disable \
     tailscale \
-    _copr_ublue-os-akmods \
-    negativo17-fedora-multimedia; do
-    sed -i \
-        's@enabled=1@enabled=0@g' \
-        "/etc/yum.repos.d/${repo}.repo"
-done
-
-for repo in \
+    copr:copr.fedorainfracloud.org:ublue-os:akmods \
+    'fedora-multimedia*' \
     fedora-cisco-openh264 \
     terra \
-    terra-extras; do
-    sed -i \
-        's@enabled=1@enabled=0@g' \
-        "/usr/share/dnf5/repos.d/${repo}.repo"
-done
+    terra-extras
 
 # -- Disable Copr repositories --
 echo "==> Disabling Copr repositories..."
@@ -162,8 +152,6 @@ for copr in \
     che/nerd-fonts; do
     dnf5 -y copr disable "${copr}"
 done
-
-eval "$(/ctx/dnf5-setopt setopt '*negativo17*' enabled=0)"
 
 # -- Patch setroubleshoot path --
 echo "==> Patching setroubleshoot path..."

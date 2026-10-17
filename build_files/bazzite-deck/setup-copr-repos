@@ -11,11 +11,9 @@ echo "::group::Setup Copr repos (Deck)"
 trap 'echo "::endgroup::"' EXIT
 
 # -- Enable akmods COPR repo --
-# The akmods repo is disabled by default; flip enabled=0 → enabled=1.
+# The akmods repo is disabled by default.
 echo "==> Enabling akmods COPR repo..."
-sed -i \
-    's@enabled=0@enabled=1@g' \
-    /etc/yum.repos.d/_copr_ublue-os-akmods.repo
+dnf5 config-manager enable copr:copr.fedorainfracloud.org:ublue-os:akmods
 
 # -- Enable Ublue and Bazzite COPR repos --
 # Install the core set of COPR repositories required for Bazzite.

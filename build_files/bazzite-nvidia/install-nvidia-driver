@@ -15,7 +15,7 @@ trap 'echo "::endgroup::"' EXIT
 # terra-mesa provides NVIDIA-compatible Mesa drivers; staging has additional
 # packages needed for the installation.
 echo "==> Enabling terra-mesa and ublue-os/staging..."
-dnf5 config-manager setopt "terra-mesa".enabled=1
+dnf5 config-manager enable terra-mesa
 dnf5 -y copr enable ublue-os/staging
 
 # -- Install EGL and Wayland packages --
@@ -49,7 +49,7 @@ ln -s libnvidia-ml.so.1 /usr/lib64/libnvidia-ml.so
 # -- Disable terra-mesa and ublue-os/staging --
 # Re-enable skip_if_unavailable and disable repos used only for this install.
 echo "==> Disabling terra-mesa and ublue-os/staging..."
-dnf5 config-manager setopt "terra-mesa".enabled=0
+dnf5 config-manager disable terra-mesa
 dnf5 -y copr disable ublue-os/staging
 
 # -- Swap Waydroid for NVIDIA variant --

@@ -51,9 +51,7 @@ dnf5 -y config-manager \
 
 # -- Enable negativo17 multimedia repository --
 echo "==> Enabling negativo17 multimedia repository..."
-sed -i \
-    's@enabled=0@enabled=1@g' \
-    /etc/yum.repos.d/negativo17-fedora-multimedia.repo
+dnf5 config-manager enable 'fedora-multimedia*'
 
 # -- Configure repository priorities and exclusions --
 # Set priority and exclusion rules for each repository.
@@ -63,7 +61,7 @@ dnf5 -y config-manager \
     setopt "*terra*".priority=1 \
            "*terra*.exclude=nerd-fonts scx-tools scx-scheds"
 
-dnf5 -y config-manager setopt "terra-mesa".enabled=false
+dnf5 -y config-manager disable terra-mesa
 
 dnf5 -y config-manager setopt "*bazzite*".priority=2
 
