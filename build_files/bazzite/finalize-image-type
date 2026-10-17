@@ -59,6 +59,8 @@ sed -i \
 # -- Patch grub2-mkconfig --
 # Fix grub_probe path for chroot compatibility.
 echo "==> Patching grub2-mkconfig..."
+# Match literal backticks in the GRUB script.
+# shellcheck disable=SC2016
 sed -i \
     's|grub_probe\} --target=device /`|grub_probe} --target=device /sysroot`|g' \
     /usr/bin/grub2-mkconfig

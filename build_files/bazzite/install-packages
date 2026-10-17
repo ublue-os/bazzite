@@ -183,6 +183,8 @@ sed -i~ -E \
     's/=.\$\(command -v (nft|ip6?tables-legacy).*/=/g' \
     /usr/lib/waydroid/data/scripts/waydroid-net.sh
 
+# Match the literal runtime variable in the launcher.
+# shellcheck disable=SC2016
 sed -i \
     's/ --xdg-runtime=\\"${XDG_RUNTIME_DIR}\\"//g' \
     /usr/bin/btrfs-assistant-launcher

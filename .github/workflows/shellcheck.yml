@@ -1,0 +1,22 @@
+name: ShellCheck
+
+on: [workflow_call]
+
+permissions:
+  contents: read
+
+jobs:
+  shellcheck:
+    name: Check build scripts
+    runs-on: ubuntu-slim
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Install ShellCheck
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends shellcheck
+
+      - name: Run ShellCheck
+        run: find build_files -type f ! -name '*.cer' -print -exec shellcheck {} +

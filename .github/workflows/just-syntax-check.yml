@@ -1,8 +1,9 @@
 name: Just Syntax Check
 
-on: [pull_request]
+on: [workflow_call]
 
-permissions: {}
+permissions:
+  contents: read
 
 jobs:
   just-syntax-check:

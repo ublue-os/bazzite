@@ -44,6 +44,8 @@ dnf5 -y remove \
 # Apply Bazzite pin configuration, set default wallpapers, and clean up legacy files.
 echo "==> Configuring layout and wallpaper..."
 
+# $r is a sed command, not a shell variable.
+# shellcheck disable=SC2016
 sed -i \
     '$r /usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates/bazzite-pins.js' \
     /usr/share/plasma/layout-templates/org.kde.plasma.desktop.defaultPanel/contents/layout.js

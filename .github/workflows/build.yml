@@ -44,6 +44,18 @@ env:
   REPO_OWNER: ${{ github.repository_owner }}
 
 jobs:
+  shellcheck:
+    name: ShellCheck
+    permissions:
+      contents: read
+    uses: ./.github/workflows/shellcheck.yml
+
+  just-syntax-check:
+    name: Just Syntax Check
+    permissions:
+      contents: read
+    uses: ./.github/workflows/just-syntax-check.yml
+
   # Matrix has to be known before push-ghcr's jobs are scheduled, so this
   # computes it in a separate job and feeds it in via fromJson. The matrix
   # itself now lives in build.py's IMAGES table (the single source of truth
@@ -78,7 +90,7 @@ jobs:
 
   push-ghcr:
     name: Make
-    needs: compute-matrix
+    needs: [compute-matrix, shellcheck, just-syntax-check]
     runs-on: ubuntu-26.04
     continue-on-error: false
     permissions:

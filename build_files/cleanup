@@ -14,6 +14,8 @@ rm -rf /var/log/dnf5.log || true
 
 # -- Remove boot files --
 # Clear old kernel images and boot artifacts from /boot.
+# Intentionally clear /boot in the image being built.
+# shellcheck disable=SC2115
 rm -rf /boot/* || true
 rm -rf /boot/.* || true
 rm -rf /usr/lib/sysimage/libdnf5/* || true
