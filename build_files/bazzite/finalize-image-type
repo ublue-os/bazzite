@@ -132,11 +132,8 @@ sed -i \
 # -- Disable repository files --
 echo "==> Disabling repository files..."
 for repo in \
-    fedora-cisco-openh264 \
     tailscale \
     _copr_ublue-os-akmods \
-    terra \
-    terra-extras \
     negativo17-fedora-multimedia; do
     sed -i \
         's@enabled=1@enabled=0@g' \
