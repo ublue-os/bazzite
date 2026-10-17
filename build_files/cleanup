@@ -1,9 +1,19 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
+#
+# Clean up temporary, log, and boot files to free disk space.
+#
+set -xeuo pipefail
 
-set -eoux pipefail
-
+# -- Remove temporary files --
+# Clear all contents of /tmp to reclaim space used by temporary data.
 rm -rf /tmp/* || true
+
+# -- Remove DNF5 log file --
+# Delete the DNF5 package manager log if it exists.
 rm -rf /var/log/dnf5.log || true
+
+# -- Remove boot files --
+# Clear old kernel images and boot artifacts from /boot.
 rm -rf /boot/* || true
 rm -rf /boot/.* || true
 rm -rf /usr/lib/sysimage/libdnf5/* || true

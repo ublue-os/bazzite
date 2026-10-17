@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+#
+# Configure KDE (Kinoite) or GNOME desktop environment depending on the
+# BASE_IMAGE_NAME variable, plus common packages.
+#
+set -xeuo pipefail
+
+echo "::group::Configure desktop environments"
+trap 'echo "::endgroup::"' EXIT
+
+# -- Configure desktop environment --
+# Install KDE for Kinoite images, or GNOME for all other variants.
+echo "==> Configuring desktop environment..."
+
+if [[ "${BASE_IMAGE_NAME}" == "kinoite" ]]; then
+    /ctx/bazzite/desktop_env/configure-kde
+else
+    /ctx/bazzite/desktop_env/configure-gnome
+fi
+
+# -- Install common packages --
+# Install rom-properties-utils for both KDE and GNOME.
+echo "==> Installing common packages..."
+dnf5 -y install rom-properties-utils
