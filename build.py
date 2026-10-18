@@ -408,11 +408,7 @@ def resolve_version(
     VERSION_TAG / VERSION_PRETTY build args from our resolved release tag. 
     The registry tag carries the branch prefix and only has a point-release suffix on collisions.
     """
-    release = (
-        version
-            .removeprefix("unstable-")
-            .removeprefix("testing-")
-    )
+    release = version.removeprefix("unstable-").removeprefix("testing-")
 
     if not release.startswith(f"{fedora_version}."):
         raise ValueError(f"version tag {version} does not match fedora_version {fedora_version}")
