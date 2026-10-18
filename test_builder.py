@@ -400,6 +400,19 @@ def test_rechunk_no_privileged_flag(caplog):
     assert "--privileged" not in caplog.text
 
 
+def test_sbom_scans_mounted_image_without_exporting(capsys, caplog):
+    caplog.set_level(logging.INFO, logger="build")
+    args = b.build_parser().parse_args(
+        ["--dry-run", "sbom", "--image", "bazzite-deck", "--chunked-image", "localhost/custom-chunked",
+         "--version-tag", "45.20261018", "--syft-cmd", "/opt/syft"]
+    )
+    assert b.cmd_sbom(args) == 0
+    assert "buildah unshare" in caplog.text
+    assert "bash localhost/custom-chunked /opt/syft bazzite-deck-45.20261018 " in caplog.text
+    assert "export" not in caplog.text
+    assert json.loads(capsys.readouterr().out)["sbom"].endswith("/sbom.json")
+
+
 def test_test_dry_run_invokes_dgoss(caplog):
     caplog.set_level(logging.INFO, logger="build")
     args = b.build_parser().parse_args(["--dry-run", "test", "--ref", "containers-storage:localhost/chunked-img"])

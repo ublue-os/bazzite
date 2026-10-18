@@ -779,38 +779,37 @@ def cmd_rechunk(args: argparse.Namespace) -> int:
     return 0
 
 
-def cmd_sbom(args: argparse.Namespace) -> int:
-    """Export the chunked image's rootfs and run syft over it to produce an SBOM."""
-    oci_dir = Path(tempfile.mkdtemp(prefix="image-oci-", dir=scratch_dir()))
-    rootfs = oci_dir / "rootfs"
-    rootfs.mkdir(parents=True)
-    try:
-        run(
-            [args.container_mgr, "container", "create", "--replace", "--name", args.image, args.chunked_image],
-            dry_run=args.dry_run,
-        )
-        export_cmd = [args.container_mgr, "export", args.image]
-        tar_cmd = ["tar", "-C", str(rootfs), "--no-same-owner", "-xf", "-"]
-        log.info("+ %s | %s", " ".join(export_cmd), " ".join(tar_cmd))
-        if not args.dry_run:
-            export = subprocess.Popen(export_cmd, stdout=subprocess.PIPE)
-            subprocess.run(tar_cmd, stdin=export.stdout, check=True)
-            export.stdout.close()
-            export.wait()
-        run([args.container_mgr, "container", "rm", args.image], dry_run=args.dry_run, check=False)
+#: Shell run under `buildah unshare` that mounts an image's rootfs in place
+#: (via a throwaway working container) and runs syft over it. $1 is the
+#: image, $2 the syft binary, $3 the SBOM source name, $4 the output path.
+SYFT_ON_MOUNT = """
+container=$(buildah from --pull=never "$1")
+trap 'buildah rm "$container" >/dev/null' EXIT
+mnt=$(buildah mount "$container")
+"$2" --source-name "$3" "dir:$mnt" -o "syft-json=$4"
+"""
 
-        sbom_path = Path(tempfile.mkdtemp(prefix="sbom-")) / "sbom.json"
-        source_name = f"{args.image}-{args.version_tag}"
-        env = {"SYFT_PARALLELISM": str((os.cpu_count() or 1) * 2)}
-        run(
-            [args.syft_cmd, "--source-name", source_name, str(rootfs), "-o", f"syft-json={sbom_path}"],
-            dry_run=args.dry_run,
-            env=env,
-        )
-        print(json.dumps({"sbom": str(sbom_path)}))
-        return 0
-    finally:
-        shutil.rmtree(oci_dir, ignore_errors=True)
+
+def cmd_sbom(args: argparse.Namespace) -> int:
+    """Run syft over the chunked image's rootfs to produce an SBOM.
+
+    The rootfs is scanned through a buildah mount rather than a `podman
+    export | tar -x` copy, which wrote the whole image back to disk first
+    (minutes on CI).
+    """
+    sbom_path = Path(tempfile.mkdtemp(prefix="sbom-")) / "sbom.json"
+    source_name = f"{args.image}-{args.version_tag}"
+    env = {"SYFT_PARALLELISM": str((os.cpu_count() or 1) * 2)}
+    run(
+        [
+            "buildah", "unshare", "bash", "-euo", "pipefail", "-c", SYFT_ON_MOUNT,
+            "bash", args.chunked_image, args.syft_cmd, source_name, str(sbom_path),
+        ],
+        dry_run=args.dry_run,
+        env=env,
+    )
+    print(json.dumps({"sbom": str(sbom_path)}))
+    return 0
 
 
 def cmd_test(args: argparse.Namespace) -> int:
@@ -943,7 +942,7 @@ def cmd_shell(args: argparse.Namespace) -> int:
 
 
 def scratch_dir() -> str | None:
-    """Where to put multi-GiB scratch output (chunked OCI dirs, exported rootfs).
+    """Where to put multi-GiB scratch output (chunked OCI dirs).
 
     On Actions runners /tmp sits on the small root disk -- the largest images
     fail chunkah with "Disk quota exceeded" there -- so use $RUNNER_TEMP when
@@ -1029,7 +1028,6 @@ def build_parser() -> argparse.ArgumentParser:
     p_sbom.add_argument("--image", default=DEFAULT_IMAGE, choices=sorted(IMAGES))
     p_sbom.add_argument("--chunked-image", default="localhost/chunked-img")
     p_sbom.add_argument("--version-tag", default="dev")
-    p_sbom.add_argument("--container-mgr", default=None)
     p_sbom.add_argument("--syft-cmd", default="syft")
     p_sbom.set_defaults(func=cmd_sbom)
 
