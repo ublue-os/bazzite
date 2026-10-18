@@ -114,7 +114,7 @@ def test_source_version_stable():
     version, pretty = b.resolve_version(
         ref_name="main", version="45.20261013", sha_short="abc1234", fedora_version=45,
     )
-    assert version == "45.20261013.0"
+    assert version == "45.20261013"
     assert pretty == "Stable (F45.20261013)"
 
 
@@ -124,7 +124,7 @@ def test_source_version_unstable():
         sha_short="abc1234", fedora_version=45,
     )
     assert version == "45.20261013.2"
-    assert pretty == "Unstable (F45.20261013, #abc1234)"
+    assert pretty == "Unstable (F45.20261013.2, #abc1234)"
 
 
 def test_source_version_testing():
@@ -132,7 +132,7 @@ def test_source_version_testing():
         ref_name="testing", version="testing-45.20261014",
         sha_short="c500b43", fedora_version=45,
     )
-    assert version == "45.20261014.0"
+    assert version == "45.20261014"
     assert pretty == "Testing (F45.20261014, #c500b43)"
 
 
@@ -142,7 +142,7 @@ def test_source_version_pr_number_takes_priority_over_ref():
         ref_name="unstable", version="unstable-45.20261013", sha_short="abc1234",
         fedora_version=45, pr_number="42",
     )
-    assert version == "45.20261013.0"
+    assert version == "45.20261013"
     assert pretty == "PR (42, F45.20261013, #abc1234)"
 
 
@@ -283,7 +283,7 @@ def test_resolve_uses_precomputed_version(capsys):
     assert out["version"] == f"unstable-{FEDORA}.20260820.3"
     assert out["labels"]["org.opencontainers.image.version"] == f"unstable-{FEDORA}.20260820.3"
     assert out["build_args"]["VERSION_TAG"] == f"{FEDORA}.20260820.3"
-    assert out["build_args"]["VERSION_PRETTY"] == f"Unstable (F{FEDORA}.20260820, #deadbee)"
+    assert out["build_args"]["VERSION_PRETTY"] == f"Unstable (F{FEDORA}.20260820.3, #deadbee)"
 
 
 def test_resolve_testing_uses_our_version_without_inspecting_base(capsys):
@@ -293,7 +293,7 @@ def test_resolve_testing_uses_our_version_without_inspecting_base(capsys):
     ])
     assert b.cmd_resolve(args) == 0
     out = json.loads(capsys.readouterr().out)
-    assert out["build_args"]["VERSION_TAG"] == "45.20261014.0"
+    assert out["build_args"]["VERSION_TAG"] == "45.20261014"
     assert out["build_args"]["VERSION_PRETTY"] == "Testing (F45.20261014, #c500b43)"
 
 
