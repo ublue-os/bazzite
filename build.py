@@ -396,16 +396,16 @@ def build_args(
     }
 
 
-def resolve_version(
+def resolve_pretty_version(
     *,
     ref_name: str,
     version: str,
     sha_short: str,
     fedora_version: int,
     pr_number: str | None = None,
-) -> tuple[str, str]:
+) -> str:
     """
-    VERSION_TAG / VERSION_PRETTY build args from our resolved release tag. 
+    VERSION_PRETTY build args from our resolved release tag. 
     The registry tag carries the branch prefix and only has a point-release suffix on collisions.
     """
     release = version.removeprefix("unstable-").removeprefix("testing-")
@@ -421,7 +421,7 @@ def resolve_version(
         pretty = f"Testing (F{release}, #{sha_short})"
     else:
         pretty = f"Stable (F{release})"
-    return release, pretty
+    return pretty
 
 
 def release_version(*, ref_name: str, fedora_version: int, today: datetime | None = None) -> str:
@@ -600,7 +600,7 @@ def cmd_resolve(args: argparse.Namespace) -> int:
             with group(f"Checking existing tags for {output_image}"):
                 version = dedup_version(version, list_tags(output_image))
 
-    resolved_version, resolved_version_pretty = resolve_version(
+    version_pretty = resolve_pretty_version(
         ref_name=ref_name,
         version=version,
         sha_short=sha_short,
@@ -612,8 +612,8 @@ def cmd_resolve(args: argparse.Namespace) -> int:
         image_vendor=args.image_vendor,
         image_branch=ref_name,
         sha_head_short=sha_short,
-        version_tag=resolved_version,
-        version_pretty=resolved_version_pretty,
+        version_tag=version,
+        version_pretty=version_pretty,
     )
 
     tags = alias_tags(ref_name=ref_name, version=version, fedora_version=variant.fedora_version)
