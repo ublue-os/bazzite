@@ -404,10 +404,9 @@ def resolve_version(
     fedora_version: int,
     pr_number: str | None = None,
 ) -> tuple[str, str]:
-    """VERSION_TAG / VERSION_PRETTY build args from our resolved release tag.
-
-    The registry tag carries the branch prefix and only has a point-release
-    suffix on collisions; the in-image version always has a point release.
+    """
+    VERSION_TAG / VERSION_PRETTY build args from our resolved release tag. 
+    The registry tag carries the branch prefix and only has a point-release suffix on collisions.
     """
     release = (
         version
