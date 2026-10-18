@@ -31,7 +31,6 @@ import dataclasses
 import json
 import logging
 import os
-import re
 import shutil
 import subprocess
 import sys
@@ -397,37 +396,37 @@ def build_args(
     }
 
 
-def resolve_source_version(
+def resolve_version(
     *,
     ref_name: str,
-    upstream_tag: str,
+    version: str,
     sha_short: str,
     fedora_version: int,
     pr_number: str | None = None,
 ) -> tuple[str, str]:
-    """VERSION_TAG / VERSION_PRETTY build args, baked into the image's
-    /usr/lib/os-release. `upstream_tag` is the base Fedora image's own
-    version label with any trailing ".0" stripped, e.g. skopeo inspect's
-    Labels["org.opencontainers.image.version"].
+    """VERSION_TAG / VERSION_PRETTY build args from our resolved release tag.
+
+    The registry tag carries the branch prefix and only has a point-release
+    suffix on collisions; the in-image version always has a point release.
     """
+    release = (
+        version
+            .removeprefix("unstable-")
+            .removeprefix("testing-")
+    )
+
+    if not release.startswith(f"{fedora_version}."):
+        raise ValueError(f"version tag {version} does not match fedora_version {fedora_version}")
+
     if pr_number:
-        version = f"pr-{fedora_version}-{pr_number}"
-        pretty = f"PR ({pr_number}, {upstream_tag})"
+        pretty = f"PR ({pr_number}, F{release}, #{sha_short})"
     elif ref_name == "unstable":
-        version = f"unstable-{upstream_tag}"
-        pretty = f"Unstable (F{upstream_tag}, #{sha_short})"
+        pretty = f"Unstable (F{release}, #{sha_short})"
     elif ref_name == "testing":
-        version = f"testing-{upstream_tag}"
-        pretty = f"Testing (F{upstream_tag}, #{sha_short})"
+        pretty = f"Testing (F{release}, #{sha_short})"
     else:
-        version = upstream_tag
-        pretty = f"Stable (F{upstream_tag})"
-    return version, pretty
-
-
-def strip_trailing_zero(upstream_tag: str) -> str:
-    """Remove a trailing ".0" so it doesn't collide with our own point releases."""
-    return re.sub(r"\.\d$", "", upstream_tag)
+        pretty = f"Stable (F{release})"
+    return release, pretty
 
 
 def release_version(*, ref_name: str, fedora_version: int, today: datetime | None = None) -> str:
@@ -591,42 +590,6 @@ def cmd_resolve(args: argparse.Namespace) -> int:
     sha = args.sha or "deadbeef"
     sha_short = sha[:7]
 
-    upstream_tag = args.upstream_tag
-    if upstream_tag is None:
-        with group(f"Inspecting {variant.base_image}"):
-            result = run(
-                ["skopeo", "inspect", f"docker://{variant.base_image}"],
-                capture=True,
-                dry_run=args.dry_run,
-            )
-            if args.dry_run:
-                upstream_tag = f"{variant.fedora_version}.0"
-            else:
-                data = json.loads(result.stdout)
-                raw = data.get("Labels", {}).get("org.opencontainers.image.version")
-                if not raw or raw == "null":
-                    log.error("inspected image version must not be empty or null")
-                    return 1
-                upstream_tag = raw
-    upstream_tag = strip_trailing_zero(upstream_tag)
-
-    source_version, source_pretty = resolve_source_version(
-        ref_name=ref_name,
-        upstream_tag=upstream_tag,
-        sha_short=sha_short,
-        fedora_version=variant.fedora_version,
-        pr_number=args.pr_number,
-    )
-
-    args_out = build_args(
-        variant,
-        image_vendor=args.image_vendor,
-        image_branch=ref_name,
-        sha_head_short=sha_short,
-        version_tag=source_version,
-        version_pretty=source_pretty,
-    )
-
     output_image = f"{args.push_registry}/{variant.image}"
     if args.version:
         # Precomputed by `version` for the whole run (CI). Guards against it
@@ -641,6 +604,22 @@ def cmd_resolve(args: argparse.Namespace) -> int:
         if not args.dry_run and not args.skip_registry:
             with group(f"Checking existing tags for {output_image}"):
                 version = dedup_version(version, list_tags(output_image))
+
+    source_version, source_pretty = resolve_version(
+        ref_name=ref_name,
+        version=version,
+        sha_short=sha_short,
+        fedora_version=variant.fedora_version,
+        pr_number=args.pr_number,
+    )
+    args_out = build_args(
+        variant,
+        image_vendor=args.image_vendor,
+        image_branch=ref_name,
+        sha_head_short=sha_short,
+        version_tag=source_version,
+        version_pretty=source_pretty,
+    )
 
     tags = alias_tags(ref_name=ref_name, version=version, fedora_version=variant.fedora_version)
     labels = labels_for(variant, version=version, sha=sha, kernel_evr=args.kernel_evr or variant.kernel_version)
@@ -667,7 +646,7 @@ def cmd_resolve(args: argparse.Namespace) -> int:
 def cmd_build(args: argparse.Namespace) -> int:
     """Build the image with podman/buildah.
 
-    Local dev builds skip the registry entirely -- no upstream tag lookup,
+    Local dev builds skip the registry entirely -- no release tag lookup,
     no version dedup -- since a contributor iterating on a package list
     doesn't care whether "44.20260820" collides with a published tag. CI
     passes --resolved-json to reuse the build args/target that `resolve`
@@ -1015,7 +994,6 @@ def build_parser() -> argparse.ArgumentParser:
     p_resolve.add_argument("--pr-number", default=os.environ.get("PR_NUMBER"))
     p_resolve.add_argument("--image-vendor", default=IMAGE_VENDOR_DEFAULT)
     p_resolve.add_argument("--push-registry", default=PULL_REGISTRY)
-    p_resolve.add_argument("--upstream-tag", default=None, help="skip the skopeo inspect and use this instead")
     p_resolve.add_argument("--kernel-evr", default=None, help="skip the in-image rpm query and use this instead")
     p_resolve.add_argument("--skip-registry", action="store_true", help="skip point-release dedup against the registry")
     p_resolve.add_argument("--version", default=None, help="use this release version (from `version`) instead of resolving one")
