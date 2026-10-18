@@ -153,4 +153,4 @@ fi
 
 # Normalize filesystem timestamps without affecting chunkah's layer plan.
 # See: https://github.com/coreos/chunkah/issues/160
-find /usr /etc /opt -exec touch -h -a -m -d '1970-01-01T00:00:00Z' {} +
+find /usr /etc /opt -newermt '1970-01-01T00:00:00Z' -exec touch -h -a -m -d '1970-01-01T00:00:00Z' {} +
