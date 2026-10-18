@@ -483,10 +483,10 @@ def test_resolve_bakes_image_vendor_into_build_args(capsys):
     """CI passes the lowercased repo owner, so fork builds identify as the fork."""
     args = b.build_parser().parse_args([
         "resolve", "--image", "bazzite", "--version", f"{FEDORA}.20260820",
-        "--image-vendor", "tedohayer",
+        "--image-vendor", "ublue-os",
     ])
     assert b.cmd_resolve(args) == 0
-    assert json.loads(capsys.readouterr().out)["build_args"]["IMAGE_VENDOR"] == "tedohayer"
+    assert json.loads(capsys.readouterr().out)["build_args"]["IMAGE_VENDOR"] == "ublue-os"
 
 
 def test_sbom_attach_passes_relative_path_from_sbom_dir(caplog):
