@@ -600,7 +600,7 @@ def cmd_resolve(args: argparse.Namespace) -> int:
             with group(f"Checking existing tags for {output_image}"):
                 version = dedup_version(version, list_tags(output_image))
 
-    source_version, source_pretty = resolve_version(
+    resolved_version, resolved_version_pretty = resolve_version(
         ref_name=ref_name,
         version=version,
         sha_short=sha_short,
@@ -612,8 +612,8 @@ def cmd_resolve(args: argparse.Namespace) -> int:
         image_vendor=args.image_vendor,
         image_branch=ref_name,
         sha_head_short=sha_short,
-        version_tag=source_version,
-        version_pretty=source_pretty,
+        version_tag=resolved_version,
+        version_pretty=resolved_version_pretty,
     )
 
     tags = alias_tags(ref_name=ref_name, version=version, fedora_version=variant.fedora_version)
