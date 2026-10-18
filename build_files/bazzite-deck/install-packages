@@ -66,6 +66,11 @@ sed -i \
     's|^CLIENTCMD="opengamepadui --overlay-mode|/usr/libexec/hwsupport/non-valve-handheld-hardware \&\& CLIENTCMD="opengamepadui --accessibility disabled --overlay-mode --steam-input --steamos-manager --skip-update-pack|' \
     /usr/share/gamescope-session-plus/sessions.d/ogui-steam
 
+# Patch alsa-ucm-conf for Ally X20
+sed -i \
+    '/|tas2783|/!s/|rt1318|/|tas2783|rt1318|/' \
+    /usr/share/alsa/ucm2/sof-soundwire/sof-soundwire.conf
+
 # -- Install jupiter-dock-updater --
 # Clone and deploy the jupiter-dock-updater binary with component metadata.
 echo "==> Installing jupiter-dock-updater..."
