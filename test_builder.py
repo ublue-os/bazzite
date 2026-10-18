@@ -111,45 +111,35 @@ def test_unknown_image_raises_with_valid_list():
 # --- resolve_source_version ---
 
 def test_source_version_stable():
-    version, pretty = b.resolve_source_version(
-        ref_name="main", upstream_tag="44", sha_short="abc1234", fedora_version=44,
+    pretty = b.resolve_pretty_version(
+        ref_name="main", version="45.20261013", sha_short="abc1234", fedora_version=45,
     )
-    assert version == "44"
-    assert pretty == "Stable (F44)"
+    assert pretty == "Stable (F45.20261013)"
 
 
 def test_source_version_unstable():
-    version, pretty = b.resolve_source_version(
-        ref_name="unstable", upstream_tag="44", sha_short="abc1234", fedora_version=44,
+    pretty = b.resolve_pretty_version(
+        ref_name="unstable", version="unstable-45.20261013.2",
+        sha_short="abc1234", fedora_version=45,
     )
-    assert version == "unstable-44"
-    assert pretty == "Unstable (F44, #abc1234)"
+    assert pretty == "Unstable (F45.20261013.2, #abc1234)"
 
 
 def test_source_version_testing():
-    version, pretty = b.resolve_source_version(
-        ref_name="testing", upstream_tag="44", sha_short="abc1234", fedora_version=44,
+    pretty = b.resolve_pretty_version(
+        ref_name="testing", version="testing-45.20261014",
+        sha_short="c500b43", fedora_version=45,
     )
-    assert version == "testing-44"
-    assert pretty == "Testing (F44, #abc1234)"
+    assert pretty == "Testing (F45.20261014, #c500b43)"
 
 
 def test_source_version_pr_number_takes_priority_over_ref():
     # pr_number takes priority regardless of ref_name
-    version, pretty = b.resolve_source_version(
-        ref_name="unstable", upstream_tag="44", sha_short="abc1234",
-        fedora_version=44, pr_number="42",
+    pretty = b.resolve_pretty_version(
+        ref_name="unstable", version="unstable-45.20261013", sha_short="abc1234",
+        fedora_version=45, pr_number="42",
     )
-    assert version == "pr-44-42"
-    assert pretty == "PR (42, 44)"
-
-
-def test_strip_trailing_zero():
-    # Mirrors bash's ${UPSTREAM_TAG%\.[0-9]}: strips any trailing ".<digit>",
-    # not just ".0" -- that's the actual (slightly loose) upstream behavior.
-    assert b.strip_trailing_zero("44.0") == "44"
-    assert b.strip_trailing_zero("44.1") == "44"
-    assert b.strip_trailing_zero("44") == "44"
+    assert pretty == "PR (42, F45.20261013, #abc1234)"
 
 
 # --- release_version / dedup_version ---
@@ -282,18 +272,30 @@ def test_version_dedups_against_tags_from_every_image(monkeypatch, capsys):
 def test_resolve_uses_precomputed_version(capsys):
     args = b.build_parser().parse_args([
         "resolve", "--image", "bazzite-deck", "--ref-name", "unstable",
-        "--upstream-tag", f"{FEDORA}.20260820.0", "--version", f"unstable-{FEDORA}.20260820.3",
+        "--version", f"unstable-{FEDORA}.20260820.3",
     ])
     assert b.cmd_resolve(args) == 0
     out = json.loads(capsys.readouterr().out)
     assert out["version"] == f"unstable-{FEDORA}.20260820.3"
     assert out["labels"]["org.opencontainers.image.version"] == f"unstable-{FEDORA}.20260820.3"
+    assert out["build_args"]["VERSION_TAG"] == f"unstable-{FEDORA}.20260820.3"
+    assert out["build_args"]["VERSION_PRETTY"] == f"Unstable (F{FEDORA}.20260820.3, #deadbee)"
+
+
+def test_resolve_testing_uses_our_version_without_inspecting_base(capsys):
+    args = b.build_parser().parse_args([
+        "resolve", "--ref-name", "testing", "--version", "testing-45.20261014",
+        "--sha", "c500b43",
+    ])
+    assert b.cmd_resolve(args) == 0
+    out = json.loads(capsys.readouterr().out)
+    assert out["build_args"]["VERSION_TAG"] == "testing-45.20261014"
+    assert out["build_args"]["VERSION_PRETTY"] == "Testing (F45.20261014, #c500b43)"
 
 
 def test_resolve_rejects_version_for_another_fedora_release():
     args = b.build_parser().parse_args([
-        "resolve", "--image", "bazzite", "--upstream-tag", f"{FEDORA}.20260820.0",
-        "--version", f"{FEDORA - 1}.20260820",
+        "resolve", "--image", "bazzite", "--version", f"{FEDORA - 1}.20260820",
     ])
     assert b.cmd_resolve(args) == 1
 
@@ -476,11 +478,11 @@ def test_sbom_attach_dry_run_emits_placeholder_digest(capsys):
 def test_resolve_bakes_image_vendor_into_build_args(capsys):
     """CI passes the lowercased repo owner, so fork builds identify as the fork."""
     args = b.build_parser().parse_args([
-        "resolve", "--image", "bazzite", "--upstream-tag", f"{FEDORA}.20260820.0",
-        "--skip-registry", "--image-vendor", "tedohayer",
+        "resolve", "--image", "bazzite", "--version", f"{FEDORA}.20260820",
+        "--image-vendor", "ublue-os",
     ])
     assert b.cmd_resolve(args) == 0
-    assert json.loads(capsys.readouterr().out)["build_args"]["IMAGE_VENDOR"] == "tedohayer"
+    assert json.loads(capsys.readouterr().out)["build_args"]["IMAGE_VENDOR"] == "ublue-os"
 
 
 def test_sbom_attach_passes_relative_path_from_sbom_dir(caplog):

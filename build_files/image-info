@@ -99,6 +99,14 @@ sed -i \
   "s|^VERSION_CODENAME=.*|VERSION_CODENAME=\"${BASE_IMAGE_NAME^}\"|" \
   /usr/lib/os-release
 
+sed -i \
+  "s|^VERSION=.*|VERSION=\"${VERSION_TAG} (${BASE_IMAGE_NAME^})\"|" \
+  /usr/lib/os-release
+
+sed -i \
+  "s|^OSTREE_VERSION=.*|OSTREE_VERSION='${VERSION_TAG}'|" \
+  /usr/lib/os-release
+
 # Ensure grub2-mkconfig uses "Bazzite" as the distributor name.
 echo "${IMAGE_PRETTY_NAME} release ${FEDORA_VERSION} (${BASE_IMAGE_NAME^})" > /etc/system-release
 
