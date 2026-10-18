@@ -109,23 +109,6 @@ jobs:
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@ceedf095f4ec1a097402bc6bd80831f2e1a6fde6 # v2.0.0
 
-      - name: Mount rootless container storage on compressed BTRFS
-        run: |
-          sudo truncate -s 110G /mnt/podman-storage.img
-          sudo mkfs.btrfs -f -m single -d single /mnt/podman-storage.img
-          LOOP=$(sudo losetup --find --show --direct-io=on /mnt/podman-storage.img)
-          sudo mkdir -p /mnt/podman-storage
-          sudo mount -o compress-force=zstd:3,discard=async,noatime "$LOOP" /mnt/podman-storage
-          sudo mkdir -p /mnt/podman-storage/storage
-          sudo chown "$(id -u):$(id -g)" /mnt/podman-storage/storage
-          mkdir -p "$HOME/.config/containers"
-          # Keep rootless Podman and Buildah on overlay, not the rootful-only BTRFS driver.
-          cat > "$HOME/.config/containers/storage.conf" <<'EOF'
-          [storage]
-          driver = "overlay"
-          graphroot = "/mnt/podman-storage/storage"
-          EOF
-
       # Moved up from its old spot (after "Define base variables") --
       # build.py has to exist on disk before the next step can call it.
       - name: Checkout repository
