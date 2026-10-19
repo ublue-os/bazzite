@@ -108,6 +108,10 @@ jobs:
 
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@ceedf095f4ec1a097402bc6bd80831f2e1a6fde6 # v2.0.0
+        with:
+          android: false
+          large-packages: false
+          docker-images: false
 
       # Moved up from its old spot (after "Define base variables") --
       # build.py has to exist on disk before the next step can call it.

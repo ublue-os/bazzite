@@ -755,7 +755,7 @@ def cmd_rechunk(args: argparse.Namespace) -> int:
                     "--volume", f"{rechunk_dir}:/run/out:Z",
                     chunkah_ref,
                     "build",
-                    "--verbose", "--compressed",
+                    "--verbose",
                     "--max-layers", str(args.max_layers),
                     "--prune", "/sysroot/",
                     *labels,
