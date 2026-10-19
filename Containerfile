@@ -174,10 +174,6 @@ RUN --mount=type=cache,dst=/var/cache \
     && /ctx/build-initramfs \
     && /ctx/finalize
 
-RUN --mount=type=tmpfs,target=/run \
-    --network=none \
-    bootc container lint
-
 ################
 # DECK BUILDS
 ################
@@ -249,10 +245,6 @@ RUN --mount=type=cache,dst=/var/cache \
     && /ctx/build-initramfs \
     && /ctx/finalize
 
-RUN --mount=type=tmpfs,target=/run \
-    --network=none \
-    bootc container lint
-
 ################
 # NVIDIA BUILDS
 ################
@@ -297,6 +289,9 @@ RUN --mount=type=cache,dst=/var/cache \
     && /ctx/image-info \
     && /ctx/build-initramfs \
     && /ctx/finalize
+
+# Run lint on the final stage
+FROM ${FINAL_STAGE}
 
 RUN --mount=type=tmpfs,target=/run \
     --network=none \
