@@ -300,7 +300,6 @@ jobs:
             --image "${IMAGE}" \
             --chunked-image localhost/chunked-img \
             --version-tag "${VERSION_TAG}" \
-            --container-mgr podman \
             --syft-cmd "${SYFT_CMD}" \
             > sbom.json
           sbom="$(jq -er .sbom sbom.json)"
