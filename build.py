@@ -393,6 +393,7 @@ def build_args(
         "VERSION_TAG": version_tag,
         "VERSION_PRETTY": version_pretty,
         "ARCH": variant.arch,
+        "FINAL_STAGE": variant.container_target
     }
 
 

@@ -203,10 +203,55 @@ def test_build_args_field_set_matches_ci():
         "BASE_IMAGE_NAME", "FEDORA_VERSION", "BASE_IMAGE", "IMAGE_NAME",
         "IMAGE_VENDOR", "IMAGE_BRANCH", "KERNEL_FLAVOR", "KERNEL_VERSION",
         "NVIDIA_FLAVOR", "NVIDIA_BASE", "SHA_HEAD_SHORT", "VERSION_TAG",
-        "VERSION_PRETTY", "ARCH",
+        "VERSION_PRETTY", "ARCH", "FINAL_STAGE"
     }
     assert args["SHA_HEAD_SHORT"] == "abc1234"  # never empty
 
+def test_build_args_final_stage_bazzite():
+    variants = [
+        "bazzite",
+        "bazzite-gnome",
+    ]
+
+    for variant_name in variants:
+        variant = b.get_variant(variant_name)
+        build_args = b.build_args(
+            variant, image_vendor="ublue-os", image_branch="main",
+            sha_head_short="abc1234", version_tag="44", version_pretty="Stable (F44)",
+        )
+        assert build_args["FINAL_STAGE"] == "bazzite"
+
+def test_build_args_final_stage_bazzite_deck():
+    variants = [
+        "bazzite-deck",
+        "bazzite-deck-gnome",
+    ]
+
+    for variant_name in variants:
+        variant = b.get_variant(variant_name)
+        build_args = b.build_args(
+            variant, image_vendor="ublue-os", image_branch="main",
+            sha_head_short="abc1234", version_tag="44", version_pretty="Stable (F44)",
+        )
+        assert build_args["FINAL_STAGE"] == "bazzite-deck"
+
+def test_build_args_final_stage_bazzite_nvidia():
+    variants = [
+        "bazzite-nvidia",
+        "bazzite-gnome-nvidia",
+        "bazzite-nvidia-open",
+        "bazzite-gnome-nvidia-open",
+        "bazzite-deck-nvidia",
+        "bazzite-deck-nvidia-gnome",
+    ]
+
+    for variant_name in variants:
+        variant = b.get_variant(variant_name)
+        build_args = b.build_args(
+            variant, image_vendor="ublue-os", image_branch="main",
+            sha_head_short="abc1234", version_tag="44", version_pretty="Stable (F44)",
+        )
+        assert build_args["FINAL_STAGE"] == "bazzite-nvidia"
 
 def test_labels_include_required_oci_fields():
     variant = b.get_variant("bazzite")
