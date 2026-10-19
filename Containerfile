@@ -161,18 +161,16 @@ RUN --mount=type=cache,dst=/var/cache \
     /ctx/bazzite/ublue-os-media-automount-udev \
     && /ctx/cleanup
 
-# Cleanup & Finalize
+# Copy overrides
 COPY system_files/overrides /
 
+# Finalize desktop stage
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     --mount=type=secret,id=GITHUB_TOKEN \
-    /ctx/bazzite/finalize-image-type \
-    && /ctx/image-info \
-    && /ctx/build-initramfs \
-    && /ctx/finalize
+    /ctx/bazzite/finalize-image-type 
 
 ################
 # DECK BUILDS
@@ -234,16 +232,12 @@ RUN --mount=type=cache,dst=/var/cache \
     /ctx/bazzite-deck/install-gamescope-session \
     && /ctx/cleanup
 
-# Cleanup & Finalize
+# Finalize Deck stage
 RUN --mount=type=cache,dst=/var/cache \
-    --mount=type=cache,dst=/var/cache/libdnf5 \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    /ctx/bazzite-deck/finalize-image-type \
-    && /ctx/image-info \
-    && /ctx/build-initramfs \
-    && /ctx/finalize
+    /ctx/bazzite-deck/finalize-image-type 
 
 ################
 # NVIDIA BUILDS
@@ -280,18 +274,23 @@ RUN --mount=type=cache,dst=/var/cache \
     /ctx/bazzite-nvidia/install-nvidia-driver \
     && /ctx/cleanup
 
-# Cleanup & Finalize
+# Finalize NVIDIA stage
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    /ctx/bazzite-nvidia/finalize-image-type \
-    && /ctx/image-info \
+    /ctx/bazzite-nvidia/finalize-image-type 
+
+# Finalize the image based on the provided final stage
+FROM ${FINAL_STAGE}
+
+RUN --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/log \
+    --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=tmpfs,dst=/tmp \
+    /ctx/image-info \
     && /ctx/build-initramfs \
     && /ctx/finalize
-
-# Run lint on the final stage
-FROM ${FINAL_STAGE}
 
 RUN --mount=type=tmpfs,target=/run \
     --network=none \
