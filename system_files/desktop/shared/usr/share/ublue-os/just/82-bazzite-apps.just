@@ -24,6 +24,12 @@ _install_appimage_file $APPIMAGE_SRC $filename="":
     sleep 3
     LC_ALL=C flatpak run it.mijorus.gearlever "$appimage_file" <&-
 
+# Enable Terra repositories
+_enable_terra:
+    #!/usr/bin/bash
+    sudo dnf5 config-manager enable terra
+    sudo dnf5 config-manager enable terra-extras
+
 # Manage CoolerControl, a GUI for viewing sensors and creating fan and pump profiles. Options: status | install | uninstall
 [group("apps")]
 install-coolercontrol ACTION="":
@@ -69,14 +75,7 @@ install-coolercontrol ACTION="":
         done
 
         if [ ${#packages[@]} -gt 0 ]; then
-            repo_path="/etc/yum.repos.d/terra.repo"
-
-            if ( ! grep -q "enabled=0" "$repo_path" ); then  # if not matches found
-                echo 'Terra Repository is already enabled, skipping.'
-            else
-                echo 'Enabling Terra Repository.'
-                sudo sed -i 's@enabled=0@enabled=1@g' "$repo_path"
-            fi
+            just _enable_terra
 
             echo "Installing: ${packages[*]}"
             rpm-ostree install -y "${packages[@]}"
@@ -579,13 +578,7 @@ install-openrazer ACTION="":
         fi
 
         sudo rm -f /etc/yum.repos.d/hardware:razer.repo
-        repo_path="/etc/yum.repos.d/terra.repo"
-        if ( ! grep -q "enabled=0" "$repo_path" ); then  # if not matches found
-            echo 'Terra Repository is already enabled, skipping.'
-        else
-            echo 'Enabling Terra Repository.'
-            sudo sed -i 's@enabled=0@enabled=1@g' "$repo_path"
-        fi
+        just _enable_terra
         rpm-ostree install -y openrazer-daemon
         if ! grep -q "plugdev" /etc/group; then
             sudo bash -c 'grep "plugdev" /lib/group >> /etc/group'
