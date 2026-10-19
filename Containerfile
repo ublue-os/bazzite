@@ -36,6 +36,7 @@ ARG NVIDIA_BASE="${NVIDIA_BASE:-bazzite}"
 ARG KERNEL_FLAVOR="${KERNEL_FLAVOR:-ogc}"
 ARG KERNEL_VERSION="${KERNEL_VERSION:-7.0.9-ogc3.2.fc${FEDORA_VERSION}.${ARCH}}"
 ARG NVIDIA_FLAVOR="${NVIDIA_FLAVOR:-nvidia-open}"
+ARG FINAL_STAGE="${FINAL_STAGE:-bazzite}"
 
 FROM ghcr.io/ublue-os/akmods:${KERNEL_FLAVOR}-${FEDORA_VERSION}-${KERNEL_VERSION} AS akmods
 FROM ghcr.io/ublue-os/akmods-extra:${KERNEL_FLAVOR}-${FEDORA_VERSION}-${KERNEL_VERSION} AS akmods-extra
@@ -160,22 +161,16 @@ RUN --mount=type=cache,dst=/var/cache \
     /ctx/bazzite/ublue-os-media-automount-udev \
     && /ctx/cleanup
 
-# Cleanup & Finalize
+# Copy overrides
 COPY system_files/overrides /
 
+# Finalize desktop stage
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     --mount=type=secret,id=GITHUB_TOKEN \
-    /ctx/bazzite/finalize-image-type \
-    && /ctx/image-info \
-    && /ctx/build-initramfs \
-    && /ctx/finalize
-
-RUN --mount=type=tmpfs,target=/run \
-    --network=none \
-    bootc container lint
+    /ctx/bazzite/finalize-image-type 
 
 ################
 # DECK BUILDS
@@ -237,20 +232,12 @@ RUN --mount=type=cache,dst=/var/cache \
     /ctx/bazzite-deck/install-gamescope-session \
     && /ctx/cleanup
 
-# Cleanup & Finalize
+# Finalize Deck stage
 RUN --mount=type=cache,dst=/var/cache \
-    --mount=type=cache,dst=/var/cache/libdnf5 \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    /ctx/bazzite-deck/finalize-image-type \
-    && /ctx/image-info \
-    && /ctx/build-initramfs \
-    && /ctx/finalize
-
-RUN --mount=type=tmpfs,target=/run \
-    --network=none \
-    bootc container lint
+    /ctx/bazzite-deck/finalize-image-type 
 
 ################
 # NVIDIA BUILDS
@@ -287,13 +274,28 @@ RUN --mount=type=cache,dst=/var/cache \
     /ctx/bazzite-nvidia/install-nvidia-driver \
     && /ctx/cleanup
 
-# Cleanup & Finalize
+# Finalize NVIDIA stage
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    /ctx/bazzite-nvidia/finalize-image-type \
-    && /ctx/image-info \
+    /ctx/bazzite-nvidia/finalize-image-type 
+
+# Finalize the image based on the provided final stage
+FROM ${FINAL_STAGE}
+
+ARG IMAGE_NAME="${IMAGE_NAME:-bazzite-deck}"
+ARG IMAGE_VENDOR="${IMAGE_VENDOR:-ublue-os}"
+ARG IMAGE_BRANCH="${IMAGE_BRANCH:-stable}"
+ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-kinoite}"
+ARG VERSION_TAG="${VERSION_TAG}"
+ARG VERSION_PRETTY="${VERSION_PRETTY}"
+
+RUN --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/log \
+    --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=tmpfs,dst=/tmp \
+    /ctx/image-info \
     && /ctx/build-initramfs \
     && /ctx/finalize
 

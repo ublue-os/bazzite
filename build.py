@@ -393,6 +393,7 @@ def build_args(
         "VERSION_TAG": version_tag,
         "VERSION_PRETTY": version_pretty,
         "ARCH": variant.arch,
+        "FINAL_STAGE": variant.container_target
     }
 
 
@@ -663,7 +664,7 @@ def cmd_build(args: argparse.Namespace) -> int:
         )
 
     tag = args.tag or f"localhost/{args.image}:build"
-    cmd = [args.container_mgr, "build", "-f", "Containerfile", "--target", target]
+    cmd = [args.container_mgr, "build", "-f", "Containerfile"]
     for key, value in args_dict.items():
         cmd.append(f"--build-arg={key}={value}")
     if args.secret:
