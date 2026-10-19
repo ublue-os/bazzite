@@ -36,8 +36,11 @@ cat > "${IMAGE_INFO}" <<EOF
 }
 EOF
 
-# Rewrite os-release fields to reflect the Bazzite branding and identity.
+# Source the base `os-release` file, so we can fill in some fields that
+# can carry over to the new `os-release` file.
 source /usr/lib/os-release
+
+# Rewrite os-release fields to reflect the Bazzite branding and identity.
 tee /usr/lib/os-release <<EOF
 NAME="${IMAGE_PRETTY_NAME}"
 VERSION="${VERSION_TAG} (${BASE_IMAGE_NAME^})"
