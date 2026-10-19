@@ -20,7 +20,6 @@ glib-compile-schemas /usr/share/gnome-shell/extensions/logomenu@aryan_k/schemas
 glib-compile-schemas /usr/share/gnome-shell/extensions/compiz-windows-effect@hermes83.github.com/schemas
 glib-compile-schemas /usr/share/gnome-shell/extensions/compiz-alike-magic-lamp-effect@hermes83.github.com/schemas
 glib-compile-schemas /usr/share/gnome-shell/extensions/hotedge@jonathan.jdoda.ca/schemas
-glib-compile-schemas /usr/share/gnome-shell/extensions/restartto@tiagoporsch.github.io/schemas
 glib-compile-schemas /usr/share/gnome-shell/extensions/appindicatorsupport@rgcjonas.gmail.com/schemas
 glib-compile-schemas /usr/share/gnome-shell/extensions/add-to-steam@pupper.space/schemas
 
