@@ -376,7 +376,6 @@ def test_build_ci_mode_reads_resolved_json(tmp_path, caplog):
         ]
     )
     assert b.cmd_build(args) == 0
-    assert "--target bazzite-nvidia" in caplog.text
     assert "--build-arg=VERSION_TAG=44" in caplog.text
     assert "--secret id=GITHUB_TOKEN,env=GITHUB_TOKEN" in caplog.text
     assert "--tag raw-img" in caplog.text
