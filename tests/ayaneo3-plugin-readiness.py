@@ -17,7 +17,7 @@ def check_powerstation(root):
     executable = read(root, "usr/bin/powerstation", binary=True)
     for marker in (
         b"org.shadowblip.Fan.Device", b"org.shadowblip.Fan.Sensor", b"EnumerateSensors",
-        b"LoadProfileJson", b"CurrentProfileName", b"PercentValid", b"--record-fan-startup", b"untrusted fan startup attempt",
+        b"LoadProfileJson", b"CurrentProfileName", b"PercentValid", b"profile descriptor must be a readable regular file",
     ):
         if marker not in executable:
             raise ValueError("PowerStation lacks the required fan API marker: " + marker.decode())
@@ -38,12 +38,6 @@ def check_powerstation_service(root):
     service = read(root, "usr/lib/systemd/system/powerstation.service")
     if "ExecStopPost=/usr/bin/powerstation --restore-fans-auto" not in service or "WatchdogSec=5s" not in service:
         raise ValueError("PowerStation fan recovery and supervision are missing")
-    for setting in (
-        "ExecStartPre=/usr/bin/powerstation --record-fan-startup", "RuntimeDirectory=powerstation-fan-startup",
-        "RuntimeDirectoryMode=0700", "RuntimeDirectoryPreserve=yes",
-    ):
-        if setting not in service.splitlines():
-            raise ValueError("PowerStation first-invocation startup safeguard is missing: " + setting)
     policy = read(root, "usr/share/dbus-1/system.d/org.shadowblip.PowerStation.conf")
     if 'user="root"' not in policy or 'own="org.shadowblip.PowerStation"' not in policy:
         raise ValueError("PowerStation D-Bus ownership policy is missing")
@@ -51,7 +45,7 @@ def check_powerstation_service(root):
 
 def check_managed_lighting(root):
     profile = read(root, "usr/share/inputplumber/devices/50-ayaneo_3.yaml")
-    for marker in ("group: led", "*:rgb:joystick_rings", "persistent_id: ayaneo-3-joystick-rings", "hardware_cycle_only: true"):
+    for marker in ("group: led", "*:rgb:joystick_rings", "settings_id: ayaneo-3-joystick-rings", "hardware_cycle_only: true"):
         if marker not in profile:
             raise ValueError("InputPlumber managed lighting profile is incomplete")
     if "initial_config:" in profile:

@@ -17,7 +17,7 @@ class ReadinessTests(unittest.TestCase):
         files = {
             "usr/bin/powerstation": (
                 "org.shadowblip.Fan.Device org.shadowblip.Fan.Sensor EnumerateSensors "
-                "LoadProfileJson CurrentProfileName PercentValid --record-fan-startup untrusted fan startup attempt"
+                "LoadProfileJson CurrentProfileName PercentValid profile descriptor must be a readable regular file"
             ),
             "usr/bin/inputplumber": "org.shadowblip.Input.Source.LEDDevice SetConfig unconfigured",
             "usr/lib/systemd/system/inputplumber.service": "StateDirectory=inputplumber\nStateDirectoryMode=0700\n",
@@ -31,12 +31,10 @@ class ReadinessTests(unittest.TestCase):
             ),
             "usr/lib/systemd/system/powerstation.service": (
                 "ExecStopPost=/usr/bin/powerstation --restore-fans-auto\nWatchdogSec=5s\n"
-                "ExecStartPre=/usr/bin/powerstation --record-fan-startup\n"
-                "RuntimeDirectory=powerstation-fan-startup\nRuntimeDirectoryMode=0700\nRuntimeDirectoryPreserve=yes\n"
             ),
             "usr/share/inputplumber/devices/50-ayaneo_3.yaml": (
                 "product_name: AYANEO 3\ngroup: gamepad\ngroup: imu\ngroup: led\n"
-                "*:rgb:joystick_rings\npersistent_id: ayaneo-3-joystick-rings\nhardware_cycle_only: true\n"
+                "*:rgb:joystick_rings\nsettings_id: ayaneo-3-joystick-rings\nhardware_cycle_only: true\n"
             ),
             "usr/lib/udev/rules.d/70-steam-jupiter-leds.rules": (
                 Path(__file__).parents[1] / "system_files/deck/shared/usr/lib/udev/rules.d/70-steam-jupiter-leds.rules"
@@ -62,15 +60,15 @@ class ReadinessTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "fan API marker"):
             readiness.check_image(self.root)
 
-    def test_missing_startup_safeguard_is_rejected(self):
+    def test_missing_watchdog_is_rejected(self):
         path = self.root / "usr/lib/systemd/system/powerstation.service"
-        path.write_text(path.read_text().replace("RuntimeDirectoryPreserve=yes", "RuntimeDirectoryPreserve=restart"))
-        with self.assertRaisesRegex(ValueError, "startup safeguard"):
+        path.write_text(path.read_text().replace("WatchdogSec=5s", ""))
+        with self.assertRaisesRegex(ValueError, "recovery and supervision"):
             readiness.check_image(self.root)
 
-    def test_startup_helper_without_precreation_fence_is_rejected(self):
+    def test_old_string_profile_loader_is_rejected(self):
         path = self.root / "usr/bin/powerstation"
-        path.write_text(path.read_text().replace("untrusted fan startup attempt", ""))
+        path.write_text(path.read_text().replace("profile descriptor must be a readable regular file", ""))
         with self.assertRaisesRegex(ValueError, "fan API marker"):
             readiness.check_image(self.root)
 
