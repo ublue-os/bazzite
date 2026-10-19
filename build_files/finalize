@@ -89,6 +89,32 @@ BAZZITE_CONFIG=(/usr/libexec/bazzite-* /usr/libexec/hwsupport /usr/share/bazzite
 setfattr -n user.component -v "bazzite-init" "${BAZZITE_CONFIG[@]}"
 setfattr -n user.update-interval -v "monthly" "${BAZZITE_CONFIG[@]}"
 
+for BAZZITE_HELPER in /usr/bin/bazzite-* /usr/bin/cec-control /usr/bin/startplasma-steamos-oneshot; do
+    if [[ -f "${BAZZITE_HELPER}" ]]; then
+        setfattr -n user.component -v "bazzite-init" "${BAZZITE_HELPER}"
+        setfattr -n user.update-interval -v "monthly" "${BAZZITE_HELPER}"
+    fi
+done
+
+BAZZITE_JUST=/usr/share/ublue-os/just
+setfattr -n user.component -v "bazzite-just" "${BAZZITE_JUST}"
+setfattr -n user.update-interval -v "quarterly" "${BAZZITE_JUST}"
+
+BAZZITE_YAFTI=/usr/share/yafti
+setfattr -n user.component -v "bazzite-yafti" "${BAZZITE_YAFTI}"
+setfattr -n user.update-interval -v "quarterly" "${BAZZITE_YAFTI}"
+
+BAZZITE_BAZAAR=/usr/share/ublue-os/bazaar
+setfattr -n user.component -v "bazzite-bazaar" "${BAZZITE_BAZAAR}"
+setfattr -n user.update-interval -v "quarterly" "${BAZZITE_BAZAAR}"
+
+for GNOME_EXTENSION in /usr/share/gnome-shell/extensions/*; do
+    if [[ -d "${GNOME_EXTENSION}" ]]; then
+        setfattr -n user.component -v "gnome-extension-${GNOME_EXTENSION##*/}" "${GNOME_EXTENSION}"
+        setfattr -n user.update-interval -v "weekly" "${GNOME_EXTENSION}"
+    fi
+done
+
 for WALLPAPERS in /usr/share/wallpapers /usr/share/backgrounds /usr/share/gnome-background-properties; do
     if [[ -d "${WALLPAPERS}" ]]; then
         setfattr -n user.component -v "bazzite-wallpapers" "${WALLPAPERS}"
@@ -104,10 +130,28 @@ BAZZITE_ASSETS=(
     /usr/share/pixmaps/system-logo-white.png
     /usr/share/plasma/avatars
     /usr/share/plymouth/themes/spinner/watermark.png
-    /usr/share/ublue-os/bazaar
+    /usr/share/ublue-os/bazaar/*.jxl
+    /usr/share/ublue-os/bazzite/*.webm
 )
 setfattr -n user.component -v "bazzite-assets" "${BAZZITE_ASSETS[@]}"
-setfattr -n user.update-interval -v "quarterly" "${BAZZITE_ASSETS[@]}"
+setfattr -n user.update-interval -v "yearly" "${BAZZITE_ASSETS[@]}"
+WAYDROID_ASSETS=/usr/share/applications/Waydroid
+if [[ -d "${WAYDROID_ASSETS}" ]]; then
+    setfattr -n user.component -v "bazzite-assets" "${WAYDROID_ASSETS}"
+    setfattr -n user.update-interval -v "yearly" "${WAYDROID_ASSETS}"
+fi
+
+for AUDIO_PROFILES in /usr/share/{pipewire,wireplumber}/hardware-profiles; do
+    if [[ -d "${AUDIO_PROFILES}" ]]; then
+        setfattr -n user.component -v "bazzite-audio-config" "${AUDIO_PROFILES}"
+        setfattr -n user.update-interval -v "quarterly" "${AUDIO_PROFILES}"
+        # Impulse responses are large and rarely change alongside profile tuning.
+        find "${AUDIO_PROFILES}" -type f -name '*.wav' \
+            -exec setfattr -n user.component -v "bazzite-audio-config" {} + \
+            -exec setfattr -n user.update-interval -v "quarterly" {} +
+    fi
+done
+
 find /usr/share/icons/hicolor -type f \
     \( -name 'bazzite-logo*' -o -name 'distributor-logo*' -o -name 'framework.svg' \) \
     -exec setfattr -n user.component -v "bazzite-icons" {} + \

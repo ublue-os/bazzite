@@ -17,6 +17,7 @@ cp -a /ctx/firmware/. /tmp/firmware
 # Mark each firmware file with the 'bazzite-nonfree' component attribute.
 echo "==> Tagging firmware as non-free..."
 find /tmp/firmware -type f -exec setfattr -n user.component -v "bazzite-nonfree" {} +
+find /tmp/firmware -type f -exec setfattr -n user.update-interval -v "yearly" {} +
 
 # -- Remove git metadata --
 # Clean up git history to keep the image size minimal.
