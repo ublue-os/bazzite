@@ -64,30 +64,13 @@ dnf5 -y install \
 echo "==> Installing libfreeaptx..."
 dnf5 -y install libfreeaptx
 
-# -- Install multimedia codecs & MakeMKV --
-# OpenH264 (both arches), libbluray, and MakeMKV from fedora-multimedia.
-echo "==> Installing OpenH264, libbluray, and MakeMKV..."
+# -- Install multimedia codecs --
+# OpenH264 (both arches) and libbluray from fedora-multimedia.
+echo "==> Installing OpenH264 and libbluray..."
 dnf5 -y install --allowerasing \
     openh264.x86_64 \
     openh264.i686
 
 dnf5 -y install \
     libbluray \
-    libbluray-utils \
-    makemkv
-
-# -- Hide MakeMKV from application menu --
-# Mark as hidden so it doesn't clutter the app launcher.
-echo "==> Hiding MakeMKV from application menu..."
-desktop-file-edit \
-    --set-key=Hidden \
-    --set-value=true \
-    /usr/share/applications/makemkv.desktop
-
-# -- Create library symlinks --
-# Symlink libmmbd.so to libaacs.so and libbdplus.so for Blu-ray decryption.
-echo "==> Creating library symlinks..."
-ln -sf /usr/lib64/libmmbd.so.0 /usr/lib64/libaacs.so.0
-ln -sf /usr/lib64/libmmbd.so.0 /usr/lib64/libaacs.so.0.7.2
-ln -sf /usr/lib64/libmmbd.so.0 /usr/lib64/libbdplus.so.0
-ln -sf /usr/lib64/libmmbd.so.0 /usr/lib64/libbdplus.so.0.2.0
+    libbluray-utils
