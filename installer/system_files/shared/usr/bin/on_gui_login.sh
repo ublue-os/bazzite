@@ -282,11 +282,11 @@ for device in "${!mount[@]}"; do
             grub=("$dir"/grub*.efi)
             (( ! ${#grub[@]} )) && continue
             if [[ "$BAZZITE_INSTALLER_LOCALE" == sv* ]]; then
-                      echo "GRUB-starthanteraren verkar vara installerad på $device vid ${dir#$mnt}\nBazzite <a href=\"http://127.0.0.1:1290/General/Installation_Guide/troubleshoot_guide/#error-code-1\">har inte stöd för dubbelstart med någon annan Linux-installation.</a>\nInstallationer på denna disk som försöker återanvända EFI-partitionen kommer att misslyckas.\nInstallera antingen Bazzite på en annan disk eller ta bort denna partition eller starthanterare.\n\nSe <a href=\"http://127.0.0.1:1290/General/Installation_Guide/troubleshoot_guide/#how-to-remove-an-orphaned-copy-of-grub\">dokumentationen</a> för anvisningar.\n"
-                  else
-                      echo "Another Linux bootloader seems to be installed on $device at ${dir#$mnt}\n.Bazzite <a href=\"http://127.0.0.1:1290/General/Installation_Guide/troubleshoot_guide/#error-code-1\">does not support dualbooting with any other Linux.</a> \nInstalling Bazzite to this drive  will fail.\nEither Bazzite 1) must be installed to a different disk, or 2) this boot loader must be removed. The installed Linux, if still functional, will no longer be bootable if you proceed with option 2). \n\nPlease see the <a href=\"http://127.0.0.1:1290/General/Installation_Guide/troubleshoot_guide/#how-to-remove-an-orphaned-copy-of-grub\">documentation</a> for instructions.\n"
-                 fi
-        done
+                                echo "GRUB-starthanteraren verkar vara installerad på $device vid ${dir#$mnt}\nBazzite <a href=\"http://127.0.0.1:1290/General/Installation_Guide/troubleshoot_guide/#error-code-1\">har inte stöd för dubbelstart med någon annan Linux-installation.</a>\nInstallationer på denna disk som försöker återanvända EFI-partitionen kommer att misslyckas.\nInstallera antingen Bazzite på en annan disk eller ta bort denna partition eller starthanterare.\n\nSe <a href=\"http://127.0.0.1:1290/General/Installation_Guide/troubleshoot_guide/#how-to-remove-an-orphaned-copy-of-grub\">dokumentationen</a> för anvisningar.\n"
+                            else
+                                echo "Another Linux bootloader seems to be installed on $device at ${dir#$mnt}\n.Bazzite <a href=\"http://127.0.0.1:1290/General/Installation_Guide/troubleshoot_guide/#error-code-1\">does not support dualbooting with any other Linux.</a> \nInstalling Bazzite to this drive  will fail.\nEither Bazzite 1) must be installed to a different disk, or 2) this boot loader must be removed. The installed Linux, if still functional, will no longer be bootable if you proceed with option 2). \n\nPlease see the <a href=\"http://127.0.0.1:1290/General/Installation_Guide/troubleshoot_guide/#how-to-remove-an-orphaned-copy-of-grub\">documentation</a> for instructions.\n"
+                           fi
+                  done
     ' || true)
     [ "$msg" ] || continue
     serve_docs
