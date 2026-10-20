@@ -116,7 +116,6 @@ dnf5 -y swap \
     switcheroo-control cardwire
 
 dnf5 -y install \
-    --enable-repo=terra \
     cardwire-gui
 
 # -- Replace ddcutil packages with Terra variants --

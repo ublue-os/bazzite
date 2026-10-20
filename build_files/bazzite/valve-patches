@@ -54,7 +54,7 @@ dnf5 versionlock add \
 # -- Install Mesa OpenCL & 32-bit EGL --
 # intel-opencl and clinfo for OpenCL support; mesa-libEGL.i686 for 32-bit compat.
 echo "==> Installing Mesa OpenCL and 32-bit EGL..."
-dnf5 --enable-repo=terra-mesa -y install \
+dnf5 -y install \
     mesa-libEGL.i686 \
     intel-opencl \
     clinfo
@@ -67,11 +67,11 @@ dnf5 -y install libfreeaptx
 # -- Install multimedia codecs & MakeMKV --
 # OpenH264 (both arches), libbluray, and MakeMKV from fedora-multimedia.
 echo "==> Installing OpenH264, libbluray, and MakeMKV..."
-dnf5 -y install --enable-repo="*fedora-multimedia*" --allowerasing \
+dnf5 -y install --allowerasing \
     openh264.x86_64 \
     openh264.i686
 
-dnf5 -y install --enable-repo="*fedora-multimedia*" \
+dnf5 -y install \
     libbluray \
     libbluray-utils \
     makemkv

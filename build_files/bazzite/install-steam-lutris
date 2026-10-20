@@ -27,10 +27,7 @@ fi
 # -- Install gaming stack --
 # Install gamescope, Proton, Wine, and related graphics libraries.
 echo "==> Installing gaming stack..."
-dnf5 --enable-repo=terra-mesa \
-    --enable-repo=terra \
-    --enable-repo=terra-extras \
-    -y install \
+dnf5 -y install \
     terra-gamescope.x86_64 \
     terra-gamescope-libs.x86_64 \
     terra-gamescope-libs.i686 \
@@ -57,13 +54,10 @@ dnf5 --enable-repo=terra-mesa \
 # -- Install Steam and Lutris --
 # Install the main gaming launchers without weak dependencies.
 echo "==> Installing Steam and Lutris..."
-dnf5 -y --enable-repo=terra-mesa \
-    --enable-repo=terra \
-    --setopt=install_weak_deps=False \
+dnf5 -y --setopt=install_weak_deps=False \
     install steam lutris
 
-# -- Remove conflicting gamemode --
-# Remove gamemode as it conflicts with the dmemcg-based approach.
+# -- Remove feral interactive gamemode --
 echo "==> Removing gamemode..."
 dnf5 -y remove gamemode
 

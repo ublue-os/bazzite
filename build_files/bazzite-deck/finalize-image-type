@@ -51,18 +51,6 @@ sed -i \
     's@\[Desktop Entry\]@\[Desktop Entry\]\nHidden=true@g' \
     /etc/xdg/autostart/input-remapper-autoload.desktop
 
-# -- Disable COPR repos --
-# Disable the COPR repositories after installation is complete.
-echo "==> Disabling COPR repos..."
-for copr in \
-    ublue-os/staging \
-    ublue-os/packages \
-    ublue-os/bazzite \
-    ublue-os/bazzite-multilib \
-    ycollet/audinux; do
-    dnf5 -y copr disable -y "${copr}"
-done
-
 # -- Remove redundant desktop entries --
 # Clean up the bazzite-steam-bpm desktop entry if it exists.
 echo "==> Removing redundant desktop entries..."

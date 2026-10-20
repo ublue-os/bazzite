@@ -12,7 +12,6 @@ trap 'echo "::endgroup::"' EXIT
 # Install the package from the ublue-os packages Copr repository.
 echo "==> Installing ublue-os-media-automount-udev..."
 dnf5 install -y \
-    --enable-repo=copr:copr.fedorainfracloud.org:ublue-os:packages \
     ublue-os-media-automount-udev
 
 # -- Enable the automount service --

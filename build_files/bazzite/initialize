@@ -63,8 +63,6 @@ dnf5 -y config-manager \
     setopt "*terra*".priority=1 \
            "*terra*.exclude=nerd-fonts scx-tools scx-scheds"
 
-dnf5 -y config-manager disable terra-mesa
-
 dnf5 -y config-manager setopt "*bazzite*".priority=2
 
 eval "$(/ctx/dnf5-setopt setopt '*negativo17*' priority=4 exclude='mesa-* *xone*')"
