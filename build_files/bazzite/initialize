@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 #
+# Initialize
+#
 # Setup Copr repositories, install Terra packages, configure Tailscale,
 # and apply repository priorities and exclusions for Bazzite.
 #

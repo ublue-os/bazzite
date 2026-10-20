@@ -125,36 +125,6 @@ if [[ "${BASE_IMAGE_NAME}" == "silverblue" ]]; then
     rm -r /tmp/bazzite-schema-test
 fi
 
-# -- Disable rpm-ostree stage --
-echo "==> Disabling rpm-ostree stage..."
-sed -i \
-    's/stage/none/g' \
-    /etc/rpm-ostreed.conf
-
-# -- Disable repositories --
-echo "==> Disabling repositories..."
-dnf5 config-manager disable \
-    tailscale-stable \
-    copr:copr.fedorainfracloud.org:ublue-os:akmods \
-    'fedora-multimedia*' \
-    fedora-cisco-openh264 \
-    terra \
-    terra-extras \
-    terra-mesa \
-    terra-source
-
-# -- Disable Copr repositories --
-echo "==> Disabling Copr repositories..."
-for copr in \
-    ublue-os/bazzite \
-    ublue-os/bazzite-multilib \
-    ublue-os/staging \
-    ublue-os/packages \
-    ycollet/audinux \
-    che/nerd-fonts; do
-    dnf5 -y copr disable "${copr}"
-done
-
 # -- Patch setroubleshoot path --
 echo "==> Patching setroubleshoot path..."
 sed -i \

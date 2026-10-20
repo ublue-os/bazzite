@@ -11,6 +11,36 @@ trap 'echo "::endgroup::"' EXIT
 # Tell DNF5 not to keep downloaded package cache after installation.
 dnf5 config-manager setopt keepcache=0
 
+# -- Disable rpm-ostree stage --
+echo "==> Disabling rpm-ostree stage..."
+sed -i \
+    's/stage/none/g' \
+    /etc/rpm-ostreed.conf
+
+# -- Disable repositories --
+echo "==> Disabling repositories..."
+dnf5 config-manager disable \
+    tailscale-stable \
+    copr:copr.fedorainfracloud.org:ublue-os:akmods \
+    'fedora-multimedia*' \
+    fedora-cisco-openh264 \
+    terra \
+    terra-extras \
+    terra-mesa \
+    terra-source
+
+# -- Disable Copr repositories --
+echo "==> Disabling Copr repositories..."
+for copr in \
+    ublue-os/bazzite \
+    ublue-os/bazzite-multilib \
+    ublue-os/staging \
+    ublue-os/packages \
+    ycollet/audinux \
+    che/nerd-fonts; do
+    dnf5 -y copr disable "${copr}"
+done
+
 # Move user/group entries from /etc to /usr/lib so they persist across
 # chroots and container mounts.
 relocate_accounts() {

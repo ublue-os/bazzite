@@ -81,7 +81,7 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=secret,id=GITHUB_TOKEN \
     /ctx/bazzite/install-nonfree-firmware-blobs \
     && /ctx/bazzite/install-kernel-akmods \
-    && /ctx/bazzite/setup-copr-repos \
+    && /ctx/bazzite/initialize \
     && /ctx/bazzite/valve-patches \
     && /ctx/bazzite/global-remove \
     && /ctx/bazzite/install-packages \
@@ -114,8 +114,7 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     --mount=type=secret,id=GITHUB_TOKEN \
-    /ctx/bazzite-deck/setup-copr-repos \
-    && /ctx/bazzite-deck/configure-desktop \
+    /ctx/bazzite-deck/configure-desktop \
     && /ctx/bazzite-deck/install-patched-upower \
     && /ctx/bazzite-deck/install-packages \
     && /ctx/bazzite-deck/install-gamescope-session \
