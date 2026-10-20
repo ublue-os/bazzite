@@ -12,7 +12,6 @@ set -xeuo pipefail
 echo "==> Installing KDE packages..."
 
 dnf5 -y install \
-    qt \
     steamdeck-kde-presets-desktop \
     rom-properties-kf6 \
     fcitx5-{chewing,chinese-addons,hangul,m17n,mozc,table-extra} \
