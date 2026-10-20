@@ -61,22 +61,16 @@ ARG SHA_HEAD_SHORT="${SHA_HEAD_SHORT}"
 ARG VERSION_TAG="${VERSION_TAG}"
 ARG VERSION_PRETTY="${VERSION_PRETTY}"
 
-COPY system_files/desktop/shared/ system_files/desktop/${BASE_IMAGE_NAME}/ /
-# Install needed firmware blobs
-RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=bind,src=firmware,dst=/ctx/firmware,relabel=shared \
-    --mount=type=cache,dst=/var/log \
-    --mount=type=tmpfs,dst=/tmp \
-    /ctx/bazzite/install-nonfree-firmware-blobs
-
 # Copy Homebrew files from the brew image
 COPY --from=brew /system_files/ /tmp/brew_files/
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     /ctx/bazzite/copy-brew-files
 
-# Install kernel
+COPY system_files/desktop/shared/ system_files/desktop/${BASE_IMAGE_NAME}/ /
 RUN --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/cache/libdnf5 \
     --mount=type=cache,dst=/var/log \
+    --mount=type=bind,src=firmware,dst=/ctx/firmware,relabel=shared \
     --mount=type=bind,from=akmods,src=/kernel-rpms,dst=/tmp/kernel-rpms \
     --mount=type=bind,from=akmods,src=/rpms/common,dst=/tmp/rpms/common \
     --mount=type=bind,from=akmods,src=/rpms/kmods,dst=/tmp/rpms/kmods \
@@ -84,93 +78,22 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=bind,from=akmods-extra,src=/rpms/kmods,dst=/tmp/rpms/kmods-extra \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    /ctx/bazzite/install-kernel-akmods \
-    && /ctx/cleanup
-
-# Setup Copr repos
-RUN --mount=type=cache,dst=/var/cache \
-    --mount=type=cache,dst=/var/cache/libdnf5 \
-    --mount=type=cache,dst=/var/log \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=tmpfs,dst=/tmp \
-    /ctx/bazzite/setup-copr-repos \
-    && /ctx/cleanup
-
-# Install Valve's patched Mesa and Xwayland
-RUN --mount=type=cache,dst=/var/cache \
-    --mount=type=cache,dst=/var/cache/libdnf5 \
-    --mount=type=cache,dst=/var/log \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=tmpfs,dst=/tmp \
-    /ctx/bazzite/valve-patches \
-    && /ctx/cleanup
-
-# Remove unneeded packages
-RUN --mount=type=cache,dst=/var/cache \
-    --mount=type=cache,dst=/var/cache/libdnf5 \
-    --mount=type=cache,dst=/var/log \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=tmpfs,dst=/tmp \
-    /ctx/bazzite/global-remove \
-    && /ctx/cleanup
-
-# Install new packages
-RUN --mount=type=cache,dst=/var/cache \
-    --mount=type=cache,dst=/var/log \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=tmpfs,dst=/tmp \
     --mount=type=secret,id=GITHUB_TOKEN \
-    /ctx/bazzite/install-packages \
-    && /ctx/cleanup
-
-# Install Steam & Lutris, plus supporting packages
-RUN --mount=type=cache,dst=/var/cache \
-    --mount=type=cache,dst=/var/cache/libdnf5 \
-    --mount=type=cache,dst=/var/log \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=tmpfs,dst=/tmp \
-    --mount=type=secret,id=GITHUB_TOKEN \
-    /ctx/bazzite/install-steam-lutris \
-    && /ctx/cleanup
-
-# Install ujust-picker from GitHub releases
-RUN --mount=type=cache,dst=/var/cache \
-    --mount=type=cache,dst=/var/cache/libdnf5 \
-    --mount=type=cache,dst=/var/log \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=tmpfs,dst=/tmp \
-    --mount=type=secret,id=GITHUB_TOKEN \
-    /ctx/bazzite/install-ujust-picker \
-    && /ctx/cleanup
-
-# Configure KDE & GNOME
-RUN --mount=type=cache,dst=/var/cache \
-    --mount=type=cache,dst=/var/log \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=tmpfs,dst=/tmp \
-    --mount=type=secret,id=GITHUB_TOKEN \
-    /ctx/bazzite/configure-desktops \
-    && /ctx/cleanup
-
-# ublue-os-media-automount-udev, mount non-removable device partitions automatically under /media/media-automount/
-RUN --mount=type=cache,dst=/var/cache \
-    --mount=type=cache,dst=/var/cache/libdnf5 \
-    --mount=type=cache,dst=/var/log \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=tmpfs,dst=/tmp \
-    /ctx/bazzite/ublue-os-media-automount-udev \
+    /ctx/bazzite/install-nonfree-firmware-blobs \
+    && /ctx/bazzite/install-kernel-akmods \
+    && /ctx/bazzite/setup-copr-repos \
+    && /ctx/bazzite/valve-patches \
+    && /ctx/bazzite/global-remove \
+    && /ctx/bazzite/install-packages \
+    && /ctx/bazzite/install-steam-lutris \
+    && /ctx/bazzite/install-ujust-picker \
+    && /ctx/bazzite/configure-desktops \
+    && /ctx/bazzite/ublue-os-media-automount-udev \
+    && /ctx/bazzite/finalize-image-type \
     && /ctx/cleanup
 
 # Copy overrides
 COPY system_files/overrides /
-
-# Finalize desktop stage
-RUN --mount=type=cache,dst=/var/cache \
-    --mount=type=cache,dst=/var/log \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=tmpfs,dst=/tmp \
-    --mount=type=secret,id=GITHUB_TOKEN \
-    /ctx/bazzite/finalize-image-type 
 
 ################
 # DECK BUILDS
@@ -186,58 +109,19 @@ ARG VERSION_TAG="${VERSION_TAG}"
 ARG VERSION_PRETTY="${VERSION_PRETTY}"
 
 COPY system_files/deck/shared system_files/deck/${BASE_IMAGE_NAME} /
-
-# Setup Copr repos
-RUN --mount=type=cache,dst=/var/cache \
-    --mount=type=cache,dst=/var/cache/libdnf5 \
-    --mount=type=cache,dst=/var/log \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=tmpfs,dst=/tmp \
-    /ctx/bazzite-deck/setup-copr-repos \
-    && /ctx/cleanup
-
-# Configure KDE & GNOME
-RUN --mount=type=cache,dst=/var/cache \
-    --mount=type=cache,dst=/var/log \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=tmpfs,dst=/tmp \
-    /ctx/bazzite-deck/configure-desktop \
-    && /ctx/cleanup
-
-# Install Steam Deck patched UPower
-RUN --mount=type=cache,dst=/var/cache \
-    --mount=type=cache,dst=/var/log \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=tmpfs,dst=/tmp \
-    /ctx/bazzite-deck/install-patched-upower \
-    && /ctx/cleanup
-
-# Install new packages
-RUN --mount=type=cache,dst=/var/cache \
-    --mount=type=cache,dst=/var/cache/libdnf5 \
-    --mount=type=cache,dst=/var/log \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=tmpfs,dst=/tmp \
-    /ctx/bazzite-deck/install-packages \
-    && /ctx/cleanup
-
-# Install Gamescope Session Supporting changes
-# Add bootstrap_steam.tar.gz used by gamescope-session (Thanks GE & Nobara Project!)
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/cache/libdnf5 \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     --mount=type=secret,id=GITHUB_TOKEN \
-    /ctx/bazzite-deck/install-gamescope-session \
+    /ctx/bazzite-deck/setup-copr-repos \
+    && /ctx/bazzite-deck/configure-desktop \
+    && /ctx/bazzite-deck/install-patched-upower \
+    && /ctx/bazzite-deck/install-packages \
+    && /ctx/bazzite-deck/install-gamescope-session \
+    && /ctx/bazzite-deck/finalize-image-type \
     && /ctx/cleanup
-
-# Finalize Deck stage
-RUN --mount=type=cache,dst=/var/cache \
-    --mount=type=cache,dst=/var/log \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=tmpfs,dst=/tmp \
-    /ctx/bazzite-deck/finalize-image-type 
 
 ################
 # NVIDIA BUILDS
@@ -253,35 +137,23 @@ ARG NVIDIA_FLAVOR="${NVIDIA_FLAVOR:-nvidia-open}"
 ARG VERSION_TAG="${VERSION_TAG}"
 ARG VERSION_PRETTY="${VERSION_PRETTY}"
 
-# Fetch NVIDIA driver
 COPY system_files/nvidia/shared system_files/nvidia/${BASE_IMAGE_NAME} /
-
-# Remove everything that doesn't work well with NVIDIA, unset skip_if_unavailable option if was set beforehand
-RUN --mount=type=cache,dst=/var/cache \
-    --mount=type=cache,dst=/var/log \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=tmpfs,dst=/tmp \
-    /ctx/bazzite-nvidia/remove-nvidia-conflicts \
-    && /ctx/cleanup
-
-# Install NVIDIA driver
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=bind,from=akmods-nvidia,src=/rpms,dst=/tmp/rpms/nvidia \
     --mount=type=tmpfs,dst=/tmp \
     --mount=type=secret,id=GITHUB_TOKEN \
-    /ctx/bazzite-nvidia/install-nvidia-driver \
+    /ctx/bazzite-nvidia/remove-nvidia-conflicts \
+    && /ctx/bazzite-nvidia/install-nvidia-driver \
+    && /ctx/bazzite-nvidia/finalize-image-type \
     && /ctx/cleanup
 
-# Finalize NVIDIA stage
-RUN --mount=type=cache,dst=/var/cache \
-    --mount=type=cache,dst=/var/log \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=tmpfs,dst=/tmp \
-    /ctx/bazzite-nvidia/finalize-image-type 
 
-# Finalize the image based on the provided final stage
+################
+# FINALIZE & CLEANUP
+################
+
 FROM ${FINAL_STAGE}
 
 ARG IMAGE_NAME="${IMAGE_NAME:-bazzite-deck}"
