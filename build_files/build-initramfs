@@ -23,9 +23,16 @@ QUALIFIED_KERNEL="$(
         --queryformat='%{evr}.%{arch}' \
         "kernel${KERNEL_SUFFIX:+-${KERNEL_SUFFIX}}"
 )"
+INITRAMFS="/usr/lib/modules/${QUALIFIED_KERNEL}/initramfs.img"
+
+# Exclude build-specific metadata from the initramfs.
+OS_RELEASE="/usr/lib/os-release"
+TMP_OS_RELEASE=$(mktemp --tmpdir 'os-release-XXXXXXXXXX')
+cp "${OS_RELEASE}" "${TMP_OS_RELEASE}"
+sed -Ei -e '/^((OSTREE_)?(IMAGE_)?VERSION|PRETTY_NAME|BUILD_ID)=/d' "${OS_RELEASE}"
 
 # Generate a reproducible initramfs with ostree and fido2 support.
-/usr/bin/dracut \
+DRACUT_NO_XATTR=1 /usr/bin/dracut \
     --no-hostonly \
     --kver "${QUALIFIED_KERNEL}" \
     --reproducible \
@@ -33,7 +40,11 @@ QUALIFIED_KERNEL="$(
     -v \
     --add ostree \
     --add fido2 \
-    -f "/usr/lib/modules/${QUALIFIED_KERNEL}/initramfs.img"
+    -f "${INITRAMFS}"
+
+# Copy back to preserve the original os-release permissions.
+cp "${TMP_OS_RELEASE}" "${OS_RELEASE}"
+rm "${TMP_OS_RELEASE}"
 
 # Restrict read/write access to root only.
-chmod 0600 "/usr/lib/modules/${QUALIFIED_KERNEL}/initramfs.img"
+chmod 0600 "${INITRAMFS}"
