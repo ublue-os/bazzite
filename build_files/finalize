@@ -220,6 +220,5 @@ if [[ -f "${STEAM_BOOTSTRAP}" ]]; then
     setfattr -n user.update-interval -v "yearly" "${STEAM_BOOTSTRAP}"
 fi
 
-# Normalize filesystem timestamps without affecting chunkah's layer plan.
-# See: https://github.com/coreos/chunkah/issues/160
-find /usr /etc /opt -newermt '1970-01-01T00:00:00Z' -exec touch -h -a -m -d '1970-01-01T00:00:00Z' {} +
+# Catch files changed since the last stage's reset (initramfs, image-info, overrides).
+/ctx/reset-mtimes
