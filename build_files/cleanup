@@ -6,7 +6,7 @@ set -xeuo pipefail
 
 # -- Remove temporary files --
 # Clear all contents of /tmp to reclaim space used by temporary data.
-rm -rf /tmp/* || true
+rm -rf /tmp/* 2>/dev/null || true
 
 # -- Remove DNF5 log file --
 # Delete the DNF5 package manager log if it exists.

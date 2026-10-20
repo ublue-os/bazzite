@@ -18,6 +18,7 @@ declare -a REMOVE_GLOBAL=(
     firefox{,-langpacks}      # we use the flatpak
     htop                      # btop is better
     ublue-os-update-services  # we use uupd, from ublue-os/main
+    toolbox                   # distrobox is better
 )
 
 # Packages to remove on KDE (Kinoite).
@@ -25,8 +26,6 @@ declare -a REMOVE_KDE=()
 
 # Packages to remove on GNOME (Silverblue).
 declare -a REMOVE_GNOME=(
-    toolbox  # can be a global removal after KDE Gear 26.08 landed
-             # https://invent.kde.org/utilities/konsole/-/merge_requests/1207
 )
 
 # -- Build the removal list based on the base image --
