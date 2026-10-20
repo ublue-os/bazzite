@@ -89,8 +89,7 @@ RUN --mount=type=cache,dst=/var/cache \
     && /ctx/bazzite/install-ujust-picker \
     && /ctx/bazzite/configure-desktops \
     && /ctx/bazzite/ublue-os-media-automount-udev \
-    && /ctx/bazzite/finalize-image-type \
-    && /ctx/cleanup
+    && /ctx/bazzite/finalize-image-type
 
 # Copy overrides
 COPY system_files/overrides /
@@ -120,8 +119,7 @@ RUN --mount=type=cache,dst=/var/cache \
     && /ctx/bazzite-deck/install-patched-upower \
     && /ctx/bazzite-deck/install-packages \
     && /ctx/bazzite-deck/install-gamescope-session \
-    && /ctx/bazzite-deck/finalize-image-type \
-    && /ctx/cleanup
+    && /ctx/bazzite-deck/finalize-image-type
 
 ################
 # NVIDIA BUILDS
@@ -146,8 +144,7 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=secret,id=GITHUB_TOKEN \
     /ctx/bazzite-nvidia/remove-nvidia-conflicts \
     && /ctx/bazzite-nvidia/install-nvidia-driver \
-    && /ctx/bazzite-nvidia/finalize-image-type \
-    && /ctx/cleanup
+    && /ctx/bazzite-nvidia/finalize-image-type
 
 
 ################
@@ -169,7 +166,8 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=tmpfs,dst=/tmp \
     /ctx/image-info \
     && /ctx/build-initramfs \
-    && /ctx/finalize
+    && /ctx/finalize \
+    && /ctx/cleanup
 
 RUN --mount=type=tmpfs,target=/run \
     --network=none \

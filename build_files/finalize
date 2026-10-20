@@ -11,12 +11,6 @@ trap 'echo "::endgroup::"' EXIT
 # Tell DNF5 not to keep downloaded package cache after installation.
 dnf5 config-manager setopt keepcache=0
 
-# Remove stale temporary and cache directories, then recreate /var/tmp.
-rm -rf /tmp/* || true
-find /var/* -maxdepth 0 -type d \! -name cache -exec rm -fr {} \;
-mkdir -p /var/tmp
-chmod -R 1777 /var/tmp
-
 # Move user/group entries from /etc to /usr/lib so they persist across
 # chroots and container mounts.
 relocate_accounts() {
@@ -68,6 +62,7 @@ rm -rf \
     /etc/subuid- \
     /etc/subgid-
 
+# Chunkah
 # See: https://github.com/coreos/chunkah#customizing-the-layers
 RPM_OSTREE_TMPFILES=/usr/lib/rpm-ostree/tmpfiles.d
 setfattr -n user.component -v "rpm-ostree-tmpfiles.d" "${RPM_OSTREE_TMPFILES}"
