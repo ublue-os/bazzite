@@ -144,10 +144,10 @@ nvidia_hardware_helper() {
         support_status=$output
         echo "support status: $support_status"
         if [ "$support_status" == "legacy" ]; then
-            correct_image="<b>Nvidia (GTX 9xx-10xx Series)</b>\n"
+            correct_image="<b>GTX - GTX 1080 or older (LTS)</b>\n"
         fi
         if [ "$support_status" == "supported" ]; then
-            correct_image="<b>Nvidia (RTX Series | GTX 16xx Series+)</b>"
+            correct_image="<b>RTX - GTX 16xx or RTX series</b>"
         fi
         # parse image information
         if [[ $image_name == *-nvidia-open* ]]; then
@@ -179,7 +179,7 @@ nvidia_hardware_helper() {
         recommend_unknown="It is not recommended to install Bazzite as we cannot guarantee your hardware will work."
         heading_wrong_image="<b>WRONG IMAGE DETECTED</b>\n"
         detected_wrong_image="Your $support_status NVIDIA graphics card needs a different version of Bazzite.\n"
-        recommend_wrong_image="Pick $correct_image as \"vendor of your primary GPU\" on the website to download and install the correct version instead."
+        recommend_wrong_image="Pick $correct_image as your primary discrete GPU on the website to download and install the version with the correct graphics drivers instead. Please note that we do not offer a Steam Gaming Mode image for old Nvidia GPUs."
         button1="I KNOW WHAT I AM DOING. Install Bazzite Anyway:0"
         button2="Power Off:1"
         heading2="More Information"
@@ -282,11 +282,11 @@ for device in "${!mount[@]}"; do
             grub=("$dir"/grub*.efi)
             (( ! ${#grub[@]} )) && continue
             if [[ "$BAZZITE_INSTALLER_LOCALE" == sv* ]]; then
-                echo "GRUB-starthanteraren verkar vara installerad på $device vid ${dir#$mnt}\nBazzite <a href=\"http://127.0.0.1:1290/General/Installation_Guide/troubleshoot_guide/#error-code-1\">har inte stöd för dubbelstart med någon annan Linux-installation.</a>\nInstallationer på denna disk som försöker återanvända EFI-partitionen kommer att misslyckas.\nInstallera antingen Bazzite på en annan disk eller ta bort denna partition eller starthanterare.\n\nSe <a href=\"http://127.0.0.1:1290/General/Installation_Guide/troubleshoot_guide/#how-to-remove-an-orphaned-copy-of-grub\">dokumentationen</a> för anvisningar.\n"
-            else
-                echo "The GRUB bootloader seems to be installed on $device at ${dir#$mnt}\nBazzite <a href=\"http://127.0.0.1:1290/General/Installation_Guide/troubleshoot_guide/#error-code-1\">does not support dual boot with any other Linux installation.</a> \nInstalls to this disk that attempt to reuse this EFI partition will fail.\nEither Bazzite must be installed to a different disk, or this partition or boot loader must be removed.\n\nPlease see the <a href=\"http://127.0.0.1:1290/General/Installation_Guide/troubleshoot_guide/#how-to-remove-an-orphaned-copy-of-grub\">documentation</a> for instructions.\n"
-            fi
-        done
+                                echo "GRUB-starthanteraren verkar vara installerad på $device vid ${dir#$mnt}\nBazzite <a href=\"http://127.0.0.1:1290/General/Installation_Guide/troubleshoot_guide/#error-code-1\">har inte stöd för dubbelstart med någon annan Linux-installation.</a>\nInstallationer på denna disk som försöker återanvända EFI-partitionen kommer att misslyckas.\nInstallera antingen Bazzite på en annan disk eller ta bort denna partition eller starthanterare.\n\nSe <a href=\"http://127.0.0.1:1290/General/Installation_Guide/troubleshoot_guide/#how-to-remove-an-orphaned-copy-of-grub\">dokumentationen</a> för anvisningar.\n"
+                            else
+                                echo "Another Linux bootloader seems to be installed on $device at ${dir#$mnt}\n.Bazzite <a href=\"http://127.0.0.1:1290/General/Installation_Guide/troubleshoot_guide/#error-code-1\">does not support dualbooting with any other Linux.</a> \nInstalling Bazzite to this drive  will fail.\nEither Bazzite 1) must be installed to a different disk, or 2) this boot loader must be removed. The installed Linux, if still functional, will no longer be bootable if you proceed with option 2). \n\nPlease see the <a href=\"http://127.0.0.1:1290/General/Installation_Guide/troubleshoot_guide/#how-to-remove-an-orphaned-copy-of-grub\">documentation</a> for instructions.\n"
+                           fi
+                  done
     ' || true)
     [ "$msg" ] || continue
     serve_docs
