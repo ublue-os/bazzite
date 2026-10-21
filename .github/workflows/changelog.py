@@ -16,6 +16,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 # used to be its own hand-maintained copy here, which could (and did) drift
 # from the real list.
 from build import IMAGES as _BUILD_IMAGES
+from build import sbom_packages
 
 REGISTRY = "ghcr.io/ublue-os/"
 
@@ -133,7 +134,7 @@ def get_images():
         yield img, base, de
 
 
-def get_manifests(target: str):
+def get_manifests(target: str, registry: str = REGISTRY):
     out = {}
     imgs = list(get_images())
     for j, (img, _, _) in enumerate(imgs):
@@ -142,7 +143,7 @@ def get_manifests(target: str):
         for i in range(RETRIES):
             try:
                 output = subprocess.run(
-                    ["skopeo", "inspect", "docker://" + REGISTRY + img + ":" + target],
+                    ["skopeo", "inspect", "docker://" + registry + img + ":" + target],
                     check=True,
                     stdout=subprocess.PIPE,
                 ).stdout
@@ -217,18 +218,50 @@ def get_sbom(image: str, digest: str) -> dict:
     raise RuntimeError(f"No SBOM file found after pulling {sbom_ref}")
 
 
-def parse_sbom_packages(sbom: dict) -> dict[str, str]:
-    """Parse RPM packages from a Syft-format SBOM."""
-    packages = {}
-    for artifact in sbom.get("artifacts", []):
-        if artifact.get("type") != "rpm":
-            continue
-        name = artifact.get("name")
-        version = artifact.get("version")
-        if name and version:
-            if name not in packages or (":" in version and ":" not in packages[name]):
-                packages[name] = version
+def read_package_file(path: Path, img: str, tag: str) -> dict[str, str] | None:
+    """Packages from a `build.py packages` file, if it describes img:tag."""
+    try:
+        data = json.loads(path.read_text())
+        image, version, packages = data.get("image"), data.get("version"), data["packages"]
+    except (OSError, ValueError, AttributeError, KeyError):
+        return None
+    if image != img or version != tag:
+        print(f"  {path.name} is for {image}:{version}, not {img}:{tag}")
+        return None
     return packages
+
+
+def read_package_files(files_dir: Path | None, tag: str) -> dict[str, dict[str, str]]:
+    """This run's per-image `build.py packages` files that describe tag."""
+    if files_dir is None:
+        return {}
+    files = {}
+    for img in IMAGES:
+        pkgs = read_package_file(files_dir / f"packages-{img}.json", img, tag)
+        if pkgs is not None:
+            files[img] = pkgs
+    return files
+
+
+def write_release_packages(packages: dict[str, dict[str, str]], tag: str, path: Path):
+    path.write_text(json.dumps({"version": tag, "images": packages}, sort_keys=True))
+
+
+def download_release_packages(tag: str) -> dict[str, dict[str, str]]:
+    """Per-image packages from the packages.json attached to release `tag`, if it has one."""
+    cmd = ["gh", "release", "download", tag, "--pattern", "packages.json", "--output", "-"]
+    if repo := os.environ.get("GITHUB_REPOSITORY"):
+        cmd += ["--repo", repo]
+    try:
+        data = json.loads(subprocess.run(cmd, check=True, stdout=subprocess.PIPE).stdout)
+        version, images = data.get("version"), data["images"]
+    except (OSError, subprocess.CalledProcessError, ValueError, AttributeError, KeyError):
+        print(f"No packages.json on release {tag}, using SBOMs")
+        return {}
+    if version != tag or not isinstance(images, dict):
+        print(f"packages.json on release {tag} is for {version}, using SBOMs")
+        return {}
+    return images
 
 
 def tag_sort_key(tag: str):
@@ -284,19 +317,23 @@ def get_prev_tag(target: str, manifests: dict[str, Any], curr: str):
     return tags[-1]
 
 
-def get_packages(tag: str):
+def get_packages(ref: str, tag: str, files: dict[str, dict[str, str]], registry: str = REGISTRY):
     packages = {}
     imgs = list(get_images())
     for j, (img, _, _) in enumerate(imgs):
-        print(f"Getting packages for {img}:{tag} via SBOM ({j+1}/{len(imgs)})")
+        if img in files:
+            print(f"Got packages for {img}:{tag} from package file ({j+1}/{len(imgs)})")
+            packages[img] = files[img]
+            continue
+        print(f"Getting packages for {img}:{ref} via SBOM ({j+1}/{len(imgs)})")
         try:
-            full_image = REGISTRY + img
-            digest = get_image_digest(full_image, tag)
+            full_image = registry + img
+            digest = get_image_digest(full_image, ref)
             sbom = get_sbom(full_image, digest)
-            packages[img] = parse_sbom_packages(sbom)
+            packages[img] = sbom_packages(sbom)
             print(f"  Found {len(packages[img])} packages")
         except Exception as e:
-            print(f"  Failed to get packages for {img}:{tag}: {e}")
+            print(f"  Failed to get packages for {img}:{ref}: {e}")
             raise
     return packages
 
@@ -308,14 +345,21 @@ def is_nvidia(img: str, lts: bool):
         return "nvidia-open" in img or "deck-nvidia" in img
 
 
-def get_package_groups(prev_tag: str, curr_ref: str):
+def get_package_groups(
+    prev_tag: str,
+    curr_ref: str,
+    curr_tag: str,
+    curr_files: dict[str, dict[str, str]],
+    prev_files: dict[str, dict[str, str]],
+    registry: str = REGISTRY,
+):
     common = set()
     others = {k: set() for k in OTHER_NAMES.keys()}
 
-    print(f"\nFetching current packages for {curr_ref}...")
-    npkg = get_packages(curr_ref)
+    print(f"\nFetching current packages for {curr_tag}...")
+    npkg = get_packages(curr_ref, curr_tag, curr_files, registry)
     print(f"\nFetching previous packages for {prev_tag}...")
-    ppkg = get_packages(prev_tag)
+    ppkg = get_packages(prev_tag, prev_tag, prev_files, registry)
 
     keys = set(npkg.keys()) | set(ppkg.keys())
     pkg = defaultdict(set)
@@ -479,8 +523,16 @@ def generate_changelog(
     curr_tag: str,
     prev_manifests,
     manifests,
+    curr_files: dict[str, dict[str, str]] | None = None,
+    prev_files: dict[str, dict[str, str]] | None = None,
+    packages_out: Path | None = None,
+    registry: str = REGISTRY,
 ):
-    common, others, curr_packages, prev_packages = get_package_groups(prev_tag, target)
+    common, others, curr_packages, prev_packages = get_package_groups(
+        prev_tag, target, curr_tag, curr_files or {}, prev_files or {}, registry
+    )
+    if packages_out is not None:
+        write_release_packages(curr_packages, curr_tag, packages_out)
     versions = get_versions(curr_packages)
     prev_versions = get_versions(prev_packages)
 
@@ -557,7 +609,11 @@ def main():
     parser.add_argument("--pretty", help="Subject for the changelog")
     parser.add_argument("--workdir", help="Git directory for commits")
     parser.add_argument("--handwritten", help="Handwritten changelog")
+    parser.add_argument("--packages-dir", type=Path, help="This run's `build.py packages` files")
+    parser.add_argument("--packages-out", type=Path, help="Where to write packages.json for the release")
+    parser.add_argument("--registry", default=REGISTRY, help=f"Image registry prefix (default: {REGISTRY})")
     args = parser.parse_args()
+    registry = args.registry.rstrip("/") + "/"
 
     # Remove refs/tags, refs/heads, refs/remotes e.g.
     # Tags cannot include / anyway.
@@ -566,13 +622,13 @@ def main():
     if target == "main":
         target = "stable"
 
-    manifests = get_manifests(target)
+    manifests = get_manifests(target, registry)
     curr = get_release_tag(manifests)
     prev = get_prev_tag(target, manifests, curr)
     print(f"Previous tag: {prev}")
     print(f" Current tag: {curr}")
 
-    prev_manifests = get_manifests(prev)
+    prev_manifests = get_manifests(prev, registry)
     title, changelog = generate_changelog(
         args.handwritten,
         target,
@@ -582,6 +638,10 @@ def main():
         curr,
         prev_manifests,
         manifests,
+        curr_files=read_package_files(args.packages_dir, curr),
+        prev_files=download_release_packages(prev),
+        packages_out=args.packages_out,
+        registry=registry,
     )
 
     print(f"Changelog:\n# {title}\n{changelog}")
