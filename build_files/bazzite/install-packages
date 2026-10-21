@@ -118,15 +118,6 @@ dnf5 -y swap \
 dnf5 -y install \
     cardwire-gui
 
-# -- Replace ddcutil packages with Terra variants --
-# Install terra-ddcutil and terra-libddcutil from the Terra extras repository.
-echo "==> Installing Terra ddcutil packages..."
-dnf5 -y install \
-    --allowerasing \
-    --repo terra-extras \
-    terra-ddcutil \
-    terra-libddcutil
-
 # -- Disable unnecessary services --
 # Mask services that are not needed on the Bazzite image.
 echo "==> Disabling unnecessary services..."
