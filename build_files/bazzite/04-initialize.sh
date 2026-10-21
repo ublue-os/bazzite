@@ -68,7 +68,7 @@ echo "==> Configuring repository priorities and exclusions..."
 
 dnf5 -y config-manager \
     setopt "*terra*".priority=1 \
-           "*terra*.exclude=nerd-fonts"
+           "*terra*.exclude=nerd-fonts bazzite-portal"
 
 dnf5 -y config-manager setopt "*bazzite*".priority=2
 
