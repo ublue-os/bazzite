@@ -38,7 +38,6 @@ rows:
           - dev.goats.xivlauncher
           - net.retrodeck.retrodeck
           - org.libretro.RetroArch
-          - page.kramo.Cartridges
           - com.github._0negal.Viper
           - info.cemu.Cemu
           - org.DolphinEmu.dolphin-emu
