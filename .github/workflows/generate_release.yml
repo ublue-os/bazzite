@@ -33,12 +33,23 @@ jobs:
       - name: Install ORAS
         uses: oras-project/setup-oras@005458ad77f1c8facd38a094e4af2e69e5607ff4 # v2.0.2
 
+      - name: Download package versions
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: packages-*
+          merge-multiple: true
+          path: packages-in
+
       - name: Generate Release Text
         id: generate-release
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           python3 ./.github/workflows/changelog.py \
             "${{ steps.get-target.outputs.target }}" \
-            ./output.env ./changelog.md --workdir . --handwritten "${{ github.event.inputs.handwritten }}"
+            ./output.env ./changelog.md --workdir . --handwritten "${{ github.event.inputs.handwritten }}" \
+            --packages-dir packages-in --packages-out packages.json \
+            --registry "ghcr.io/${GITHUB_REPOSITORY_OWNER,,}"
           source ./output.env
           echo "title=${TITLE}" >> $GITHUB_OUTPUT
           echo "tag=${TAG}" >> $GITHUB_OUTPUT
@@ -49,5 +60,6 @@ jobs:
           name: ${{ steps.generate-release.outputs.title }}
           tag_name: ${{ steps.generate-release.outputs.tag }}
           body_path: ./changelog.md
+          files: packages.json
           make_latest: ${{ steps.get-target.outputs.target == 'stable' }}
           prerelease: ${{ steps.get-target.outputs.target != 'stable' }}
