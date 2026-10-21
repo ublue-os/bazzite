@@ -218,6 +218,7 @@ rows:
         list:
           - org.waywallen.waywallen
           - io.github.ilya_zlobintsev.LACT
+          - org.fcitx.Fcitx5
           - io.github.limo_app.limo
           - io.github.radiolamp.mangojuice
           - io.github.rfrench3.scopebuddy-gui
