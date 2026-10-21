@@ -1,0 +1,26 @@
+{
+  "title": "Changes to Fcitx5 on Bazzite",
+  "seeMoreUrl": "appstream://org.fcitx.Fcitx5",
+  "seeMoreLabel": "Download fcitx5 flatpak",
+  "body": "Fcitx5 has been removed from the Bazzite image due to packaging issues upstream.\n\nIf you use Fcitx5 for text input, install the Fcitx5 Flatpak instead.",
+  "translations": {
+    "zh": {
+      "title": "Bazzite 上的 Fcitx5 变更",
+      "body": "由于上游打包问题，Fcitx5 已从 Bazzite 系统镜像中移除。\n\n如果您使用 Fcitx5 输入文字，请改为安装 Fcitx5 Flatpak。请记得同时安装用于中文输入的 <b>Chinese addons</b> 附加组件。",
+      "seeMoreLabel": "下载 Fcitx5 Flatpak",
+      "dontShowAgainLabel": "不再显示此消息"
+    },
+    "ja": {
+      "title": "Bazzite の Fcitx5 に関する変更",
+      "body": "上流のパッケージングの問題により、Fcitx5 は Bazzite のシステムイメージから削除されました。\n\nFcitx5 で文字を入力している場合は、代わりに Fcitx5 の Flatpak をインストールしてください。日本語入力用の <b>Mozc</b> アドオンも忘れずにインストールしてください。",
+      "seeMoreLabel": "Fcitx5 Flatpak をダウンロード",
+      "dontShowAgainLabel": "今後このメッセージを表示しない"
+    },
+    "ko": {
+      "title": "Bazzite의 Fcitx5 변경 사항",
+      "body": "업스트림 패키징 문제로 인해 Bazzite 시스템 이미지에서 Fcitx5가 제거되었습니다.\n\nFcitx5로 텍스트를 입력하고 있다면 대신 Fcitx5 Flatpak을 설치해 주세요. 한국어 입력을 위한 <b>Hangul</b> 추가 기능도 함께 설치하는 것을 잊지 마세요.",
+      "seeMoreLabel": "Fcitx5 Flatpak 다운로드",
+      "dontShowAgainLabel": "이 메시지를 다시 표시하지 않기"
+    }
+  }
+}

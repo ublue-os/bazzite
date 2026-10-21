@@ -11,6 +11,29 @@ set -o pipefail
 declare -r ANNOUNCEMENTS_DIR=/usr/share/ublue-os/announcements
 declare -r ANNOUNCEMENTS_SEEN_DIR="$HOME/.local/share/bazzite/announcements_seen"
 
+message_locale="${LC_ALL:-${LC_MESSAGES:-${LANG:-en}}}"
+message_locale="${message_locale%%.*}"
+message_locale="${message_locale%%@*}"
+case "$message_locale" in
+    C|POSIX) language_preferences=en ;;
+    *) language_preferences="${LANGUAGE:-$message_locale}" ;;
+esac
+IFS=: read -r -a languages <<<"$language_preferences"
+locale_candidates=()
+for language in "${languages[@]}"; do
+    language="${language%%.*}"
+    language="${language%%@*}"
+    language="${language//-/_}"
+    locale_candidates+=("$language" "${language%%_*}")
+done
+locales_json=$(jq -cn --args '$ARGS.positional' "${locale_candidates[@]}") || exit 1
+
+get_localized_field() {
+    jq -r --arg field "$1" --arg fallback "$2" --argjson locales "$locales_json" '
+        first(.translations[$locales[]][$field] // empty) // .[$field] // $fallback
+    ' <<<"$_msg_file_contents"
+}
+
 # Get the sha256 hash of a message file, disregarding whitespaces.
 #
 # Args:
@@ -47,25 +70,26 @@ for msg_file in "$ANNOUNCEMENTS_DIR"/*.msg.json; do
         #   - seeMoreUrl: The url to open when the button "See more" is pressed.
         #   - if: shell line to execute to check whenever the message should display.
         #         It wont override the pressence of the seen message file.
-        unset -v _msg_file_contents title body see_more_url if
+        unset -v _msg_file_contents title body see_more_url see_more_label dont_show_again_label if
 
         _msg_file_contents="$(<"$msg_file")"
-        title=$(jq -r '.title // ""' <<<"$_msg_file_contents")
-        body=$(jq -r '.body // ""' <<<"$_msg_file_contents")
+        title=$(get_localized_field title "") || exit
+        body=$(get_localized_field body "") || exit
+        see_more_label=$(get_localized_field seeMoreLabel "See more") || exit
+        dont_show_again_label=$(get_localized_field dontShowAgainLabel "Dont show me this again") || exit
         see_more_url=$(jq -r '.seeMoreUrl // ""' <<<"$_msg_file_contents")
         if=$(jq -r '.if // ""' <<<"$_msg_file_contents")
         unset -v _msg_file_contents
 
         (eval "$if") || exit
 
-        notify_cmd="/usr/bin/notify-send --app-name=\"Announcements\" --expire-time=0"
-        notify_cmd+=" \"${title:+$title}\" \"${body:+$body}\""
+        notify_cmd=(/usr/bin/notify-send --app-name="Announcements" --expire-time=0 "$title" "$body")
         if [[ -n "$see_more_url" ]]; then
-            notify_cmd+=" --action=\"see_more=See more\""
+            notify_cmd+=("--action=see_more=$see_more_label")
         fi
-        notify_cmd+=' --action="dont_show_again=Dont show me this again"'
+        notify_cmd+=("--action=dont_show_again=$dont_show_again_label")
 
-        action=$(eval "$notify_cmd") || exit
+        action=$("${notify_cmd[@]}") || exit
         case "$action" in
         see_more)
             xdg-open "$see_more_url"
