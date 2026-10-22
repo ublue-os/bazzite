@@ -680,7 +680,7 @@ get-emudeck ACTION="":
     install_emudeck() {
         remote_appimage_url="$(
             curl -s https://api.github.com/repos/EmuDeck/emudeck-electron/releases/latest | \
-            jq -r ".assets[] | select(.name | test(\".*AppImage\")) | .browser_download_url"
+            jq -r ".assets[] | select(.name | test(\".*x86_64.AppImage\")) | .browser_download_url"
         )"
         just _install_appimage_file "$remote_appimage_url"
     }
