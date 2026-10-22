@@ -18,7 +18,7 @@ BAZZITE_CONFIG_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/bazzite"
 mkdir -p "$BAZZITE_CONFIG_DIR"
 
 # SCRIPT VERSION
-USER_SETUP_VER=57
+USER_SETUP_VER=58
 USER_SETUP_VER_FILE="$BAZZITE_CONFIG_DIR/version"
 USER_SETUP_FEDORA_VER_FILE="$BAZZITE_CONFIG_DIR/fedora_version"
 USER_SETUP_IMAGE_VER_FILE=$BAZZITE_CONFIG_DIR/image_name""
@@ -294,6 +294,16 @@ wp_audio_sinks() {
 
 if [[ ":83E1:ROG Ally RC71L:" =~ ":$SYS_ID:" ]]; then
   wpctl set-volume $(wp_audio_sinks | grep "17h/19h" | sed 's@^[^0-9]*\([0-9]\+\).*@\1@') 100% || true
+fi
+
+# fcitx5 flatpak migration
+if [[ ! -f "$BAZZITE_CONFIG_DIR/fcitx5-fix" ]]; then
+  touch "$BAZZITE_CONFIG_DIR/fcitx5-fix"
+  if [[ -d ~/.local/share/fcitx5 ]] && [[ -n "$(ls -A ~/.local/share/fcitx5 2>/dev/null)" ]]; then
+    echo "Configuration files found under ~/.local/share/fcitx5"
+    echo "Copying configuration to ~/.var/app/org.fcitx.Fcitx5/data..."
+    cp -r ~/.local/share/fcitx5 ~/.var/app/org.fcitx.Fcitx5/data
+  fi
 fi
 
 # Prevent future executions
