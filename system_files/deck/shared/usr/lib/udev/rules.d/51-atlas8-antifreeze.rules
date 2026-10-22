@@ -1,0 +1,1 @@
+ACTION=="add", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="0502", ATTRS{idProduct}=="f901", TAG+="systemd", ENV{SYSTEMD_WANTS}+="atlas8-antifreeze.service"

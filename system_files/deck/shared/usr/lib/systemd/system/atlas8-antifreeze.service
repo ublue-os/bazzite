@@ -1,0 +1,11 @@
+[Unit]
+Description=Prevent Atlas8 from freezing from some buttons (disable this when inputplumber has support for the buttons)
+
+[Service]
+Type=simple
+ExecStart=/usr/libexec/atlas8-antifreeze
+ExecStop=pkill hid-recorder
+Restart=yes
+
+[Install]
+WantedBy=default.target
