@@ -1,0 +1,18 @@
+#!/bin/bash
+pids=()
+
+# Stop the inputs from Acer Predator Atlas8 from freezing when pressing certain buttons that are not implemented yet
+for d in /sys/class/hidraw/hidraw*; do
+  [ -r "$d/device/uevent" ] || continue
+  if grep -qiE 'HID_ID=.*00000502.*0000F901' "$d/device/uevent"; then
+    node="/dev/${d##*/}"
+    hid-recorder "$node" >/dev/null 2>&1 &
+    pids+=("$!")
+  fi
+done
+
+if ((${#pids[@]})); then
+  wait
+else
+  echo "No matching hidraw nodes found."
+fi

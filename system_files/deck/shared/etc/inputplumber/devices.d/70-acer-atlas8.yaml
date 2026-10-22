@@ -1,0 +1,43 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/ShadowBlip/InputPlumber/main/rootfs/usr/share/inputplumber/schema/composite_device_v1.json
+version: 1
+kind: CompositeDevice
+name: "Acer Atlas 8"
+
+single_source: false
+
+# Automatically manage this device when connected
+options:
+  auto_manage: true
+
+matches:
+  - dmi_data:
+      board_name: F900_PTG
+      sys_vendor: Acer
+
+source_devices:
+  - group: keyboard
+    evdev:
+      name: "  Xbox360 Controller for Windows Keyboard"
+      vendor_id: "0502"
+      product_id: "f901"
+      handler: event*
+  - group: gamepad
+    evdev:
+      name: "  Xbox360 Controller for Windows"
+      vendor_id: "0502"
+      product_id: "f901"
+      handler: event*
+  - group: gamepad
+    evdev:
+      name: Generic X-Box pad
+      vendor_id: "0502"
+      product_id: "f901"
+      handler: event*
+        
+capability_map_id: acer_atlas8
+
+# Ensure your target layout supports these buttons (e.g., xbox-elite handles Guide/QAM)
+target_devices:
+  - xbox-elite
+  - mouse
+  - keyboard
