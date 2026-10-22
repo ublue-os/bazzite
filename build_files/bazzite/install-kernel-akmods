@@ -88,7 +88,9 @@ echo "==> Installing extra akmods..."
     /tmp/rpms/{extra,kmods-extra}/*sc0710*.rpm \
     /tmp/rpms/{extra,kmods-extra}/*nct6687d*.rpm \
     /tmp/rpms/{extra,kmods-extra}/*system76*.rpm \
-    /tmp/rpms/{extra,kmods-extra}/*vhba*.rpm
+    /tmp/rpms/{extra,kmods-extra}/*vhba*.rpm \
+    /tmp/rpms/{extra,kmods-extra}/*trueforce*.rpm \
+    /tmp/rpms/{extra,kmods-extra}/*ayaneo*.rpm
 
 # -- Restore original kernel install.d scripts --
 # Move the backed-up install scripts back to their original names.
