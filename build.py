@@ -813,6 +813,32 @@ def cmd_sbom(args: argparse.Namespace) -> int:
     return 0
 
 
+def sbom_packages(sbom: dict) -> dict[str, str]:
+    """RPM name -> version from a syft-json SBOM, preferring an epoch-qualified version."""
+    packages = {}
+    for artifact in sbom.get("artifacts", []):
+        if artifact.get("type") != "rpm":
+            continue
+        name = artifact.get("name")
+        version = artifact.get("version")
+        if name and version:
+            if name not in packages or (":" in version and ":" not in packages[name]):
+                packages[name] = version
+    return packages
+
+
+def cmd_packages(args: argparse.Namespace) -> int:
+    """Write the image's RPM versions next to its SBOM, for changelog.py."""
+    sbom_path = Path(args.sbom)
+    packages_path = sbom_path.parent / f"packages-{args.image}.json"
+    packages = sbom_packages(json.loads(sbom_path.read_bytes()))
+    packages_path.write_text(
+        json.dumps({"image": args.image, "version": args.version, "packages": packages}, sort_keys=True)
+    )
+    print(json.dumps({"packages": str(packages_path)}))
+    return 0
+
+
 def cmd_test(args: argparse.Namespace) -> int:
     """Run the goss test suite against a built image. Thin passthrough so CI and
     local iteration share one entrypoint; tests/dgoss/ itself is untouched.
@@ -1031,6 +1057,12 @@ def build_parser() -> argparse.ArgumentParser:
     p_sbom.add_argument("--version-tag", default="dev")
     p_sbom.add_argument("--syft-cmd", default="syft")
     p_sbom.set_defaults(func=cmd_sbom)
+
+    p_packages = sub.add_parser("packages", help="write an image's RPM versions from its SBOM, for release notes")
+    p_packages.add_argument("--image", required=True, choices=sorted(IMAGES))
+    p_packages.add_argument("--sbom", required=True)
+    p_packages.add_argument("--version", required=True)
+    p_packages.set_defaults(func=cmd_packages)
 
     p_test = sub.add_parser("test", help="run the goss test suite against an image ref")
     p_test.add_argument("--ref", required=True)

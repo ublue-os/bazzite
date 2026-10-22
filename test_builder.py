@@ -554,3 +554,26 @@ def test_sbom_attach_passes_relative_path_from_sbom_dir(caplog):
     assert line.startswith("+ (cd /tmp/sbom-xyz && oras attach")
     assert line.endswith(" sbom.json)")
     assert "/tmp/sbom-xyz/sbom.json" not in line
+
+
+def test_sbom_packages_keeps_rpms_and_prefers_epoch_version():
+    sbom = {"artifacts": [
+        {"type": "rpm", "name": "mesa-filesystem", "version": "26.2.4-1.fc45"},
+        {"type": "rpm", "name": "mesa-filesystem", "version": "1:26.2.4-1.fc45"},
+        {"type": "rpm", "name": "mesa-filesystem", "version": "26.2.4-1.fc45"},
+        {"type": "python", "name": "requests", "version": "2.32.0"},
+        {"type": "rpm", "name": "kernel-core"},
+    ]}
+    assert b.sbom_packages(sbom) == {"mesa-filesystem": "1:26.2.4-1.fc45"}
+
+
+def test_cmd_packages_writes_versioned_file_next_to_sbom(tmp_path, capsys):
+    sbom = tmp_path / "sbom.json"
+    sbom.write_text(json.dumps({"artifacts": [{"type": "rpm", "name": "steam", "version": "1.0.0.87-5.fc45"}]}))
+    version = f"unstable-{FEDORA}.20261021.3"
+    assert b.main(["packages", "--image", "bazzite-deck", "--sbom", str(sbom), "--version", version]) == 0
+    out = json.loads(capsys.readouterr().out)
+    assert out == {"packages": str(tmp_path / "packages-bazzite-deck.json")}
+    assert json.loads((tmp_path / "packages-bazzite-deck.json").read_text()) == {
+        "image": "bazzite-deck", "version": version, "packages": {"steam": "1.0.0.87-5.fc45"},
+    }

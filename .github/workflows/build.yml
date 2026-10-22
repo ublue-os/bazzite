@@ -310,6 +310,26 @@ jobs:
           du -sh "${sbom}"
           echo "SBOM=${sbom}" >> "$GITHUB_OUTPUT"
 
+      - name: Write package versions
+        if: github.event_name != 'pull_request'
+        id: packages
+        env:
+          IMAGE: ${{ matrix.image }}
+          SBOM: ${{ steps.generate-sbom.outputs.SBOM }}
+          VERSION: ${{ steps.resolve.outputs.version }}
+        run: |
+          ./build.py packages --image "${IMAGE}" --sbom "${SBOM}" --version "${VERSION}" > packages.json
+          echo "path=$(jq -er .packages packages.json)" >> "$GITHUB_OUTPUT"
+
+      - name: Upload package versions
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: packages-${{ matrix.image }}
+          path: ${{ steps.packages.outputs.path }}
+          retention-days: 7
+          overwrite: true
+
       - name: Install dgoss
         run: |
           set -euo pipefail
