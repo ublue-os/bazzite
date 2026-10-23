@@ -21,7 +21,7 @@ for (let i = 0; i < allPanels.length; ++i) {
                     "applications:net.lutris.Lutris.desktop",
                     "applications:org.kde.konsole.desktop",
                     "applications:io.github.kolunmi.Bazaar.desktop",
-                    "applications:io.github.ublue_os.yafti_gtk.desktop",
+                    "applications:io.github.Xarishark.bazzite_portal.desktop",
                     "preferred://filemanager"
                 ]);
                 widget.reloadConfig();

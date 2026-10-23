@@ -26,7 +26,6 @@ dnf5 -y install \
     greenboot \
     greenboot-default-health-checks \
     ublue-os-selinux-workarounds \
-    bazzite-updater \
     ScopeBuddy \
     twitter-twemoji-fonts \
     google-noto-sans-cjk-fonts \
