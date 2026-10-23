@@ -30,6 +30,7 @@ if [[ -n "${AUTH_HEADER}" ]]; then
       -sSL \
       --fail \
       --retry 3 \
+      --retry-all-errors \
       --retry-delay 2 \
       --retry-max-time 60 \
       -H \
@@ -41,6 +42,7 @@ else
       -sSL \
       --fail \
       --retry 3 \
+      --retry-all-errors \
       --retry-delay 2 \
       --retry-max-time 60 \
       "${OPTIONS[@]}" \
