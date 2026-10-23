@@ -1,0 +1,11 @@
+#!/usr/bin/bash
+# Reset GPU DPM power profile after resume to clear stale telemetry and clocks.
+# TDP is managed by SteamOS Manager and must follow the user's selected limit.
+
+for card_perf in /sys/class/drm/card*/device/power_dpm_force_performance_level; do
+    if [ -w "$card_perf" ]; then
+        echo "manual" > "$card_perf" 2>/dev/null || true
+        sleep 0.1
+        echo "auto" > "$card_perf" 2>/dev/null || true
+    fi
+done
