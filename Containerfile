@@ -302,19 +302,19 @@ RUN --mount=type=cache,dst=/var/cache \
     systemctl mask iscsi && \
     systemctl mask systemd-remount-fs.service && \
     systemctl mask fedora-atomic-desktop-appstream-cache-refresh && \
-    mkdir -p /usr/lib/extest/ && \
-    EXTEST_RELEASE=$(/ctx/ghcurl https://api.github.com/repos/ublue-os/extest/releases/latest) \
+    mkdir -p /usr/lib/extest /usr/lib64/extest; \
+    EXTEST_RELEASE=$(/ctx/ghcurl https://api.github.com/repos/ublue-os/extest/releases/latest) && \
     for asset in libextest.so libextest64.so; do \
         url=$(jq -r --arg name "${asset}" \
-            '.assets[] | select(.name == $name).browser_download_url' <<< "${EXTEST_RELEASE}") \
+            '.assets[] | select(.name == $name).browser_download_url' <<< "${EXTEST_RELEASE}"); \
         if [[ "${asset}" == "libextest64.so" ]]; then \
-            destination=/usr/lib64/extest/libextest.so \
+            destination=/usr/lib64/extest/libextest.so; \
         else \
-            destination=/usr/lib/extest/libextest.so \
-        fi \
-        /ctx/ghcurl "${url}" -Lo "${destination}" \
-    done \
-    unset -v EXTEST_RELEASE asset url destination \
+            destination=/usr/lib/extest/libextest.so; \
+        fi; \
+        /ctx/ghcurl "${url}" -Lo "${destination}"; \
+    done && \
+    unset -v EXTEST_RELEASE asset url destination && \
     /ctx/ghcurl "https://github.com/ykshek/Sunshine/raw/1347f9ef290c089b815cf186f7d361470bdb9ef7/src_assets/linux/misc/postinst" -Lo /usr/libexec/sunshine-postinst && \
     chmod +x /usr/libexec/sunshine-postinst && \
     setfattr -n user.component -v "extest" /usr/lib/extest/libextest.so && \
