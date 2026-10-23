@@ -106,7 +106,8 @@ dnf5 -y install \
     ls-iommu \
     sbsigntools \
     xdg-native-messaging-proxy \
-    cicpoffs
+    cicpoffs \
+    openssl3-libs
 
 # -- Replace switcheroo-control with cardwire --
 # Swap in cardwire (and its GUI) from the Terra repository.
