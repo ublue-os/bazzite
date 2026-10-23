@@ -1,5 +1,5 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/ShadowBlip/InputPlumber/main/rootfs/usr/share/inputplumber/schema/composite_device_v1.json
-version: 1
+version: 2
 kind: CompositeDevice
 name: "Acer Atlas 8"
 
@@ -33,6 +33,15 @@ source_devices:
       vendor_id: "0502"
       product_id: "f901"
       handler: event*
+  # Atlas 8 QAM button (tap)
+  - group: keyboard
+    hidraw:
+      vendor_id: 0x0502
+      product_id: 0xf901
+      interface_num: 2
+    capability_map_id: acer_atlas8_hid_type1
+
+
         
 capability_map_id: acer_atlas8
 
