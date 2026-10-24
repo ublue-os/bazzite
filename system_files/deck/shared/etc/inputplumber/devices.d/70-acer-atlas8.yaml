@@ -33,6 +33,22 @@ source_devices:
       vendor_id: "0502"
       product_id: "f901"
       handler: event*
+  # Atlas 8 QAM button (tap)
+  - group: keyboard
+    hidraw:
+      vendor_id: 0x0502
+      product_id: 0xf901
+      interface_num: 2
+    capability_map_id: acer_atlas8_hid_type1
+  # Atlas 8 Extra buttons (M1 and M2)
+  - group: keyboard
+    hidraw:
+      vendor_id: 0x0502
+      product_id: 0xf901
+      interface_num: 1
+    capability_map_id: acer_atlas8_hid_type2
+
+
         
 capability_map_id: acer_atlas8
 

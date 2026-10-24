@@ -91,6 +91,7 @@ dnf5 -y install \
     stress-ng \
     snapper \
     btrfs-assistant \
+    btrfsmaintenance \
     edk2-ovmf \
     lsb_release \
     uupd \
