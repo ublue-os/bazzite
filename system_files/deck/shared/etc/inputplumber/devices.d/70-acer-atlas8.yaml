@@ -1,5 +1,5 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/ShadowBlip/InputPlumber/main/rootfs/usr/share/inputplumber/schema/composite_device_v1.json
-version: 2
+version: 1
 kind: CompositeDevice
 name: "Acer Atlas 8"
 
