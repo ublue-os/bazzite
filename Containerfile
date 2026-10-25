@@ -109,6 +109,12 @@ ARG VERSION_TAG="${VERSION_TAG}"
 ARG VERSION_PRETTY="${VERSION_PRETTY}"
 
 COPY system_files/deck/shared system_files/deck/${BASE_IMAGE_NAME} /
+
+# Append the Deck category after its image-specific files have been copied.
+RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
+    printf '\n' >> /usr/share/bazzite-portal/tools.yml && \
+    cat /ctx/portal-tools/tools-deck.yml >> /usr/share/bazzite-portal/tools.yml
+
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/cache/libdnf5 \
     --mount=type=cache,dst=/var/log \
@@ -137,6 +143,12 @@ ARG VERSION_TAG="${VERSION_TAG}"
 ARG VERSION_PRETTY="${VERSION_PRETTY}"
 
 COPY system_files/nvidia/shared system_files/nvidia/${BASE_IMAGE_NAME} /
+
+# Append the NVIDIA category on top of the selected desktop or Deck base.
+RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
+    printf '\n' >> /usr/share/bazzite-portal/tools.yml && \
+    cat /ctx/portal-tools/tools-nvidia.yml >> /usr/share/bazzite-portal/tools.yml
+
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \

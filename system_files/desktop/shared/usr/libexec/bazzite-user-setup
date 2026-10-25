@@ -46,6 +46,29 @@ fi
 # Handle privileged tasks
 pkexec /usr/libexec/bazzite-privileged-user-setup "$USER"
 
+# Replace existing Portal pins without adding a pin if the user removed it.
+if [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
+  qdbus org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript '
+    const oldId = "io.github.ublue_os.yafti_gtk.desktop";
+    const newId = "io.github.Xarishark.bazzite_portal.desktop";
+    panels().forEach(panel => panel.widgets().forEach(widget => {
+      if (widget.type !== "org.kde.plasma.icontasks" && widget.type !== "org.kde.plasma.taskmanager") return;
+      widget.currentConfigGroup = ["General"];
+      const pins = Array.from(widget.readConfig("launchers", []));
+      const updated = pins.map(pin => pin.replace(oldId, newId));
+      if (pins.join() !== updated.join()) {
+        widget.writeConfig("launchers", updated);
+        widget.reloadConfig();
+      }
+    }));
+  ' || exit 1
+else
+  portal_pins=$(gsettings get org.gnome.shell favorite-apps) || exit 1
+  if [[ $portal_pins == *io.github.ublue_os.yafti_gtk.desktop* ]]; then
+    gsettings set org.gnome.shell favorite-apps "${portal_pins//io.github.ublue_os.yafti_gtk.desktop/io.github.Xarishark.bazzite_portal.desktop}" || exit 1
+  fi
+fi
+
 if [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
   echo 'Running setup for Kinoite'
 
