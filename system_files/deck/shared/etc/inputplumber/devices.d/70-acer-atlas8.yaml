@@ -15,15 +15,9 @@ matches:
       sys_vendor: Acer
 
 source_devices:
-  - group: keyboard
-    evdev:
-      name: "  Xbox360 Controller for Windows Keyboard"
-      vendor_id: "0502"
-      product_id: "f901"
-      handler: event*
   - group: gamepad
     evdev:
-      name: "  Xbox360 Controller for Windows"
+      name: "  Xbox360 Controller for Windows Keyboard"
       vendor_id: "0502"
       product_id: "f901"
       handler: event*
@@ -33,8 +27,8 @@ source_devices:
       vendor_id: "0502"
       product_id: "f901"
       handler: event*
-  # Atlas 8 QAM button (tap)
-  - group: keyboard
+  # Atlas 8 QAM button
+  - group: gamepad
     hidraw:
       vendor_id: 0x0502
       product_id: 0xf901
@@ -48,11 +42,9 @@ source_devices:
       interface_num: 1
     capability_map_id: acer_atlas8_hid_type2
 
-
-        
 capability_map_id: acer_atlas8
 
-# Ensure your target layout supports these buttons (e.g., xbox-elite handles Guide/QAM)
+# The target input device(s) to emulate by default
 target_devices:
   - xbox-elite
   - mouse
