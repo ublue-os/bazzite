@@ -18,15 +18,10 @@ mapping:
   - name: Guide (hold)
     source_events:
       - keyboard: KeyLeftMeta
+      - keyboard: KeyTab
     target_event:
       gamepad:
         button: Guide
-  - name: QAM (hold)
-    source_events:
-      - keyboard: KeyF22
-    target_event:
-      gamepad:
-        button: QuickAccess2
 
 # List of events to filter from the source devices
 filtered_events: []
