@@ -70,28 +70,28 @@ IMAGES: dict[str, dict] = {
         "base_image_name": "kinoite",
         "container_target": "bazzite",
         "nvidia_base": "bazzite",
-        "nvidia_flavor": "nvidia-lts",
+        "nvidia_flavor": "nvidia-open",
         "install_nvidia": False,
     },
     "bazzite-gnome": {
         "base_image_name": "silverblue",
         "container_target": "bazzite",
         "nvidia_base": "bazzite",
-        "nvidia_flavor": "nvidia-lts",
+        "nvidia_flavor": "nvidia-open",
         "install_nvidia": False,
     },
     "bazzite-deck": {
         "base_image_name": "kinoite",
         "container_target": "bazzite-deck",
         "nvidia_base": "bazzite-deck",
-        "nvidia_flavor": "nvidia-lts",
+        "nvidia_flavor": "nvidia-open",
         "install_nvidia": False,
     },
     "bazzite-deck-gnome": {
         "base_image_name": "silverblue",
         "container_target": "bazzite-deck",
         "nvidia_base": "bazzite-deck",
-        "nvidia_flavor": "nvidia-lts",
+        "nvidia_flavor": "nvidia-open",
         "install_nvidia": False,
     },
     "bazzite-deck-nvidia": {
@@ -393,7 +393,8 @@ def build_args(
         "VERSION_TAG": version_tag,
         "VERSION_PRETTY": version_pretty,
         "ARCH": variant.arch,
-        "FINAL_STAGE": variant.container_target
+        "BUILD_DECK": str("deck" in variant.image).upper(),
+        "BUILD_NVIDIA": str("nvidia" in variant.image).upper(),
     }
 
 
