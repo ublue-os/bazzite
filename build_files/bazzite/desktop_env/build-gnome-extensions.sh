@@ -66,9 +66,9 @@ mv /usr/share/gnome-shell/extensions/tmp/bazaar-integration@kolunmi.github.io/sr
 # Download the latest TouchUp release from GitHub, extract it, compile schemas,
 # and remove the downloaded archive.
 echo "==> Installing TouchUp extension..."
-TOUCHUP_DOWNLOAD_URL="$(/ctx/ghcurl https://api.github.com/repos/mityax/gnome-extension-touchup/releases/latest \
+TOUCHUP_DOWNLOAD_URL="$(/ctx/tools/ghcurl https://api.github.com/repos/mityax/gnome-extension-touchup/releases/latest \
     | jq -r '.assets[] | select(.name | test(".*\\.shell-extension\\.zip$")).browser_download_url')"
-/ctx/ghcurl "${TOUCHUP_DOWNLOAD_URL}" -Lo /tmp/touchup.zip
+/ctx/tools/ghcurl "${TOUCHUP_DOWNLOAD_URL}" -Lo /tmp/touchup.zip
 mkdir -p /usr/share/gnome-shell/extensions/touchup@mityax
 unzip -o /tmp/touchup.zip -d /usr/share/gnome-shell/extensions/touchup@mityax
 glib-compile-schemas /usr/share/gnome-shell/extensions/touchup@mityax/schemas

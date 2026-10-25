@@ -141,7 +141,7 @@ systemctl mask fedora-atomic-desktop-appstream-cache-refresh
 echo "==> Installing extest libraries..."
 mkdir -p /usr/lib/extest /usr/lib64/extest
 
-EXTEST_RELEASE=$(/ctx/ghcurl https://api.github.com/repos/ublue-os/extest/releases/latest)
+EXTEST_RELEASE=$(/ctx/tools/ghcurl https://api.github.com/repos/ublue-os/extest/releases/latest)
 for asset in libextest.so libextest64.so; do
     url=$(jq -r --arg name "${asset}" \
         '.assets[] | select(.name == $name).browser_download_url' <<< "${EXTEST_RELEASE}")
@@ -150,14 +150,14 @@ for asset in libextest.so libextest64.so; do
     else
         destination=/usr/lib/extest/libextest.so
     fi
-    /ctx/ghcurl "${url}" -Lo "${destination}"
+    /ctx/tools/ghcurl "${url}" -Lo "${destination}"
 done
 unset -v EXTEST_RELEASE asset url destination
 
 # -- Install Sunshine postinst script --
 # Download and make executable the Sunshine post-installation script.
 echo "==> Installing Sunshine postinst script..."
-/ctx/ghcurl \
+/ctx/tools/ghcurl \
     "https://github.com/ykshek/Sunshine/raw/1347f9ef290c089b815cf186f7d361470bdb9ef7/src_assets/linux/misc/postinst" \
     -Lo /usr/libexec/sunshine-postinst
 

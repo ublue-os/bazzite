@@ -11,12 +11,12 @@ trap 'echo "::endgroup::"' EXIT
 # Fetch the latest x86_64 binary from the ublue-os/bazzite-ujust-picker repo.
 echo "==> Downloading ujust-picker..."
 
-RELEASE_URL=$(/ctx/ghcurl \
+RELEASE_URL=$(/ctx/tools/ghcurl \
     "https://api.github.com/repos/ublue-os/bazzite-ujust-picker/releases/latest" \
     -s \
     | jq -r '.assets[] | select(.name | test("x86_64$")) | .browser_download_url')
 
-/ctx/ghcurl "${RELEASE_URL}" -sL -o /usr/bin/ujust-picker
+/ctx/tools/ghcurl "${RELEASE_URL}" -sL -o /usr/bin/ujust-picker
 
 # -- Set permissions and component attribute --
 echo "==> Configuring ujust-picker..."
