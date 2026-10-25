@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -xeuo pipefail
+
 echo "--- Starting nvidia build ---"
 
 cp --archive --verbose --force \

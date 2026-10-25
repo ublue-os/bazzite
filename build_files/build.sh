@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -xeuo pipefail
+
 echo "Build deck   = ${BUILD_DECK}"
 echo "Build nvidia = ${BUILD_NVIDIA}"
 echo ""

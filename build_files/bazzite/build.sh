@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -xeuo pipefail
+
 echo "--- Starting core build ---"
 
 /ctx/bazzite/01-copy-brew-files.sh
