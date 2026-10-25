@@ -13,9 +13,9 @@ trap 'echo "::endgroup::"' EXIT
 echo "==> Configuring desktop environment..."
 
 if [[ "${BASE_IMAGE_NAME}" == "kinoite" ]]; then
-    /ctx/bazzite/desktop_env/configure-kde
+    /ctx/bazzite/desktop_env/configure-kde.sh
 else
-    /ctx/bazzite/desktop_env/configure-gnome
+    /ctx/bazzite/desktop_env/configure-gnome.sh
 fi
 
 # -- Install common packages --

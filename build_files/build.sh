@@ -5,60 +5,17 @@ echo "Build nvidia = ${BUILD_NVIDIA}"
 echo ""
 
 # Desktop/Core builds
-echo "--- Starting core build ---"
-
-/ctx/bazzite/copy-brew-files
-
-cp --archive --verbose --force \
-    /tmp/system_files/desktop/shared/* \
-    /tmp/system_files/desktop/"$BASE_IMAGE_NAME"/* \
-    /
-
-/ctx/bazzite/install-nonfree-firmware-blobs
-/ctx/bazzite/install-kernel-akmods
-/ctx/bazzite/initialize
-/ctx/bazzite/valve-patches
-/ctx/bazzite/global-remove
-/ctx/bazzite/install-packages
-/ctx/bazzite/install-steam-lutris
-/ctx/bazzite/install-ujust-picker
-/ctx/bazzite/configure-desktops
-/ctx/bazzite/ublue-os-media-automount-udev
-/ctx/bazzite/finalize-image-type
-
-cp --archive --verbose --force \
-    /tmp/system_files/overrides/* \
-    /
+/ctx/bazzite/build.sh
 
 # Deck builds
 if [[ "${BUILD_DECK}" == "TRUE" ]]; then
-    echo "--- Starting deck build ---"
-
-    cp --archive --verbose --force \
-        /tmp/system_files/deck/shared/* \
-        /tmp/system_files/deck/"$BASE_IMAGE_NAME"/* \
-        /
-
-    /ctx/bazzite-deck/configure-desktop
-    /ctx/bazzite-deck/install-patched-upower
-    /ctx/bazzite-deck/install-packages
-    /ctx/bazzite-deck/install-gamescope-session
-    /ctx/bazzite-deck/finalize-image-type
+    /ctx/bazzite-deck/build.sh
 fi
 
 # Nvidia builds
 if [[ "${BUILD_NVIDIA}" == "TRUE" ]]; then
-    echo "--- Starting nvidia build ---"
-
-    cp --archive --verbose --force \
-        /tmp/system_files/nvidia/shared/* \
-        /tmp/system_files/nvidia/"$BASE_IMAGE_NAME"/* \
-        /
-
-    /ctx/bazzite-nvidia/remove-nvidia-conflicts
-    /ctx/bazzite-nvidia/install-nvidia-driver
-    /ctx/bazzite-nvidia/finalize-image-type
+    /ctx/bazzite-nvidia/build.sh
 fi
 
 # Finalize
-/ctx/reset-mtimes
+/ctx/reset-mtimes.sh
