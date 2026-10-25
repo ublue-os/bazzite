@@ -203,11 +203,11 @@ def test_build_args_field_set_matches_ci():
         "BASE_IMAGE_NAME", "FEDORA_VERSION", "BASE_IMAGE", "IMAGE_NAME",
         "IMAGE_VENDOR", "IMAGE_BRANCH", "KERNEL_FLAVOR", "KERNEL_VERSION",
         "NVIDIA_FLAVOR", "NVIDIA_BASE", "SHA_HEAD_SHORT", "VERSION_TAG",
-        "VERSION_PRETTY", "ARCH", "FINAL_STAGE"
+        "VERSION_PRETTY", "ARCH", "BUILD_DECK", "BUILD_NVIDIA",
     }
     assert args["SHA_HEAD_SHORT"] == "abc1234"  # never empty
 
-def test_build_args_final_stage_bazzite():
+def test_build_args_build_no_deck_no_nvidia():
     variants = [
         "bazzite",
         "bazzite-gnome",
@@ -219,9 +219,10 @@ def test_build_args_final_stage_bazzite():
             variant, image_vendor="ublue-os", image_branch="main",
             sha_head_short="abc1234", version_tag="44", version_pretty="Stable (F44)",
         )
-        assert build_args["FINAL_STAGE"] == "bazzite"
+        assert build_args["BUILD_DECK"] == "FALSE"
+        assert build_args["BUILD_NVIDIA"] == "FALSE"
 
-def test_build_args_final_stage_bazzite_deck():
+def test_build_args_build_deck_no_nvidia():
     variants = [
         "bazzite-deck",
         "bazzite-deck-gnome",
@@ -233,14 +234,28 @@ def test_build_args_final_stage_bazzite_deck():
             variant, image_vendor="ublue-os", image_branch="main",
             sha_head_short="abc1234", version_tag="44", version_pretty="Stable (F44)",
         )
-        assert build_args["FINAL_STAGE"] == "bazzite-deck"
+        assert build_args["BUILD_DECK"] == "TRUE"
+        assert build_args["BUILD_NVIDIA"] == "FALSE"
 
-def test_build_args_final_stage_bazzite_nvidia():
+def test_build_args_build_nvidia_no_deck():
     variants = [
         "bazzite-nvidia",
         "bazzite-gnome-nvidia",
         "bazzite-nvidia-open",
         "bazzite-gnome-nvidia-open",
+    ]
+
+    for variant_name in variants:
+        variant = b.get_variant(variant_name)
+        build_args = b.build_args(
+            variant, image_vendor="ublue-os", image_branch="main",
+            sha_head_short="abc1234", version_tag="44", version_pretty="Stable (F44)",
+        )
+        assert build_args["BUILD_DECK"] == "FALSE"
+        assert build_args["BUILD_NVIDIA"] == "TRUE"
+
+def test_build_args_build_nvidia_deck():
+    variants = [
         "bazzite-deck-nvidia",
         "bazzite-deck-nvidia-gnome",
     ]
@@ -251,7 +266,8 @@ def test_build_args_final_stage_bazzite_nvidia():
             variant, image_vendor="ublue-os", image_branch="main",
             sha_head_short="abc1234", version_tag="44", version_pretty="Stable (F44)",
         )
-        assert build_args["FINAL_STAGE"] == "bazzite-nvidia"
+        assert build_args["BUILD_DECK"] == "TRUE"
+        assert build_args["BUILD_NVIDIA"] == "TRUE"
 
 def test_labels_include_required_oci_fields():
     variant = b.get_variant("bazzite")
