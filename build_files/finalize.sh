@@ -221,4 +221,4 @@ if [[ -f "${STEAM_BOOTSTRAP}" ]]; then
 fi
 
 # Catch files changed since the last stage's reset (initramfs, image-info, overrides).
-/ctx/reset-mtimes
+/ctx/reset-mtimes.sh
