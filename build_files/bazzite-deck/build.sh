@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-
+#
+# Orchestration script for the deck build of Bazzite.
+#
 set -xeuo pipefail
 
 echo "--- Starting deck build ---"

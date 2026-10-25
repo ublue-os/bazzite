@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-
+#
+# Root orchestration script for building Bazzite.
+#
 set -xeuo pipefail
 
 echo "Build deck   = ${BUILD_DECK}"

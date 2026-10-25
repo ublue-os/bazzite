@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-
+#
+# Orchestration script for the Nvidia build of Bazzite.
+#
 set -xeuo pipefail
 
 echo "--- Starting nvidia build ---"
