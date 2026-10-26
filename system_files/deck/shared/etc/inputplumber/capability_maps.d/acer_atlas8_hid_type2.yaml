@@ -1,0 +1,41 @@
+# Schema version number
+version: 2
+
+# The type of configuration schema
+kind: CapabilityMap
+
+# Name for the device event map
+name: "Acer Atlas 8 Extra Buttons"
+
+# Unique identifier of the capability mapping
+id: acer_atlas8_hid_type2
+
+# Idle HID Report
+# Data: 9a 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+# BUF[1] = 0x02 = M1 Pressed
+# BUF[1] = 0x04 = M2 Pressed
+# BUF[1] = 0x06 = M1+M2 Pressed
+
+# List of mapped events that are activated by a specific set of activation keys.
+mapping:
+  - name: M1
+    source_events:
+      - hidraw:
+          value_type: bool
+          byte_start: 1
+          bit_offset: 1
+    target_event:
+      gamepad:
+        button: RightPaddle1
+  - name: M2
+    source_events:
+      - hidraw:
+          value_type: bool
+          byte_start: 1
+          bit_offset: 2
+    target_event:
+      gamepad:
+        button: LeftPaddle1
+
+# List of events to filter from the source devices
+filtered_events: []

@@ -1,0 +1,27 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/ShadowBlip/InputPlumber/main/rootfs/usr/share/inputplumber/schema/capability_map_v2.json
+# Schema version number
+version: 1
+
+# The type of configuration schema
+kind: CapabilityMap
+
+# Name for the device event map
+name: "Acer Atlas 8"
+
+# Unique identifier of the capability mapping
+id: acer_atlas8
+
+# List of mapped events that are activated by a specific set of activation keys.
+mapping:
+  # This capability map will make Guide and QAM accessible with hold actions
+  # since the press/tap actions on these buttons do not work currently
+  - name: Guide (hold)
+    source_events:
+      - keyboard: KeyLeftMeta
+      - keyboard: KeyTab
+    target_event:
+      gamepad:
+        button: Guide
+
+# List of events to filter from the source devices
+filtered_events: []
