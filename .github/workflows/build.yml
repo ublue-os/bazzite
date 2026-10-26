@@ -417,6 +417,21 @@ jobs:
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
 
+      - name: Final image size summary
+        if: always() && steps.rechunk.outcome == 'success'
+        env:
+          IMAGE_NAME: ${{ matrix.image }}
+          IMAGE_REF: ${{ steps.rechunk.outputs.ref }}
+        run: |
+          image_size=$(podman image inspect --format '{{.Size}}' "${IMAGE_REF#containers-storage:}")
+          image_size_human=$(numfmt --to=iec-i --suffix=B "$image_size")
+          {
+            echo "### Final image size (uncompressed)"
+            echo '```'
+            echo "${IMAGE_NAME}: ${image_size_human} (${image_size} bytes)"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Disk usage summary
         if: always()
         run: |
