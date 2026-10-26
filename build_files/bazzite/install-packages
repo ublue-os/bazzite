@@ -75,6 +75,8 @@ dnf5 -y install \
     libxcrypt-compat \
     vulkan-tools \
     vulkan-low-latency-layer \
+    game-devices-udev \
+    openrgb-udev-rules \
     xwiimote-ng \
     fastfetch \
     glow \
