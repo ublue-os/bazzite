@@ -201,10 +201,6 @@ echo "==> Downloading waydroid GPU selector..."
     -Lo /usr/bin/waydroid-choose-gpu
 chmod +x /usr/bin/waydroid-choose-gpu
 
-# -- Configure DNF fallback --
-echo "==> Configuring DNF fallback..."
-dnf5 config-manager setopt skip_if_unavailable=1
-
 # -- Download distrobox configs --
 echo "==> Downloading distrobox configs..."
 /ctx/ghcurl \

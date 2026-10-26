@@ -2,18 +2,13 @@
 #
 # Remove packages and configurations that conflict with NVIDIA drivers.
 #
-# Disables skip_if_unavailable, removes incompatible firmware and utilities,
-# and swaps cardwire for switcheroo-control on non-deck images.
+# Removes incompatible firmware and utilities, and swaps cardwire for
+# switcheroo-control on non-deck images.
 #
 set -xeuo pipefail
 
 echo "::group::Remove Nvidia conflicts"
 trap 'echo "::endgroup::"' EXIT
-
-# -- Disable skip_if_unavailable --
-# Ensures DNF doesn't silently skip unavailable packages during removal.
-echo "==> Disabling skip_if_unavailable..."
-dnf5 config-manager unsetopt skip_if_unavailable
 
 # -- Remove conflicting firmware and ROCm packages --
 # nvidia-gpu-firmware conflicts with NVIDIA proprietary drivers.

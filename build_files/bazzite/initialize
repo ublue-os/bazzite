@@ -47,8 +47,11 @@ echo "==> Installing Terra release packages..."
 # shellcheck disable=SC2016
 dnf5 -y install \
     --nogpgcheck \
+    --setopt=terra.skip_if_unavailable=False \
     --repofrompath 'terra,https://repos.fyralabs.com/terra$releasever' \
     terra-release{,-extras,-mesa}
+
+dnf5 config-manager setopt '*terra*.skip_if_unavailable=False'
 
 # -- Add Tailscale repository --
 echo "==> Adding Tailscale repository..."

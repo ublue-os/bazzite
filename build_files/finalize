@@ -11,6 +11,11 @@ trap 'echo "::endgroup::"' EXIT
 # Tell DNF5 not to keep downloaded package cache after installation.
 dnf5 config-manager setopt keepcache=0
 
+# -- Restore DNF fallback after all package transactions --
+echo "==> Restoring DNF fallback..."
+dnf5 config-manager unsetopt '*terra*.skip_if_unavailable'
+dnf5 config-manager setopt skip_if_unavailable=1
+
 # -- Disable rpm-ostree stage --
 echo "==> Disabling rpm-ostree stage..."
 sed -i \

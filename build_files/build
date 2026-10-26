@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+set -euo pipefail
+
+dnf5 config-manager setopt skip_if_unavailable=False
+
 echo "Build deck   = ${BUILD_DECK}"
 echo "Build nvidia = ${BUILD_NVIDIA}"
 echo ""

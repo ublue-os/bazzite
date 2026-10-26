@@ -47,7 +47,6 @@ echo "    Creating libnvidia-ml.so symlink..."
 ln -s libnvidia-ml.so.1 /usr/lib64/libnvidia-ml.so
 
 # -- Disable terra-mesa and ublue-os/staging --
-# Re-enable skip_if_unavailable and disable repos used only for this install.
 echo "==> Disabling terra-mesa and ublue-os/staging..."
 dnf5 config-manager disable terra-mesa
 dnf5 -y copr disable ublue-os/staging
