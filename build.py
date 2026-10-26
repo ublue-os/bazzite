@@ -57,7 +57,7 @@ IMAGE_VENDOR_DEFAULT = "ublue-os"
 DEFAULTS = {
     "fedora_version": 45,
     "kernel_flavor": "ogc",
-    "kernel_version": "7.2.11-ogc3.1.fc45",
+    "kernel_version": "7.2.11-ogc4.1.fc45",
     "base_image_flavor": "main",
     "arch": "x86_64",
 }
