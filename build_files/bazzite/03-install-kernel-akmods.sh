@@ -65,7 +65,7 @@ dnf5 versionlock add \
 # -- Install common akmods --
 # Install common kernel module RPMs (KVMFR, OpenRazer, v4l2loopback, etc.).
 echo "==> Installing common akmods..."
-/ctx/bazzite/install-kmods \
+/ctx/tools/install-kmods \
     /tmp/rpms/{common,kmods}/*kvmfr*.rpm \
     /tmp/rpms/{common,kmods}/*openrazer*.rpm \
     /tmp/rpms/{common,kmods}/*v4l2loopback*.rpm \
@@ -75,7 +75,7 @@ echo "==> Installing common akmods..."
 # -- Install extra akmods --
 # Install extra kernel module RPMs (zenergy, gcadapter, evdi, etc.).
 echo "==> Installing extra akmods..."
-/ctx/bazzite/install-kmods \
+/ctx/tools/install-kmods \
     /tmp/rpms/{extra,kmods-extra}/*zenergy*.rpm \
     /tmp/rpms/{extra,kmods-extra}/*gcadapter*.rpm \
     /tmp/rpms/{extra,kmods-extra}/*evdi*.rpm \

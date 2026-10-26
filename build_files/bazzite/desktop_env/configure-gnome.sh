@@ -42,7 +42,7 @@ dnf5 -y remove \
 # -- Build and install GNOME extensions --
 # Build and install custom GNOME shell extensions from source.
 echo "==> Building GNOME extensions..."
-/ctx/bazzite/desktop_env/build-gnome-extensions
+/ctx/bazzite/desktop_env/build-gnome-extensions.sh
 
 # -- Enable dconf-update service --
 # Enable the dconf-update service for configuration persistence.

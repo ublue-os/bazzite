@@ -66,6 +66,7 @@ ARG FEDORA_VERSION="${FEDORA_VERSION:-45}"
 ARG SHA_HEAD_SHORT="${SHA_HEAD_SHORT}"
 ARG VERSION_TAG="${VERSION_TAG}"
 ARG VERSION_PRETTY="${VERSION_PRETTY}"
+ARG KERNEL_FLAVOR
 ARG NVIDIA_FLAVOR
 ARG BUILD_DECK
 ARG BUILD_NVIDIA
@@ -85,16 +86,16 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=bind,from=system_files,source=/,target=/tmp/system_files \
     --mount=type=tmpfs,dst=/tmp \
     --mount=type=secret,id=GITHUB_TOKEN \
-    /ctx/build
+    /ctx/build.sh
 
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    /ctx/image-info \
-    && /ctx/build-initramfs \
-    && /ctx/finalize \
-    && /ctx/cleanup
+    /ctx/image-info.sh \
+    && /ctx/build-initramfs.sh \
+    && /ctx/finalize.sh \
+    && /ctx/cleanup.sh
 
 RUN --mount=type=tmpfs,target=/run \
     --network=none \

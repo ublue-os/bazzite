@@ -190,20 +190,20 @@ systemctl enable bluetooth.service
 
 # -- Download DXVK example config --
 echo "==> Downloading DXVK example config..."
-/ctx/ghcurl \
+/ctx/tools/ghcurl \
     "https://raw.githubusercontent.com/doitsujin/dxvk/3a4c6fa3cb1548d56a90a38dd8f526b6c13e63fd/dxvk.conf" \
     -Lo /etc/dxvk-example.conf
 
 # -- Download waydroid GPU selector --
 echo "==> Downloading waydroid GPU selector..."
-/ctx/ghcurl \
+/ctx/tools/ghcurl \
     "https://raw.githubusercontent.com/ublue-os/waydroid-scripts/main/waydroid-choose-gpu.sh" \
     -Lo /usr/bin/waydroid-choose-gpu
 chmod +x /usr/bin/waydroid-choose-gpu
 
 # -- Download distrobox configs --
 echo "==> Downloading distrobox configs..."
-/ctx/ghcurl \
+/ctx/tools/ghcurl \
     "https://github.com/ublue-os/toolboxes/raw/refs/heads/main/apps/docker/distrobox.ini" \
     -Lo /etc/distrobox/docker.ini
 setfattr \
@@ -211,7 +211,7 @@ setfattr \
     -v "toolbox-config" \
     /etc/distrobox/docker.ini
 
-/ctx/ghcurl \
+/ctx/tools/ghcurl \
     "https://github.com/ublue-os/toolboxes/raw/refs/heads/main/apps/incus/distrobox.ini" \
     -Lo /etc/distrobox/incus.ini
 setfattr \
@@ -221,7 +221,7 @@ setfattr \
 
 # -- Download bash-preexec --
 echo "==> Downloading bash-preexec..."
-/ctx/ghcurl \
+/ctx/tools/ghcurl \
     "https://raw.githubusercontent.com/ublue-os/bash-preexec/master/bash-preexec.sh" \
     -Lo /usr/share/bash-prexec
 setfattr \
