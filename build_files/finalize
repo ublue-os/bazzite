@@ -115,6 +115,23 @@ setfattr -n user.update-interval -v "quarterly" "/etc/distrobox/incus.ini"
 setfattr -n user.component -v "ublue-os" "/usr/share/bash-prexec"
 setfattr -n user.update-interval -v "quarterly" "/usr/share/bash-prexec"
 
+UBLUE_OS_CONFIG=(
+    /etc/flatpak/remotes.d/flathub.flatpakrepo
+    /usr/lib/dracut/dracut.conf.d/10-compression.conf
+    /usr/lib/systemd/system/bootc-update-ca-trust.service
+    /usr/lib/systemd/system/bootc-update-crypto-policies.service
+    /usr/lib/systemd/system/flatpak-add-fedora-repos.service
+    /usr/lib/systemd/system-generators/coreos-sulogin-force-generator
+    /usr/lib/tmpfiles.d/coredump.conf
+    /usr/share/dnf/plugins/copr.vendor.conf
+)
+for UBLUE_OS_CONFIG_FILE in "${UBLUE_OS_CONFIG[@]}"; do
+    if [[ -f "${UBLUE_OS_CONFIG_FILE}" ]]; then
+        setfattr -n user.component -v "ublue-os-config" "${UBLUE_OS_CONFIG_FILE}"
+        setfattr -n user.update-interval -v "yearly" "${UBLUE_OS_CONFIG_FILE}"
+    fi
+done
+
 BAZZITE_CONFIG=(/usr/libexec/bazzite-* /usr/libexec/hwsupport /usr/share/bazzite-cli)
 setfattr -n user.component -v "bazzite-init" "${BAZZITE_CONFIG[@]}"
 setfattr -n user.update-interval -v "monthly" "${BAZZITE_CONFIG[@]}"
