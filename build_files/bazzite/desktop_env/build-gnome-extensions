@@ -52,7 +52,7 @@ make -C /usr/share/gnome-shell/extensions/blur-my-shell@aunetx
 unzip -o /usr/share/gnome-shell/extensions/blur-my-shell@aunetx/build/blur-my-shell@aunetx.shell-extension.zip \
     -d /usr/share/gnome-shell/extensions/blur-my-shell@aunetx
 glib-compile-schemas /usr/share/gnome-shell/extensions/blur-my-shell@aunetx/schemas
-rm -rf /usr/share/gnome-shell/extensions/blur-my-shell@aunetx/build
+rm -rf /usr/share/gnome-shell/extensions/blur-my-shell@aunetx/build || true
 
 # -- Install Bazaar Integration --
 # Extract the Bazaar Integration extension from the tmp directory to its final
@@ -78,4 +78,4 @@ rm /tmp/touchup.zip
 # Remove build dependencies and the temporary extensions directory.
 echo "==> Cleaning up..."
 dnf5 -y remove glib2-devel
-rm -rf /usr/share/gnome-shell/extensions/tmp
+rm -rf /usr/share/gnome-shell/extensions/tmp || true

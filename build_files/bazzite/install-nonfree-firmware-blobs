@@ -22,7 +22,7 @@ find /tmp/firmware -type f -exec setfattr -n user.update-interval -v "yearly" {}
 # -- Remove git metadata --
 # Clean up git history to keep the image size minimal.
 echo "==> Removing git metadata..."
-rm -rf /tmp/firmware/.git
+rm -rf /tmp/firmware/.git || true
 
 # -- Install firmware into root filesystem --
 # Copy processed firmware files into /usr/lib/firmware or equivalent.
@@ -30,4 +30,4 @@ echo "==> Installing firmware..."
 cp -a /tmp/firmware/. /
 
 # -- Cleanup --
-rm -rf /tmp/firmware
+rm -rf /tmp/firmware || true

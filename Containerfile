@@ -26,6 +26,10 @@
 # is often unnecessary.
 #
 # https://github.com/ublue-os/image-template
+#
+# If you choose to fork this repo, see the
+# build_files folder for relevant build
+# scripts.
 
 ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-kinoite}"
 ARG FEDORA_VERSION="${FEDORA_VERSION:-45}"

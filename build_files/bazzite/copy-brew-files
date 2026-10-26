@@ -26,4 +26,4 @@ xargs -0 -a /tmp/brew_list.txt setfattr -h -n user.component -v "homebrew"
 # -- Cleanup temporary files --
 # Remove temporary file list and source directory.
 echo "==> Cleaning up temporary files..."
-rm -rf /tmp/brew_files /tmp/brew_list.txt
+rm -rf /tmp/brew_files /tmp/brew_list.txt || true
