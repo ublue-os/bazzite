@@ -29,7 +29,7 @@ INITRAMFS="/usr/lib/modules/${QUALIFIED_KERNEL}/initramfs.img"
 OS_RELEASE="/usr/lib/os-release"
 TMP_OS_RELEASE=$(mktemp --tmpdir 'os-release-XXXXXXXXXX')
 cp "${OS_RELEASE}" "${TMP_OS_RELEASE}"
-sed -Ei -e '/^((OSTREE_)?(IMAGE_)?VERSION|PRETTY_NAME|BUILD_ID)=/d' "${OS_RELEASE}"
+sed -Ei -e '/^((OSTREE_)?(IMAGE_)?VERSION|PRETTY_NAME|BUILD_ID|BOOTLOADER_NAME|IMAGE_ID)=/d' "${OS_RELEASE}"
 
 # Generate a reproducible initramfs with ostree and fido2 support.
 DRACUT_NO_XATTR=1 /usr/bin/dracut \
