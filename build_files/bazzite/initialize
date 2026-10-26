@@ -7,7 +7,7 @@
 #
 set -xeuo pipefail
 
-echo "::group::Setup Copr repos"
+echo "::group::Initialize"
 trap 'echo "::endgroup::"' EXIT
 
 # -- Cache configuration --
@@ -26,6 +26,7 @@ for copr in \
     ublue-os/staging \
     ublue-os/packages \
     ycollet/audinux \
+    bieszczaders/kernel-cachyos-addons \
     che/nerd-fonts; \
 do
     echo "    Enabling copr: ${copr}..."
@@ -33,6 +34,11 @@ do
     dnf5 -y config-manager \
         setopt "copr:copr.fedorainfracloud.org:${copr////:}.priority=98"
 done
+
+# Disable third party copr repos
+dnf5 -y copr disable "ycollet/audinux"
+dnf5 -y copr disable "bieszczaders/kernel-cachyos-addons"
+dnf5 -y copr disable "che/nerd-fonts"
 
 # -- Install Terra-release packages --
 # Add the Terra repository and install its release packages.

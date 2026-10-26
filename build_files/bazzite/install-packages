@@ -11,9 +11,16 @@ trap 'echo "::endgroup::"' EXIT
 # -- Install SCX scheduler packages --
 # Temporarily enable the kernel-cachyos-addons copr to install scx packages.
 echo "==> Installing SCX scheduler packages..."
-dnf5 -y copr enable bieszczaders/kernel-cachyos-addons
-dnf5 -y install scx-scheds scx-tools
-dnf5 -y copr disable bieszczaders/kernel-cachyos-addons
+dnf5 -y install \
+    --enable-repo=copr:copr.fedorainfracloud.org:bieszczaders:kernel-cachyos-addons \
+    scx-scheds \
+    scx-tools
+
+# -- Install Nerd Fonts --
+echo "==> Installing Nerd Fonts..."
+dnf5 -y install \
+    --enable-repo=copr:copr.fedorainfracloud.org:che:nerd-fonts \
+    nerd-fonts
 
 # -- Install core packages --
 # Install the main set of packages required for the Bazzite image.
@@ -32,7 +39,6 @@ dnf5 -y install \
     google-noto-sans-cjk-fonts \
     lato-fonts \
     fira-code-fonts \
-    nerd-fonts \
     python3-pip \
     libadwaita \
     bees \

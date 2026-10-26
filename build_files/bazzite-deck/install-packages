@@ -11,6 +11,13 @@ set -xeuo pipefail
 echo "::group::Install packages (Deck)"
 trap 'echo "::endgroup::"' EXIT
 
+# -- Install noise suppression packages from Audinux --
+echo "==> Installing noise suppression packages from Audinux..."
+dnf5 -y install \
+    --enable-repo=copr:copr.fedorainfracloud.org:ycollet:audinux \
+    ladspa-noise-suppression-for-voice \
+    license-noise-suppression-for-voice
+
 # -- Install core packages from Terra repo --
 # Install hardware support, input tools, language packs, and utilities.
 echo "==> Installing core packages from Terra repo..."
