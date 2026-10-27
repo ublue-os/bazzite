@@ -53,6 +53,7 @@ Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) using [F
 - HDR and VRR available by default.
 - Full hardware accelerated codec support for H264 decoding.
 - [xone](https://github.com/medusalix/xone) driver for Xbox controllers.
+- Enhanced support for steering wheels with multiple extra drivers.
 - Full support for [DisplayLink](https://www.synaptics.com/products/displaylink-graphics).
 - [vkBasalt](https://github.com/DadSchoorse/vkBasalt), [MangoHud](https://github.com/flightlessmango/Mangohud), and [OBS VkCapture](https://github.com/nowrep/obs-vkcapture) installed and available by default.
 - [ROM Properties Page shell extension](https://github.com/GerbilSoft/rom-properties) included.
@@ -71,7 +72,7 @@ Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) using [F
 
 Common variant available as `bazzite`, suitable for desktop computers.
 
-- Automatic updates for the OS, Flatpaks, and more - powered by [uupd](https://github.com/ublue-os/uupd) and [topgrade](https://github.com/topgrade-rs/topgrade).
+- Automatic updates for the OS, Flatpaks, and more - powered by [uupd](https://github.com/ublue-os/uupd).
 
 > [!IMPORTANT]
 > **ISOs can be downloaded from our [website](https://download.bazzite.gg), and a helpful install guide can be found [here](https://docs.bazzite.gg/General/Installation_Guide/).**
@@ -96,11 +97,9 @@ Variant designed for usage as an alternative to SteamOS on the Steam Deck, and f
 
 - Directly boots to Game mode matching SteamOS's behavior.
 - **Automatic `bees` greatly trims the size of compatdata.**
-- **Latest version of Mesa creates smaller shader caches and does not require them to prevent stutter.**
-- **Able to be booted even if the drive is full.**
 - **Support for every language supported by upstream Fedora.**
 - **Uses Wayland on the desktop with [support for Steam input](https://github.com/Supreeeme/extest).**
-- Features ported versions of most SteamOS packages, including drivers, firmware updaters, and fan controllers [from the evlaV repository](https://gitlab.com/evlaV).
+- Features ported versions of most SteamOS packages, including drivers, firmware updaters, and fan controllers.
 - Patched Mesa for proper framerate control from Gamescope.
 - Comes with patches from [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) for full BTRFS support for the SD card by default.
 - Ships with a ported copy of [SDGyroDSU](https://github.com/kmicki/SteamDeckGyroDSU), enabled by default.
@@ -259,7 +258,7 @@ Bazzite is a community effort and wouldn't exist without everyone's support. Bel
 
 - [amelia.svg](https://bsky.app/profile/ameliasvg.bsky.social) - For creating our logo and overall branding.
 - [SuperRiderTH](https://github.com/SuperRiderTH) - For creating our Steam game mode startup video.
-- [evlaV](https://gitlab.com/evlaV) - For making Valve's code available and for being [this person](https://xkcd.com/2347/).
+- [evlaV](https://gitlab.com/evlaV) *(Now retired)* - For making Valve's code available and for being [this person](https://xkcd.com/2347/).
 - [ChimeraOS](https://chimeraos.org/) - For gamescope-session and for valuable support along the way.
 - [Jovian-NixOS](https://github.com/Jovian-Experiments) - For supporting us with technical issues and for creating a similar project. Seriously, go check it out. It's our Nix-based cousin.
 - [sentry](https://copr.fedorainfracloud.org/coprs/sentry/) - For assistance with needed kernel patches and for creating the [kernel-fsync repo](https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/).

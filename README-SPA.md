@@ -55,6 +55,7 @@ Bazzite es creado con [ublue-os/main](https://github.com/ublue-os/main) y [ublue
 - Soporte total de decodificación acelerada por hardware del codec de video H264.
 - Soporte completo para los tiempos de ejecución (runtimes) de ROCM OpenCL/HIP de AMD
 - Se incluye el driver [xone](https://github.com/medusalix/xone), para mandos de videojuegos de Xbox.
+- Soporte mejorado para volantes con varios drivers adicionales.
 - Soporte completo de [DisplayLink](https://www.synaptics.com/products/displaylink-graphics).
 - Incluye los temas para KDE de SteamOS, hechos por Valve.
 - También se incluyen temas opcionales de GTK3/4 inspirados en Valve, que igualan a los temas Vapor y VGUI2 de SteamOS. Para poderlos utilizar, solo tienes que instalar [Gradience](https://flathub.org/apps/com.github.GradienceTeam.Gradience).
@@ -87,7 +88,7 @@ Bazzite es creado con [ublue-os/main](https://github.com/ublue-os/main) y [ublue
 
 Esta variante común/genérica esta disponible como `bazzite`, la cual es adecuada para computadoras de escritorio, esta variante incluye la siguiente característica:
 
-- Actualizaciones automáticas para el sistema operativo, Flatpaks y más.
+- Actualizaciones automáticas para el sistema operativo, Flatpaks y más, mediante [uupd](https://github.com/ublue-os/uupd).
 
 > \[!IMPORTANT\]\
 > **Las imágenes de disco (ISOs) pueden descargarse desde nuestra página de lanzamientos (releases) [aquí (en inglés)](https://github.com/ublue-os/bazzite/releases), también puedes encontrar una útil guía de instalación [aquí (en inglés)](https://universal-blue.discourse.group/docs?topic=30).**
@@ -117,12 +118,9 @@ Esta variante esta diseñada para usarse como una alternativa de SteamOS en la S
 
 - Al arrancar tu dispositivo, inicia directamente en Game Mode, emulando el mismo comportamiento que SteamOS.
 - **Se aplica el servicio `duperemove` automáticamente el cual recorta por mucho el tamaño del directorio compatdata, el directorio usado por Proton para almacenar los prefijos de WINE para correr juegos de Windows en Linux.**
-- **Incluye la versión mas actual de Mesa, el cual crea cachés de shaders mas pequeños, y los cuales no son requeridos para prevenir tirones/parones.**
-- **Habilidad de arrancar el sistema incluso si el disco esta lleno.**
 - **Soporte para cada uno de los lenguajes directamente soportados por Fedora (upstream).**
 - **Uso del servidor gráfico Wayland en el escritorio con [soporte para Steam input](https://github.com/Supreeeme/extest).**
-- Se incluye [HHD](https://github.com/hhd-dev/hhd) para expander el soporte de los mandos de videojuegos integrados en otras computadoras handheld que no sean de Valve
-- Incluye versiones portadas de la mayoría de los paquetes de SteamOS, incluyendo drivers, actualizadores de firmware y controladores de ventiladores [del repositorio de evlaV](https://gitlab.com/evlaV).
+- Incluye versiones portadas de la mayoría de los paquetes de SteamOS, incluyendo drivers, actualizadores de firmware y controladores de ventiladores.
 - Version parchada de Mesa para controlar correctamente la tasa de fotogramas (framerate) usando Gamescope.
 - Incluye los parches de [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) por defecto, los cuales proveen soporte completo del sistema de archivos BTRFS para tarjetas SD.
 - Se incluye una copia portada de [SDGyroDSU](https://github.com/kmicki/SteamDeckGyroDSU), habilitada por defecto.
@@ -159,10 +157,6 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck:stabl
 ```
 
 #### Portátiles alternativas
-
-**Igualmente, asegurate de tambien leer la [documentación de HHD (en inglés)](https://github.com/hhd-dev/hhd#after-install), algunas computadoras Handheld requieren ciertos ajustes o tweaks especificos para funcionar correctamente.**
-
-Tambien incluimos ciertos comandos de `ujust` para instalar varios temas para [CSS Loader](https://docs.deckthemes.com/CSSLoader/Install/#linux-or-steam-deck) que no estan disponibles en su propia tienda. Si instalas estos temas, estos tambien serán actualizados automáticamente junto con Bazzite.
 
 ### GNOME
 
@@ -300,7 +294,7 @@ Bazzite es producto de esfuerzo comunitario, y no existiría sin la contribució
 
 - [amelia.svg](https://bsky.app/profile/ameliasvg.bsky.social) - Por crear nuestro logo, y en general, nuestro branding.
 - [SuperRiderTH](https://github.com/SuperRiderTH) - Por crear nuestro lindo video de arranque al iniciar el Game Mode de Steam.
-- [evlaV](https://gitlab.com/evlaV) - Por ser [esta persona](https://xkcd.com/2347/) y liberar el código de Valve públicamente.
+- [evlaV](https://gitlab.com/evlaV) *(Ahora retirado)* - Por ser [esta persona](https://xkcd.com/2347/) y liberar el código de Valve públicamente.
 - [ChimeraOS](https://chimeraos.org/) - Por la creación de gamescope-session y su invaluable apoyo a lo largo del camino.
 - [Jovian-NixOS](https://github.com/Jovian-Experiments) - Por brindarnos su soporte con problemas técnicos y por crear un proyecto similar. ¡En serio!, [chécalo](https://github.com/Jovian-Experiments/Jovian-NixOS), es nuestro primo basado en Nix.
 - [sentry](https://copr.fedorainfracloud.org/coprs/sentry/) - Por su asistencia con unos parches necesarios en el kernel, y por crear el repositorio [kernel-fsync repo](https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/) que usamos actualmente.

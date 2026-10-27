@@ -54,6 +54,7 @@ Bazzite مبنية من [ublue-os/main](https://github.com/ublue-os/main) و[ubl
 - دعم كامل لتسريع العتاد لترميز H264 في فك التشفير.
 - دعم كامل لبيئات التشغيل OpenCL/HIP من AMD (ROCM).
 - تعريف [xone](https://github.com/medusalix/xone) لوحدات تحكم Xbox.
+- دعم محسن لعجلات القيادة مع عدة تعريفات إضافية.
 - دعم كامل لـ[DisplayLink](https://www.synaptics.com/products/displaylink-graphics).
 - تتضمن ثيمات KDE من Valve في SteamOS.
 - تثبيت افتراضي لكل من [LatencyFleX](https://github.com/ishitatsuyuki/LatencyFleX) [vkBasalt](https://github.com/DadSchoorse/vkBasalt) [MangoHud](https://github.com/flightlessmango/Mangohud) و[OBS VkCapture](https://github.com/nowrep/obs-vkcapture) ومتاح استخدامها مباشرة.
@@ -82,7 +83,7 @@ Bazzite مبنية من [ublue-os/main](https://github.com/ublue-os/main) و[ubl
 
 النسخة العامة المتاحة باسم `bazzite` مناسبة لأجهزة الكمبيوتر المكتبية.
 
-- تحديثات تلقائية للنظام وFlatpaks وغيرها  تعتمد على [uupd](https://github.com/ublue-os/uupd) و[topgrade](https://github.com/topgrade-rs/topgrade).
+- تحديثات تلقائية للنظام وFlatpaks وغيرها  تعتمد على [uupd](https://github.com/ublue-os/uupd).
 
 > [!IMPORTANT]
 > **يمكن تنزيل ملفات ISO من [موقعنا](https://download.bazzite.gg) ويمكن العثور على دليل تثبيت مفيد [هنا](https://docs.bazzite.gg/General/Installation_Guide/).**
@@ -107,12 +108,9 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:sta
 
 - الإقلاع مباشرة إلى وضع اللعب بما يطابق سلوك SteamOS.
 - **`duperemove` التلقائي يقلل بشكل كبير من حجم compatdata.**
-- **أحدث إصدار من Mesa ينشئ مخازن تظليل أصغر ولا يحتاجها لمنع التقطيع.**
-- **يمكن الإقلاع حتى إذا كان القرص ممتلئا.**
 - **دعم لكل لغة مدعومة من Fedora العليا.**
 - **استخدام Wayland على سطح المكتب مع [دعم لإدخال Steam](https://github.com/Supreeeme/extest).**
-- يتضمن [HHD](https://github.com/hhd-dev/hhd) لتوسيع دعم الإدخال على الأجهزة المحمولة غير التابعة لـ Valve.
-- ميزات نقلت لمعظم حزم SteamOS بما في ذلك التعريفات وأدوات تحديث Firmware ووحدات التحكم بالمراوح [من مستودع evlaV](https://gitlab.com/evlaV).
+- ميزات نقلت لمعظم حزم SteamOS بما في ذلك التعريفات وأدوات تحديث Firmware ووحدات التحكم بالمراوح.
 - Mesa معدلة للتحكم الصحيح بمعدل الإطارات من Gamescope.
 - تأتي مع تصحيحات من [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) لدعم كامل لـ BTRFS لبطاقة SD بشكل افتراضي.
 - تشحن بنسخة منقولة من [SDGyroDSU](https://github.com/kmicki/SteamDeckGyroDSU) ممكنة افتراضيا.
@@ -146,14 +144,6 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck:stabl
 #### أجهزة محمولة بديلة
 
 يرجى الرجوع إلى [ويكي الأجهزة المحمولة](https://docs.bazzite.gg/Handheld_and_HTPC_edition/Handheld_Wiki/) للتغييرات المطلوبة في الإعدادات وإضافات Decky Loader لوضع Steam Gaming في جهازك المحمول المحدد.
-
-**تأكد أيضا من قراءة [وثائق hhd](https://github.com/hhd-dev/hhd#after-install) بعض الأجهزة المحمولة تتطلب تغييرات/تحسينات محددة لتعمل بشكل صحيح.**
-
-نشحن أيضا بأوامر `ujust` لتثبيت ثيمات [CSS Loader](https://docs.deckthemes.com/CSSLoader/Install/#linux-or-steam-deck) المختلفة التي لا يمكن العثور عليها في متجر CSS Loader. سيتم تحديثها تلقائيا مع Bazzite إذا كانت مثبتة.
-```bash
-# تثبيت ثيم Handheld Controller (https://github.com/victor-borges/handheld-controller-glyphs)
-ujust install-hhd-controller-glyph-theme
-```
 
 ### جنوم
 
@@ -281,7 +271,7 @@ Bazzite جهد مجتمعي ولن توجد دون دعم الجميع. فيما
 
 - [amelia.svg](https://bsky.app/profile/ameliasvg.bsky.social)  لابتكار شعارنا وهوية علامتنا.
 - [SuperRiderTH](https://github.com/SuperRiderTH)  لابتكار فيديو بدء وضع اللعب في Steam.
-- [evlaV](https://gitlab.com/evlaV)  لجعل كود Valve متاحا ولأنه [هذا الشخص](https://xkcd.com/2347/).
+- [evlaV](https://gitlab.com/evlaV) *(متقاعد الآن)* لجعل كود Valve متاحا ولأنه [هذا الشخص](https://xkcd.com/2347/).
 - [ChimeraOS](https://chimeraos.org/)  من أجل gamescope-session والدعم القيم على طول الطريق.
 - [Jovian-NixOS](https://github.com/Jovian-Experiments)  لدعمنا في القضايا التقنية ولابتكار مشروع مماثل. حقا اطلع عليه. إنه ابن عمنا القائم على Nix.
 - [sentry](https://copr.fedorainfracloud.org/coprs/sentry/)  للمساعدة في تصحيحات النواة المطلوبة ولإنشاء [مستودع kernel-fsync](https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/) الذي نستخدمه الآن.

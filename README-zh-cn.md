@@ -54,6 +54,7 @@ Bazzite是使用[Fedora](https://fedoraproject.org/)技术基于[ublue-os/main](
 - 完全支持H264编码的硬件加速编/解码器。
 - 完全支持AMD的ROCM OpenCL/HIP运行时。
 - 适用于Xbox控制器的[xone](https://github.com/medusalix/xone) 驱动程序。
+- 通过多个额外驱动程序增强对方向盘的支持。
 - 完全支持 [DisplayLink](https://www.synaptics.com/products/displaylink-graphics)。
 - 包含来自SteamOS的 Valve's KDE 主题。
 - 可选的 Valve-inspired GTK3/4 主题对应 SteamOS的Vapor and VGUI2。安装 [Gradience](https://flathub.org/apps/com.github.GradienceTeam.Gradience) 以启用它们。
@@ -84,7 +85,7 @@ Bazzite是使用[Fedora](https://fedoraproject.org/)技术基于[ublue-os/main](
 
 `bazzite`适用于台式计算机的通用变体。
 
-- 操作系统，Flatpaks，等的自动更新 - 由[uupd](https://github.com/ublue-os/uupd) 和 [topgrade](https://github.com/topgrade-rs/topgrade)提供支持。
+- 操作系统，Flatpaks，等的自动更新 - 由[uupd](https://github.com/ublue-os/uupd)提供支持。
 
 > [!重要]
 > **ISOs可以从我们的[发布页面](https://github.com/ublue-os/bazzite/releases)下载，也可以[在此处](https://universal-blue.discourse.group/docs?topic=30)找到有用的安装指南。**
@@ -111,12 +112,9 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:sta
 
 - 和SteamOS一样直接启动到游戏模式。
 - **自动`duperemove`大大减少compatdata的大小。**
-- **最新版本的Mesa创建更小的着色器缓存，并且不需要它们来防止卡顿。**
-- **即便驱动器已满，也能启动。**
 - **支持上游Fedora系统支持的每种语言。**
 - **在桌面使用Wayland图形应用协议，[支持Steam input](https://github.com/Supreeeme/extest)。**
-- 包含[HHD](https://github.com/hhd-dev/hhd)以提供非Valve手持设备的扩展输入支持。
-- [evlaV仓库](https://gitlab.com/evlaV)包含大多数SteamOS软件包的移植版本，包括驱动程序，固件升级和风扇控制器。
+- 包含大多数SteamOS软件包的移植版本，包括驱动程序，固件升级和风扇控制器。
 - 修补了Mesa以便于Gamescope提供合适的帧率控制。
 - 自带[SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs)补丁以默认对SD card提供完整的BTRFS支持。
 - 附带[SDGyroDSU](https://github.com/kmicki/SteamDeckGyroDSU)的移植副本，默认启用。
@@ -152,15 +150,6 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck:stabl
 #### 其他掌上电脑
 
 请参阅我们的[掌上电脑Wiki](https://universal-blue.discourse.group/docs?topic=1038)了解所需要的设置更改以及你的掌机在Steam游戏模式下需要的Decky Loader插件。
-
-**请务必同时阅读[hhd文档](https://github.com/hhd-dev/hhd#after-install)，一些掌机需要特别的设置更改/调整才能正常运行。**
-
-我们还提供了用于安装各种[CSS Loader](https://docs.deckthemes.com/CSSLoader/Install/#linux-or-steam-deck)主题的`ujust`命令。这些主题在CSS Loader商店中找不到。这些主题如果被安装，将随着Bazzite一起自动更新。
-
-```bash
-# 为CSS Loader安装Handheld Controller主题(https://github.com/victor-borges/handheld-controller-glyphs)
-ujust install-hhd-controller-glyph-theme
-```
 
 ### GNOME
 
@@ -293,7 +282,7 @@ Bazzite是社区努力的结果，离不开每个人的支持。以下是那些�
 
 - [amelia.svg](https://bsky.app/profile/ameliasvg.bsky.social) - 创作了我们的徽标和整体品牌。
 - [SuperRiderTH](https://github.com/SuperRiderTH) - 创作了我们Steam游戏模式的启动视频。
-- [evlaV](https://gitlab.com/evlaV) - 使Valve的代码可用并成为[this person](https://xkcd.com/2347/).
+- [evlaV](https://gitlab.com/evlaV) *（现已退休）* - 使Valve的代码可用并成为[this person](https://xkcd.com/2347/).
 - [ChimeraOS](https://chimeraos.org/) - For gamescope-session and for valuable support along the way.
 - [Jovian-NixOS](https://github.com/Jovian-Experiments) - 支持我们解决技术问题并创建了一个类似的项目。Seriously, go check it out. It's our Nix-based cousin.
 - [sentry](https://copr.fedorainfracloud.org/coprs/sentry/) - 帮助提供所需的内核补丁和创建我们现在使用的[kernel-fsync 仓库](https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/)。

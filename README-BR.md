@@ -54,6 +54,7 @@ O Bazzite é feito a partir do [ublue-os/main](https://github.com/ublue-os/main)
 - Suporte completo à decodificação de hardware em codecs H264.
 - Suporte completo aos run-times OpenCL/HIP ROCM da AMD.
 - Driver [xone](https://github.com/medusalix/xone) para controles de Xbox.
+- Suporte aprimorado a volantes com vários drivers extras.
 - Suporte completo a [DisplayLink](https://www.synaptics.com/products/displaylink-graphics).
 - Inclui os temas do SteamOS para KDE da Valve.
 - Inclui temas GTK3/4 semelhantes ao Vapor e VGUI2 do SteamOS. Instale o [Gradience](https://flathub.org/apps/com.github.GradienceTeam.Gradience) para usá-los.
@@ -83,7 +84,7 @@ O Bazzite é feito a partir do [ublue-os/main](https://github.com/ublue-os/main)
 
 Imagem genérica disponível como `bazzite`, própria para computadores desktop.
 
-- Atualiza automaticamente o sistema, Flatpaks, e mais - via [uupd](https://github.com/ublue-os/uupd) e [topgrade](https://github.com/topgrade-rs/topgrade).
+- Atualiza automaticamente o sistema, Flatpaks, e mais - via [uupd](https://github.com/ublue-os/uupd).
 
 > [!IMPORTANT]
 > **ISOs podem ser baixadas do nosso [site](https://download.bazzite.gg), com um guia de instalação conveniente disponível [aqui](https://docs.bazzite.gg/General/Installation_Guide/).**
@@ -111,12 +112,9 @@ Imagem feita pra ser utilizada como alternativa ao SteamOS no Steam Deck, e para
 
 - Inicializa diretamente no Game mode, assim como o SteamOS.
 - **`duperemove` automático reduz bastante o tamanho da compatdata.**
-- **A última versão do Mesa cria caches de shader menores e não requer seu uso pra prevenir travamentos.**
-- **Inicia mesmo se o disco estiver cheio.**
 - **Suporte a todos os idiomas suportados pelo Fedora.**
 - **Usa o desktop em Wayland com [suporte a Steam Input](https://github.com/Supreeeme/extest).**
-- Inclui o [HHD](https://github.com/hhd-dev/hhd) para suporte expandido de entrada pra portáteis que não são da Valve.
-- Contém versões da maioria dos pacotes nativos do SteamOS, incluindo drivers, atualizadores de firmware, e controladores de ventoinha [do repositório evlav](https://gitlab.com/evlaV).
+- Contém versões da maioria dos pacotes nativos do SteamOS, incluindo drivers, atualizadores de firmware, e controladores de ventoinha.
 - Mesa com patches pra suportar controle de taxa de quadros via Gamescope.
 - Vem com patches do [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) pra suporte completo a BTRFS no cartão SD por padrão.
 - Inclui uma versão do [SDGyroDSU](https://github.com/kmicki/SteamDeckGyroDSU), habilitada por padrão.
@@ -153,14 +151,6 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck:stabl
 #### Portáteis Alternativos
 
 Por favor confira nossa [wiki pra portáteis](https://docs.bazzite.gg/Handheld_and_HTPC_edition/Handheld_Wiki/) pras mudanças de configuração necessárias e plugins do Decky Loader pro Steam Gaming Mode do seu portátil específico.
-
-**Certifique-se de ler a [documentação do hhd](https://github.com/hhd-dev/hhd#after-install), alguns portáteis requerem mudanças de configuração/ajustes específicos pra funcionar corretamente.**
-
-Nós também incluímos comandos `ujust` para instalar vários temas pra [CSS Loader](https://docs.deckthemes.com/CSSLoader/Install/#linux-or-steam-deck) que não se encontram na loja do CSS Loader. Esses temas são atualizados automaticamente com o Bazzite se instalados.
-```bash
-# Para instalar o tema Handheld Controller (https://github.com/victor-borges/handheld-controller-glyphs)
-ujust install-hhd-controller-glyph-theme
-```
 
 ### GNOME
 
@@ -290,7 +280,7 @@ O Bazzite é um esforço comunitário e não existiria sem o apoio de todos. Lis
 
 - [amelia.svg](https://bsky.app/profile/ameliasvg.bsky.social) - Por criar nossa logo e branding no geral.
 - [SuperRiderTH](https://github.com/SuperRiderTH) - Por criar o nosso vídeo de inicialização pro Steam game mode.
-- [evlaV](https://gitlab.com/evlaV) - Por disponibilizar o código da Valve e por ser [essa pessoa](https://xkcd.com/2347/).
+- [evlaV](https://gitlab.com/evlaV) *(Agora aposentado)* - Por disponibilizar o código da Valve e por ser [essa pessoa](https://xkcd.com/2347/).
 - [ChimeraOS](https://chimeraos.org/) - Pelo gamescope-session e pela valiosa ajuda ao longo do caminho.
 - [Jovian-NixOS](https://github.com/Jovian-Experiments) - Por nos ajudar com problemas técnicos e por criar um projeto similar. Sério, vai lá conferir. É o nosso primo baseado em Nix.
 - [sentry](https://copr.fedorainfracloud.org/coprs/sentry/) - Por ajudar com patches de kernel necessários e por criar o [repositório kernel-fsync](https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/) que nós usamos agora.

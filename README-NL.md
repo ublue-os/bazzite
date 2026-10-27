@@ -54,6 +54,7 @@ Bazzite is gebouwd van [ublue-os/main](https://github.com/ublue-os/main) en [ubl
 - Volledige ondersteuning voor hardwareversnelde codec voor H264-decodering.
 - Volledige ondesteuning voor AMD's ROCM OpenCL/HIP run-times.
 - [xone](https://github.com/medusalix/xone) stuurprogramma voor Xbox controllers.
+- Verbeterde ondersteuning voor racesturen met meerdere extra stuurprogramma's.
 - Volledige ondersteuning voor [DisplayLink](https://www.synaptics.com/products/displaylink-graphics).
 - Bevat Valve's KDE-thema's van SteamOS.
 - Met optionele Valve-geïnspireerde GTK3/4 thema's die overeenkomen met Vapor en VGUI2 van SteamOS. Installeer [Gradience](https://flathub.org/apps/com.github.GradienceTeam.Gradience) om die te gebruiken.
@@ -84,7 +85,7 @@ Bazzite is gebouwd van [ublue-os/main](https://github.com/ublue-os/main) en [ubl
 
 Gangbare variant beschikbaar als `bazzite`, voor desktop computers.
 
-- Automatische updates voor OS, Flatpaks en meer - aangedreven door [uupd](https://github.com/ublue-os/uupd) en [topgrade](https://github.com/topgrade-rs/topgrade).
+- Automatische updates voor OS, Flatpaks en meer - aangedreven door [uupd](https://github.com/ublue-os/uupd).
 
 > [!IMPORTANT]
 > **ISOs kunnen gedownload worden via onze [releases pagina](https://github.com/ublue-os/bazzite/releases) en een installatiegids kan [hier](https://universal-blue.discourse.group/docs?topic=30) gevonden worden.**
@@ -112,12 +113,9 @@ Varianten voor gebruik als alternatief voor SteamOS op de Steam Deck en voor con
 
 - Start direct in Game mode.
 - **Automatische `duperemove` verminderd de grootte van compatdata.**
-- **Laatste versie van Mesa maakt kleinere shader caches en heeft die niet nodig om haperen tegen te gaan.**
-- **Kan gestart worden ook al is de drive vol.**
 - **Al de talen die in Upstream Fedora beschikbaar zijn zijn hier ook beschikbaar.**
 - **Gebruikt Wayland in de desktop met [ondersteuning van Steam input](https://github.com/Supreeeme/extest).**
-- Gebruikt [HHD](https://github.com/hhd-dev/hhd) voor beteren invoer met non-Valve draagbare computers.
-- Gebruikt overgezetten functions va SteamOS paketten, zoals bestuurprogrammas, firmware updaters en ventilatie controle [van de evlaV repo](https://gitlab.com/evlaV).
+- Gebruikt overgezetten functions va SteamOS paketten, zoals bestuurprogrammas, firmware updaters en ventilatie controle.
 - Aangepaste Mesa voor betere framerate controle in Gamescope.
 - Komt met patches voor [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) voor een volledige BTRFS beschikbaarheid voor SD kaarten.
 - Komt met [SDGyroDSU](https://github.com/kmicki/SteamDeckGyroDSU).
@@ -153,15 +151,6 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck:stabl
 #### Alternatieve Draagbare Computers
 
 Zie onze [Handheld Wiki](https://universal-blue.discourse.group/docs?topic=1038) voor nodige instellingen en Decky Loader plugins voor Steam Gaming Mode op jou Draagbare Computer.
-
-**Lees de  [hhd documentatie](https://github.com/hhd-dev/hhd#after-install), somigen Draagbare Computers hebben specifieken tweaks nodig om te werken.**
-
-We hebben ook een `ujust` command om verschilende [CSS Loader](https://docs.deckthemes.com/CSSLoader/Install/#linux-or-steam-deck) thema's te installeren, dezen kunnen in de CSS Loader store gevonden worden. De themas worden automatisch geüpdate door Bazzite als die geïntalleerd zijn.
-
-```bash
-# Installeer Handheld Controller Thema (https://github.com/victor-borges/handheld-controller-glyphs)
-ujust install-hhd-controller-glyph-theme
-```
 
 ### GNOME
 
@@ -294,7 +283,7 @@ Bazzite is een gemeenschapsinspanning en bestaat niet zonder hen. Zie hieronder 
 
 - [amelia.svg](https://bsky.app/profile/ameliasvg.bsky.social) - Voor het creëren van ons logo en branding.
 - [SuperRiderTH](https://github.com/SuperRiderTH) - Voor het creëren van de Steam Game Mode start video.
-- [evlaV](https://gitlab.com/evlaV) - Om Valve's code beschikbaar te maken en om [dit persoon](https://xkcd.com/2347/) te zijn.
+- [evlaV](https://gitlab.com/evlaV) *(Nu met pensioen)* - Om Valve's code beschikbaar te maken en om [dit persoon](https://xkcd.com/2347/) te zijn.
 - [ChimeraOS](https://chimeraos.org/) - Voor gamescope-sessies en voor belangrijk hulp.
 - [Jovian-NixOS](https://github.com/Jovian-Experiments) - Met de hulp van techische problemen en het maken van projecten net als Bazzite. Serieus, ge kijken. Het is onze op Nix gebaseerde neef.
 - [sentry](https://copr.fedorainfracloud.org/coprs/sentry/) - Voor hulp met kernel patches en de [kernel-fsync repo](https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/) die wij nu gebruiken.

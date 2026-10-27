@@ -53,6 +53,7 @@ Bazzite, [ublue-os/main](https://github.com/ublue-os/main) kullanılarak ve [Fed
 - HDR ve VRR varsayılan olarak kullanılabilir.
 - H264 kodu çözme için tam donanım hızlandırılmış codec desteği.
 - Xbox denetleyicileri için [xone](https://github.com/medusalix/xone) sürücüsü.
+- Birden fazla ek sürücüyle direksiyon setleri için geliştirilmiş destek.
 - [DisplayLink](https://www.synaptics.com/products/displaylink-graphics) için tam destek.
 - [vkBasalt](https://github.com/DadSchoorse/vkBasalt), [MangoHud](https://github.com/flightlessmango/Mangohud) ve [OBS VkCapture](https://github.com/nowrep/obs-vkcapture) varsayılan olarak kurulu ve mevcut.
 - [ROM Properties Page shell extension](https://github.com/GerbilSoft/rom-properties) dahil.
@@ -71,7 +72,7 @@ Bazzite, [ublue-os/main](https://github.com/ublue-os/main) kullanılarak ve [Fed
 
 Masaüstü bilgisayarlara uygun olan `bazzite` olarak kullanılabilen ortak varyant.
 
-- OS, Flatpak'lar ve daha fazlasının otomatik güncellemeleri - [uupd](https://github.com/ublue-os/uupd) ve [topgrade](https://github.com/topgrade-rs/topgrade) tarafından desteklenmektedir.
+- OS, Flatpak'lar ve daha fazlasının otomatik güncellemeleri - [uupd](https://github.com/ublue-os/uupd) tarafından desteklenmektedir.
 
 > [!IMPORTANT]
 > **ISO'lar websitemizden [indirilebilir](https://download.bazzite.gg) ve yararlı bir kurulum kılavuzu [burada](https://docs.bazzite.gg/General/Installation_Guide/) bulunabilir.**
@@ -97,11 +98,9 @@ Steam Deck'te SteamOS'a alternatif olarak ve HTPC'lerde konsol benzeri bir deney
 
 - Doğrudan Game mode'a önyükleme, SteamOS'un davranışıyla eşleşiyor.
 - **Otomatik `bees` compatdata boyutunu büyük ölçüde azaltır.**
-- **Mesa'nın en son sürümü daha küçük shader cache'leri oluşturur ve kekemeliği önlemek için bunlara ihtiyaç duymaz.**
-- **Sürücü dolu olsa bile önyüklenebilir.**
 - **Upstream Fedora tarafından desteklenen her dili destekler.**
 - **Masaüstünde Wayland kullanır ve [Steam input desteği vardır](https://github.com/Supreeeme/extest).**
-- Sürücüler, firmware updater'lar ve fan kontrolörleri de dahil olmak üzere çoğu SteamOS paketinin port edilmiş sürümlerini özellikler [evlaV repository'sinden](https://gitlab.com/evlaV).
+- Sürücüler, firmware updater'lar ve fan kontrolörleri de dahil olmak üzere çoğu SteamOS paketinin port edilmiş sürümlerini içerir.
 - Gamescope'dan uygun framerate kontrolü için patch edilmiş Mesa.
 - Varsayılan olarak [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) tarafından gelen patch'ler ile SD kartı için tam BTRFS desteği ile birlikte gelir.
 - [SDGyroDSU](https://github.com/kmicki/SteamDeckGyroDSU)'nun port edilmiş bir kopyasını varsayılan olarak etkin olarak sağlar.
@@ -261,7 +260,7 @@ Bazzite, topluluk çabası ve herkesin desteği olmadan var olmayacaktı. Aşağ
 
 - [amelia.svg](https://bsky.app/profile/ameliasvg.bsky.social) - Logomuz ve genel markamızı oluşturduğu için.
 - [SuperRiderTH](https://github.com/SuperRiderTH) - Steam oyun modu başlangıç videosu oluşturduğu için.
-- [evlaV](https://gitlab.com/evlaV) - Valve'nin kodunu kullanılabilir hale getirmesi ve [bu kişi](https://xkcd.com/2347/) olmadığı için.
+- [evlaV](https://gitlab.com/evlaV) *(Artık emekli)* - Valve'nin kodunu kullanılabilir hale getirmesi ve [bu kişi](https://xkcd.com/2347/) olmadığı için.
 - [ChimeraOS](https://chimeraos.org/) - Gamescope-session ve yol boyunca değerli destek için.
 - [Jovian-NixOS](https://github.com/Jovian-Experiments) - Teknik sorunlarda bize destek olmak ve benzer bir proje oluşturmak için. Cidden, kontrol edin. Bizim Nix tabanlı kuzenimiz.
 - [sentry](https://copr.fedorainfracloud.org/coprs/sentry/) - Gerekli kernel yamaları ve [kernel-fsync repo](https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/) oluşturmada yardımcı olmak için.

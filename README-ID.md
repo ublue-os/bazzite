@@ -47,6 +47,7 @@ Bazzite dibentuk dari [ublue-os/main](https://github.com/ublue-os/main) and [ubl
 - Dukungan penuh untuk kodek H264 yang diakselerasi perangkat keras
 - Dukungan penuh untuk runtime AMD ROCM OpenCL/HIP.
 - [xone](https://github.com/medusalix/xone), [xpadneo](https://github.com/atar-axis/xpadneo), dan [xpad-noone](https://github.com/ublue-os/xpad-noone) driver untuk Kontroller Xbox.
+- Dukungan yang ditingkatkan untuk setir balap dengan beberapa driver tambahan.
 - Dukungan penuh untuk [DisplayLink](https://www.synaptics.com/products/displaylink-graphics).
 - Menyertakan Tema KDE Valve dari SteamOS.
 - [LatencyFleX](https://github.com/ishitatsuyuki/LatencyFleX), [vkBasalt](https://github.com/DadSchoorse/vkBasalt), [MangoHud](https://github.com/flightlessmango/Mangohud), dan [OBS VkCapture](https://github.com/nowrep/obs-vkcapture) terinstall dan tersedia secara bawaan.
@@ -77,7 +78,7 @@ Bazzite dibentuk dari [ublue-os/main](https://github.com/ublue-os/main) and [ubl
 
 Varian umum yang tersedia sebagai `bazzite`, cocok untuk komputer desktop.
 
-- Pembaruan otomatis untuk Sistem Operasi,Flatpak, dan lainnya.
+- Pembaruan otomatis untuk Sistem Operasi,Flatpak, dan lainnya - didukung oleh [uupd](https://github.com/ublue-os/uupd).
 
 > [!IMPORTANT]
 > **ISO bisa diunduh dari halaman rilis kami [disini](https://github.com/ublue-os/bazzite/releases), dan berbagai macam panduan instalasi dapat ditemukan [disini](https://universal-blue.discourse.group/docs?topic=30).**
@@ -104,11 +105,9 @@ Varian `bazzite-deck` ini didesain untuk digunakan sebagai alternatif untuk Stea
 
 - Langsung boot ke Gamemode seperti SteamOS.
 - **`duperemove` secara otomatis yang berguna untuk mengurangi ukuran folder compatdata.**
-- **Versi terbaru dari Mesa yang menghasilkan ukuran shaders cache yang lebih kecil dan tidak diperlukan lagi untuk mencegah stutter.**
-- **Langsung bisa booting walaupun diska penuh.**
 - **Dukungan untuk setiap bahasa yang disupport oleh Fedora.**
 - **Menggunakan Wayland di desktop dengan [dukungan untuk Steam input](https://github.com/Supreeeme/extest).**
-- Fitur yang diporting dari SteamOS meliputi driver, pembaruan perangkat tegar, dan pengatur kecepatan kipas [dari repositori evlaV ](https://gitlab.com/evlaV).
+- Fitur yang diporting dari SteamOS meliputi driver, pembaruan perangkat tegar, dan pengatur kecepatan kipas.
 - Mesa yang dipatch untuk mengatur framerate di Gamescope.
 - Hadir dengan patch dari [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) untuk dukungan BTRFS di SD Card secara bawaan.
 - [SDGyroDSU](https://github.com/kmicki/SteamDeckGyroDSU) tersedia dan diaktifkan secara bawaan.
@@ -256,7 +255,7 @@ sudo mokutil --import secure_boot.der
 Bazzite merupakan upaya dari komunitas dan tidak akan pernah ada tanpa dukungan dari semua orang. berikut ini merupakan orang-orang yang telah membantu kami:
 
 - [amelia.svg](https://bsky.app/profile/ameliasvg.bsky.social) - Yang membuat logo dan branding.
-- [evlaV](https://gitlab.com/evlaV) - Untuk membuat kode dari Valve tersedia dan menjadi [orang ini](https://xkcd.com/2347/).
+- [evlaV](https://gitlab.com/evlaV) *(Kini pensiun)* - Untuk membuat kode dari Valve tersedia dan menjadi [orang ini](https://xkcd.com/2347/).
 - [ChimeraOS](https://chimeraos.org/) - Untuk gamescope-sesion dan mendukung kami diperjalanan ini.
 - [Jovian-NixOS](https://github.com/Jovian-Experiments) - Untuk mendukung kami dengan menyelesaikan masalah teknis kami dan membuat project yang mirip. Serius bro coba cek proyek mereka. Mereka pakai Nix!.
 - [sentry](https://copr.fedorainfracloud.org/coprs/sentry/) - Untuk membantu dengan patch kernel dan membuat repo [kernel-fsync repo](https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/) yang kami gunakan.

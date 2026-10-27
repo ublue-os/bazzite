@@ -39,6 +39,7 @@ Bazzite bygger på [ublue-os/main](https://github.com/ublue-os/main) och [Fedora
 - HDR och VRR är tillgängliga som standard.
 - Fullständigt maskinvaruaccelererat stöd för H.264-avkodning.
 - [xone](https://github.com/medusalix/xone)-drivrutin för Xbox-kontroller.
+- Förbättrat stöd för rattar med flera extra drivrutiner.
 - Fullständigt stöd för [DisplayLink](https://www.synaptics.com/products/displaylink-graphics).
 - [vkBasalt](https://github.com/DadSchoorse/vkBasalt), [MangoHud](https://github.com/flightlessmango/Mangohud) och [OBS VkCapture](https://github.com/nowrep/obs-vkcapture) är förinstallerade och tillgängliga som standard.
 - Skalutökningen [ROM Properties Page](https://github.com/GerbilSoft/rom-properties) ingår.
@@ -57,7 +58,7 @@ Bazzite bygger på [ublue-os/main](https://github.com/ublue-os/main) och [Fedora
 
 Den vanliga varianten heter `bazzite` och är avsedd för stationära datorer.
 
-- Automatiska uppdateringar av operativsystemet, Flatpak och mer via [uupd](https://github.com/ublue-os/uupd) och [topgrade](https://github.com/topgrade-rs/topgrade).
+- Automatiska uppdateringar av operativsystemet, Flatpak och mer via [uupd](https://github.com/ublue-os/uupd).
 
 > [!IMPORTANT]
 > **ISO-filer hämtas från vår [webbplats](https://download.bazzite.gg). En praktisk installationsguide finns [här](https://docs.bazzite.gg/General/Installation_Guide/).**
@@ -82,11 +83,9 @@ Varianten `bazzite-deck` är ett alternativ till SteamOS på Steam Deck och ger 
 
 - Startar direkt i spelläge med samma beteende som SteamOS.
 - Automatisk `bees` minskar kraftigt storleken på compatdata.
-- Nyare Mesa skapar mindre shader-cache och kräver inte cache för att undvika hack.
-- Kan startas även om enheten är full.
 - Stöd för alla språk som stöds av uppströms Fedora.
 - Använder Wayland på skrivbordet med [stöd för Steam Input](https://github.com/Supreeeme/extest).
-- Har portningar av de flesta SteamOS-paket, inklusive drivrutiner, firmwareuppdaterare och fläktstyrning, [från evlaV-förrådet](https://gitlab.com/evlaV).
+- Har portningar av de flesta SteamOS-paket, inklusive drivrutiner, firmwareuppdaterare och fläktstyrning.
 - Patchad Mesa för korrekt bildfrekvensstyrning från Gamescope.
 - Innehåller patchar från [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) för BTRFS-stöd för SD-kort som standard.
 - Levereras med en portad kopia av [SDGyroDSU](https://github.com/kmicki/SteamDeckGyroDSU), aktiverad som standard.
@@ -219,7 +218,7 @@ Använd lösenordet `universalblue` om du tillfrågas.
 
 ## Särskilt tack
 
-Bazzite är ett gemenskapsprojekt och skulle inte finnas utan allas stöd. Tack till [amelia.svg](https://bsky.app/profile/ameliasvg.bsky.social) för logotyp och varumärke, [SuperRiderTH](https://github.com/SuperRiderTH) för startvideon till Steam-spelläge, [evlaV](https://gitlab.com/evlaV), [ChimeraOS](https://chimeraos.org/), [Jovian-NixOS](https://github.com/Jovian-Experiments), [sentry](https://copr.fedorainfracloud.org/coprs/sentry/), [nicknamenamenick](https://github.com/nicknamenamenick), Steam Deck Homebrew och [cyrv6737](https://github.com/cyrv6737) för deras omfattande bidrag och inspiration.
+Bazzite är ett gemenskapsprojekt och skulle inte finnas utan allas stöd. Tack till [amelia.svg](https://bsky.app/profile/ameliasvg.bsky.social) för logotyp och varumärke, [SuperRiderTH](https://github.com/SuperRiderTH) för startvideon till Steam-spelläge, [evlaV](https://gitlab.com/evlaV) *(numera pensionerad)*, [ChimeraOS](https://chimeraos.org/), [Jovian-NixOS](https://github.com/Jovian-Experiments), [sentry](https://copr.fedorainfracloud.org/coprs/sentry/), [nicknamenamenick](https://github.com/nicknamenamenick), Steam Deck Homebrew och [cyrv6737](https://github.com/cyrv6737) för deras omfattande bidrag och inspiration.
 
 ## Bygg en egen version
 
