@@ -177,9 +177,6 @@ jobs:
           gh run download --repo=$docs_repo -n github-pages
           tar -xC "$DOCS_DIR" -f artifact.tar
 
-      - name: Check just syntax
-        uses: ublue-os/just-action@v3
-
       # Fail fast with a clear error and warm the local pull cache before
       # DNF Package Cache Prep / Build Image, same as the old "Pull Images
       # and find versions" step's podman pull calls. skopeo inspect (inside
