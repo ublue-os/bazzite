@@ -75,6 +75,7 @@ From previous `{target}` version `{prev}` there have been the following changes.
 | **UMU Launcher** | {pkgrel:umu-launcher} |
 | **Bazaar** | {pkgrel:bazaar} |
 | **Distrobox** | {pkgrel:distrobox} |
+| **UUPD** | {pkgrel:uupd} |
 | **Gnome** | {pkgrel:gnome-control-center-filesystem} |
 | **KDE** | {pkgrel:plasma-desktop} |
 | **Waydroid** | {pkgrel:waydroid} |
