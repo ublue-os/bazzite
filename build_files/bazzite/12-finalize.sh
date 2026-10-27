@@ -125,12 +125,6 @@ if [[ "${BASE_IMAGE_NAME}" == "silverblue" ]]; then
     rm -r /tmp/bazzite-schema-test
 fi
 
-# -- Patch setroubleshoot path --
-echo "==> Patching setroubleshoot path..."
-sed -i \
-    's#/var/lib/selinux#/etc/selinux#g' \
-    /usr/lib/python3.*/site-packages/setroubleshoot/util.py
-
 # -- Patch tuned profiles --
 echo "==> Patching tuned profiles..."
 sed -i \

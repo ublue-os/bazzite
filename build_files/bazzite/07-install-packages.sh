@@ -85,7 +85,6 @@ dnf5 -y install \
     msedit \
     cockpit-networkmanager \
     cockpit-podman \
-    cockpit-selinux \
     cockpit-system \
     cockpit-files \
     cockpit-storaged \
