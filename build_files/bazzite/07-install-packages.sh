@@ -21,6 +21,7 @@ dnf5 -y install \
     scx-scheds \
     scx-tools \
     bpftune \
+    bpfrag \
     fuse-libs \
     uld \
     bazaar \
