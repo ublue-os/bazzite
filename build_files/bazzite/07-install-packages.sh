@@ -20,7 +20,7 @@ echo "==> Installing core packages..."
 dnf5 -y install \
     scx-scheds \
     scx-tools \
-    bpftune-gaming \
+    bpftune \
     fuse-libs \
     uld \
     bazaar \
