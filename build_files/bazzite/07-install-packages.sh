@@ -46,7 +46,6 @@ dnf5 -y install \
     i2c-tools \
     lm_sensors \
     iio-sensor-proxy \
-    fw-ectool \
     fw-fanctrl \
     framework-system \
     udica \
