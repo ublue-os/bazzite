@@ -90,7 +90,7 @@ Varianten `bazzite-deck` är ett alternativ till SteamOS på Steam Deck och ger 
 - Innehåller patchar från [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) för BTRFS-stöd för SD-kort som standard.
 - Levereras med en portad kopia av [SDGyroDSU](https://github.com/kmicki/SteamDeckGyroDSU), aktiverad som standard.
 - Vid installation kan du välja [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader), [EmuDeck](https://www.emudeck.com/), [RetroDECK](https://retrodeck.net/) och [ProtonUp-Qt](https://davidotek.github.io/protonup-qt/) bland många andra användbara paket.
-- Ett eget uppdateringssystem uppdaterar operativsystemet, Flatpak och mer direkt från spellägets gränssnitt via [uupd](https://github.com/ublue-os/uupd) och [topgrade](https://github.com/topgrade-rs/topgrade).
+- Ett eget uppdateringssystem uppdaterar operativsystemet, Flatpak och mer direkt från spellägets gränssnitt via [uupd](https://github.com/ublue-os/uupd).
 - Windows-dubbelstart stöds eftersom Fedoras GRUB-installation lämnas intakt.
 - Om en uppdatering orsakar problem kan du enkelt återgå till föregående Bazzite-version med `rpm-ostree`-återställning. Du kan även välja tidigare avbildningar vid start.
 - Steam och Lutris är förinstallerade som lagerpaket.

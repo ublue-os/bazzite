@@ -19,4 +19,4 @@ jobs:
           sudo apt-get install -y --no-install-recommends shellcheck
 
       - name: Run ShellCheck
-        run: find build_files -type f ! -name '*.cer' -print -exec shellcheck {} +
+        run: find build_files -type f -print -exec shellcheck {} +

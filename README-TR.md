@@ -105,7 +105,7 @@ Steam Deck'te SteamOS'a alternatif olarak ve HTPC'lerde konsol benzeri bir deney
 - Varsayılan olarak [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) tarafından gelen patch'ler ile SD kartı için tam BTRFS desteği ile birlikte gelir.
 - [SDGyroDSU](https://github.com/kmicki/SteamDeckGyroDSU)'nun port edilmiş bir kopyasını varsayılan olarak etkin olarak sağlar.
 - Kurulum sırasında [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader), [EmuDeck](https://www.emudeck.com/), [RetroDECK](https://retrodeck.net/) ve [ProtonUp-Qt](https://davidotek.github.io/protonup-qt/) ve diğer birçok kullanışlı paketi kurma seçeneği.
-- Özel güncelleme sistemi, [uupd](https://github.com/ublue-os/uupd) ve [topgrade](https://github.com/topgrade-rs/topgrade) tarafından desteklenen Game mode arayüzünden doğrudan OS, Flatpak'lar ve daha fazlasını güncelleme imkanı sağlar.
+- Özel güncelleme sistemi, [uupd](https://github.com/ublue-os/uupd) tarafından desteklenen Game mode arayüzünden doğrudan OS, Flatpak'lar ve daha fazlasını güncelleme imkanı sağlar.
 - Fedora'nın GRUB kurulumunun bozulmadan kalması sayesinde Windows çift önyükleme için yerleşik destek.
 - Güncellemeler bir şey hatalı mı yaptı? `rpm-ostree` rollback işlevselliği sayesinde Bazzite'in önceki sürümüne kolayca geri dönün. Önyükleme sırasında önceki imajları bile seçebilirsiniz.
 - Steam ve Lutris önyüklü paketler olarak imaja önceden kurulu.

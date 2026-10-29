@@ -114,7 +114,7 @@ Variante conçue pour être utilisée comme alternative à SteamOS sur le Steam 
 - Livré avec des patches de [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) pour un support complet de BTRFS pour le lecteur carte SD par défaut.
 - Livré avec une copie portée de [SDGyroDSU](https://github.com/kmicki/SteamDeckGyroDSU), activé par défaut.
 - Option pour installer [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader), [EmuDeck](https://www.emudeck.com/), [RetroDECK](https://retrodeck.net/) et [ProtonUp-Qt](https://davidotek.github.io/protonup-qt/), ainsi que de nombreux autres packages utiles lors de l'installation.
-- Système de mise à jour personnalisé permettant de mettre à jour l'OS, les Flatpaks et plus directement depuis l'interface du mode jeu grâce à [uupd](https://github.com/ublue-os/uupd) et [topgrade](https://github.com/topgrade-rs/topgrade).
+- Système de mise à jour personnalisé permettant de mettre à jour l'OS, les Flatpaks et plus directement depuis l'interface du mode jeu grâce à [uupd](https://github.com/ublue-os/uupd).
 - Prise en charge intégrée du dual-boot Windows grâce à l'installation intacte de GRUB par Fedora.
 - Une mise à jour casse quelque chose ? Revenez facilement à la version précédente de Bazzite grâce à la fonctionnalité de rollback de `rpm-ostree`. Vous pouvez même sélectionner les images précédentes au démarrage.
 - Steam et Lutris préinstallés dans l'image en tant que packages superposés.

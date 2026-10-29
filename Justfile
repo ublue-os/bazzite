@@ -1,20 +1,11 @@
 export project_root := `git rev-parse --show-toplevel`
-export git_branch := ` git branch --show-current`
-export latest := "45"
 export default_image := "kinoite"
 export default_target := "bazzite"
 
-alias build-iso := build-iso-release
 alias run := run-container
 
 _default:
     @just --list
-
-_container_mgr:
-    @{{ project_root }}/just_scripts/container_mgr.sh
-
-_tag image:
-    @echo {{ image }}-build
 
 # Check Just Syntax
 just-check:
@@ -44,18 +35,6 @@ build target="" image="":
     . "${project_root}/just_scripts/get-defaults.sh"
     "${project_root}/build.py" build --image "${image}"
 
-# Build ISO
-build-iso-release target="" image="":
-    @{{ project_root }}/just_scripts/build-iso.sh {{ target }} {{ image }} 
-
-# Build ISO using ISO Builder Git Head
-build-iso-git target="" image="":
-    @{{ project_root }}/just_scripts/build-iso-installer-main.sh {{ target }} {{ image }}
-
-# Run ISO
-run-iso target="" image="":
-    @{{ project_root }}/just_scripts/run-iso.sh {{ target }} {{ image }}
-
 # Run Container
 run-container target="" image="":
     #!/usr/bin/bash
@@ -72,7 +51,3 @@ list-images:
 # Clean Images
 clean-images:
     @{{ project_root }}/just_scripts/cleanup-images.sh
-
-# Clean ISOs
-clean-isos:
-    @{{ project_root }}/just_scripts/cleanup-dir.sh

@@ -114,7 +114,7 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:sta
 - Поставляется с патчами из [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) для полной поддержки BTRFS на SD-карте по умолчанию.
 - В комплекте перенесенная версия [SDGyroDSU](https://github.com/kmicki/SteamDeckGyroDSU), включенная по умолчанию.
 - Есть возможность установить [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader), [EmuDeck](https://www.emudeck.com/), [RetroDECK](https://retrodeck.net/) и [ProtonUp-Qt](https://davidotek.github.io/protonup-qt/), а также множество других полезных пакетов при установке.
-- Собственная система обновлений позволяет обновлять ОС, Flatpak и многое другое прямо из интерфейса игрового режима с помощью [uupd](https://github.com/ublue-os/uupd) и [topgrade](https://github.com/topgrade-rs/topgrade).
+- Собственная система обновлений позволяет обновлять ОС, Flatpak и многое другое прямо из интерфейса игрового режима с помощью [uupd](https://github.com/ublue-os/uupd).
 - Встроена поддержка двойной загрузки Windows благодаря тому, что установка GRUB от Fedora остается нетронутой.
 - Обновление сломало что-то? Легко откатитесь к предыдущей версии Bazzite благодаря функции отката `rpm-ostree`. Можно даже выбрать предыдущие образы при загрузке.
 - Steam и Lutris предустановлены в образе как добавленные пакеты.
