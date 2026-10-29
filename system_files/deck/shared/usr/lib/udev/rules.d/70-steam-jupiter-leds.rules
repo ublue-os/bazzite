@@ -1,1 +1,5 @@
+# InputPlumber owns the AYANEO 3 rings. Keep Steam's generic direct-write rule
+# for other LEDs; enforce the managed device's permissions on add and change.
+ACTION=="add|change", SUBSYSTEM=="leds", KERNEL=="*:rgb:joystick_rings", ATTRS{idVendor}=="1c4f", ATTRS{idProduct}=="0002", RUN+="/usr/bin/chmod 0644 /sys%p/brightness /sys%p/multi_intensity /sys%p/effect /sys%p/trigger", GOTO="bazzite_rgb_permissions_end"
 ACTION=="add|change", SUBSYSTEM=="leds", KERNEL=="*:rgb:*", RUN+="/usr/bin/sh -c 'cd /sys/class/leds/%k && chmod 0666 brightness brightness_scale brightness_startup effect enabled mode multi_intensity multi_intensity_startup profile speed delay trigger delay_on delay_off 2>/dev/null; exit 0'"
+LABEL="bazzite_rgb_permissions_end"
