@@ -603,7 +603,7 @@ automounting ACTION="":
       pkexec /usr/bin/bash -lc '
         set -eo pipefail
         rm -f /etc/udev/rules.d/99-media-automount.rules
-        if systemctl status --no-pager ublue-os-media-automount.service >/dev/null 2>&1; then
+        if systemctl cat ublue-os-media-automount.service >/dev/null 2>&1; then
           systemctl enable --now ublue-os-media-automount.service
         fi
       '
@@ -612,7 +612,7 @@ automounting ACTION="":
       pkexec /usr/bin/bash -lc '
         set -eo pipefail
         rm -f /etc/udev/rules.d/99-media-automount.rules
-        if systemctl status --no-pager ublue-os-media-automount.service >/dev/null 2>&1; then
+        if systemctl cat ublue-os-media-automount.service >/dev/null 2>&1; then
           systemctl disable ublue-os-media-automount.service
         fi
       '
