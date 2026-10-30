@@ -61,7 +61,7 @@ index 67c6ec1..e5ba74b 100755
 +        OPTS="${STEAMOS_BTRFS_SDCARD_FAT_MOUNT_OPTS:-rw,noatime,lazytime,uid=1000,gid=1000,utf8=1}"
 +        FSTYPE="vfat"
 +    elif [[ "${ID_FS_TYPE}" == "exfat" ]]; then
-+        UDISKS2_ALLOW='uid=$UID,gid=$GID,dmask,errors,fmask,iocharset,namecase,umask'
++        UDISKS2_ALLOW='uid=$UID,gid=$GID,dmask,errors,fmask,iocharset,namecase,umask,sys_tz'
 +        OPTS="${STEAMOS_BTRFS_SDCARD_EXFAT_MOUNT_OPTS:-rw,noatime,lazytime,uid=1000,gid=1000}"
 +        FSTYPE="exfat"
 +    elif [[ "${ID_FS_TYPE}" == "ntfs" ]]; then
