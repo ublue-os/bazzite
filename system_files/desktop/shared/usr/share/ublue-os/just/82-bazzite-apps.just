@@ -30,20 +30,22 @@ _enable_terra:
     sudo dnf5 config-manager enable terra
     sudo dnf5 config-manager enable terra-extras
 
-# Manage CoolerControl, a GUI for viewing sensors and creating fan and pump profiles. Options: status | install | uninstall
+# Manage CoolerControl for viewing sensors and creating fan and pump profiles. Options: status | install | uninstall
 [group("apps")]
 install-coolercontrol ACTION="":
     #!/usr/bin/env bash
     set -eo pipefail
     source /usr/lib/ujust/ujust.sh
 
-    layered_package() {
-        local pkg="$1"
-        rpm-ostree status --json | jq -e ".deployments[] | select(.booted == true) | .packages | index(\"$pkg\")" > /dev/null
-    }
+    QUADLET=/etc/containers/systemd/coolercontrol.container
+    IMAGE=docker.io/coolercontrol/coolercontrold:latest
+    DESKTOP_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/applications"
+    DESKTOP_FILE="$DESKTOP_DIR/coolercontrol-web.desktop"
+    ICON_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/icons/hicolor/scalable/apps"
+    ICON_FILE="$ICON_DIR/coolercontrol-web.svg"
 
     get_status_token() {
-        if layered_package liquidctl && layered_package coolercontrol; then
+        if [[ -f "$QUADLET" ]]; then
             echo "install"
         else
             echo "uninstall"
@@ -51,44 +53,26 @@ install-coolercontrol ACTION="":
     }
 
     get_current_status() {
-        if layered_package liquidctl && layered_package coolercontrol; then
+        if [[ "$(get_status_token)" == "install" ]]; then
             echo "Installed"
-        elif layered_package liquidctl || layered_package coolercontrol; then
-            echo "Partially Installed"
         else
             echo "Not Installed"
         fi
     }
 
-    install_coolercontrol() {
-        echo '{{ YELLOW }}This recipe will proceed to {{ BOLD }}layer{{ NORMAL }} {{ YELLOW }}CoolerControl{{ NORMAL }}.'
-        echo '{{ YELLOW }}If updates start to fail, please use "{{ BOLD }}rpm-ostree reset{{ NORMAL }}"'
-        echo '{{ YELLOW }}See https://docs.bazzite.gg/Installing_and_Managing_Software/rpm-ostree/#major-caveats-using-rpm-ostree{{ NORMAL }}'
-
-        packages=()
-        for pkg in liquidctl coolercontrol; do
-            if layered_package "$pkg"; then
-                echo "$pkg is already layered, skipping."
-            else
-                packages+=("$pkg")
-            fi
-        done
-
-        if [ ${#packages[@]} -gt 0 ]; then
-            just _enable_terra
-
-            echo "Installing: ${packages[*]}"
-            rpm-ostree install -y "${packages[@]}"
-            echo 'Complete, please reboot to apply changes.'
-        else
-            echo "No changes were made."
+    cleanup_layered_coolercontrol() {
+        local deployment service_state pkg
+        local -a packages=()
+        deployment=$(rpm-ostree status --json)
+        # The default deployment includes pending installs and removals.
+        deployment=$(jq -e '.deployments[0] | .["requested-packages"] // .packages' <<< "$deployment")
+        service_state=$(systemctl show --property=LoadState --value coolercontrold.service)
+        if [[ "$service_state" != "not-found" ]]; then
+            sudo systemctl disable --now coolercontrold.service
         fi
-    }
 
-    uninstall_coolercontrol() {
-        packages=()
         for pkg in liquidctl coolercontrol; do
-            if layered_package "$pkg"; then
+            if jq -e --arg pkg "$pkg" 'index($pkg) != null' <<< "$deployment" > /dev/null; then
                 packages+=("$pkg")
             fi
         done
@@ -96,10 +80,69 @@ install-coolercontrol ACTION="":
         if [ ${#packages[@]} -gt 0 ]; then
             echo "Uninstalling: ${packages[*]}"
             rpm-ostree uninstall -y "${packages[@]}"
-            echo 'Complete, please reboot to apply changes.'
-        else
-            echo "CoolerControl is not layered."
+            echo 'RPM layers removed from the next deployment; reboot to finish removing the native packages.'
         fi
+    }
+
+    install_coolercontrol() {
+        cleanup_layered_coolercontrol
+
+        sudo podman pull "$IMAGE"
+        sudo mkdir -p /etc/coolercontrol /etc/containers/systemd
+        sudo tee "$QUADLET" > /dev/null <<EOF
+    [Unit]
+    Description=CoolerControl Container
+    Wants=network-online.target
+    After=network-online.target
+
+    [Container]
+    Image=$IMAGE
+    ContainerName=coolercontrold
+    PublishPort=127.0.0.1:11987:11987
+    Volume=/etc/coolercontrol:/etc/coolercontrol
+    PodmanArgs=--privileged
+    Label=io.containers.autoupdate=registry
+
+    [Service]
+    Restart=always
+    TimeoutStartSec=900
+
+    [Install]
+    WantedBy=multi-user.target
+    EOF
+        sudo systemctl daemon-reload
+        sudo systemctl restart coolercontrol.service
+        mkdir -p "$DESKTOP_DIR" "$ICON_DIR"
+        curl -fsSL --remove-on-error \
+            https://raw.githubusercontent.com/codifryed/coolercontrol/40c9d78888c3eebf40e136d759cd7206af70c724/packaging/metadata/org.coolercontrol.CoolerControl.svg \
+            -o "$ICON_FILE"
+        cat > "$DESKTOP_FILE" <<'EOF'
+    [Desktop Entry]
+    Type=Application
+    Name=CoolerControl Web UI
+    Comment=Monitor sensors and configure fan and pump profiles
+    Exec=xdg-open http://localhost:11987/
+    Icon=coolercontrol-web
+    Terminal=false
+    Categories=System;Monitor;
+    EOF
+        echo 'Added CoolerControl Web UI to the application menu.'
+        echo 'CoolerControl is available at http://localhost:11987/'
+        echo 'The container runs privileged for hardware access. See https://docs.coolercontrol.org/installation/docker.html#device-access to restrict access.'
+    }
+
+    uninstall_coolercontrol() {
+        cleanup_layered_coolercontrol
+
+        if [[ -f "$QUADLET" ]]; then
+            sudo systemctl stop coolercontrol.service
+            sudo rm -f "$QUADLET"
+            sudo systemctl daemon-reload
+        fi
+        sudo podman rm -f --ignore coolercontrold
+        sudo podman image rm --ignore "$IMAGE"
+        rm -f "$DESKTOP_FILE" "$ICON_FILE"
+        echo 'CoolerControl uninstalled. Configuration is preserved in /etc/coolercontrol.'
     }
 
     OPTION="{{ ACTION }}"
