@@ -1,0 +1,41 @@
+name: Filter unsupported issues
+
+on:
+  issues:
+    types: [opened, edited, reopened]
+
+concurrency:
+  group: issue-filter-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  filter-issues:
+    if: github.event.issue.state == 'open'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Close issues mentioning PS5
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+        with:
+          script: |
+            const params = { ...context.repo, issue_number: context.issue.number };
+            const { data: issue } = await github.rest.issues.get(params);
+            if (issue.state !== "open" ||
+                !`${issue.title}\n${issue.body ?? ""}`.toLowerCase().includes("ps5")) {
+              return;
+            }
+
+            await github.rest.issues.addLabels({
+              ...params,
+              labels: ["wontfix"],
+            });
+            await github.rest.issues.createComment({
+              ...params,
+              body: "The PS5 version of Bazzite is unofficial and is not supported by the Bazzite team. Please report issues to the maintainers of that version [here](https://github.com/VivaLaVent/ps5-bazzite-deck/issues).",
+            });
+            await github.rest.issues.update({
+              ...params,
+              state: "closed",
+              state_reason: "not_planned",
+            });
