@@ -4,7 +4,7 @@
 
 Name:           jupiter-sd-mounting-btrfs
 Version:        {{{ git_dir_version }}}
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        SteamOS SD card mounting for desktops
 License:        GPLv3
 URL:            https://github.com/ublue-os/bazzite

@@ -4,7 +4,7 @@
 
 Name:           %{packagename}-btrfs
 Version:        {{{ git_dir_version }}}
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Steam Deck Hardware Support Package
 License:        GPLv3
 URL:            https://github.com/ublue-os/bazzite
