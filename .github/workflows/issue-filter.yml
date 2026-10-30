@@ -2,7 +2,9 @@ name: Filter unsupported issues
 
 on:
   issues:
-    types: [opened, edited, reopened]
+    types: [opened, edited]
+  issue_comment:
+    types: [created]
 
 concurrency:
   group: issue-filter-${{ github.event.issue.number }}
@@ -10,32 +12,44 @@ concurrency:
 
 jobs:
   filter-issues:
-    if: github.event.issue.state == 'open'
+    if: >-
+      github.event_name == 'issues' &&
+      github.event.issue.state == 'open' &&
+      (contains(github.event.issue.title, 'ps5') ||
+       contains(github.event.issue.body, 'ps5'))
     runs-on: ubuntu-latest
     permissions:
       issues: write
     steps:
       - name: Close issues mentioning PS5
-        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+        uses: peter-evans/close-issue@05dff7ca07116e5707cfb3a3cd4af7bb5e43524c # v3
         with:
-          script: |
-            const params = { ...context.repo, issue_number: context.issue.number };
-            const { data: issue } = await github.rest.issues.get(params);
-            if (issue.state !== "open" ||
-                !`${issue.title}\n${issue.body ?? ""}`.toLowerCase().includes("ps5")) {
-              return;
-            }
+          close-reason: not_planned
+          labels: wontfix,auto-closed-ps5
+          comment: >-
+            The PS5 version of Bazzite is unofficial and is not supported by the
+            Bazzite team. Please report issues to the maintainers of that version
+            [here](https://github.com/VivaLaVent/ps5-bazzite-deck/issues).
+            If this was closed in error, reply to this comment to reopen the issue.
 
-            await github.rest.issues.addLabels({
-              ...params,
-              labels: ["wontfix"],
-            });
-            await github.rest.issues.createComment({
-              ...params,
-              body: "The PS5 version of Bazzite is unofficial and is not supported by the Bazzite team. Please report issues to the maintainers of that version [here](https://github.com/VivaLaVent/ps5-bazzite-deck/issues).",
-            });
-            await github.rest.issues.update({
-              ...params,
-              state: "closed",
-              state_reason: "not_planned",
-            });
+  reopen-issues:
+    if: >-
+      github.event_name == 'issue_comment' &&
+      !github.event.issue.pull_request &&
+      github.event.issue.state == 'closed' &&
+      github.event.issue.state_reason == 'not_planned' &&
+      contains(github.event.issue.labels.*.name, 'auto-closed-ps5') &&
+      github.event.comment.user.type == 'User' &&
+      github.event.comment.user.login == github.event.issue.user.login
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Reopen after a reply from the issue author
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          gh issue reopen "$ISSUE_NUMBER"
+          gh issue edit "$ISSUE_NUMBER" --remove-label wontfix --remove-label auto-closed-ps5
