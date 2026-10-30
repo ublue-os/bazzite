@@ -216,6 +216,20 @@ Om du redan använder en Universal Blue-avbildning kan du i stället köra `ujus
 
 Använd lösenordet `universalblue` om du tillfrågas.
 
+## Bidragsstatistik
+
+![Bazzite](https://repobeats.axiom.co/api/embed/86b500d79c613015ad16f56df76c8e13f3fd98ae.svg "Repobeats-analysbild")
+
+## Stjärnhistorik
+
+<a href="https://star-history.com/#ublue-os/bazzite&Date" >
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=ublue-os/bazzite&type=Date&theme=dark" />
+    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=ublue-os/bazzite&type=Date" />
+    <img alt="Stjärnhistorik" src="https://api.star-history.com/svg?repos=ublue-os/bazzite&type=Date" loading="lazy" />
+  </picture>
+</a>
+
 ## Särskilt tack
 
 Bazzite är ett gemenskapsprojekt och skulle inte finnas utan allas stöd. Tack till [amelia.svg](https://bsky.app/profile/ameliasvg.bsky.social) för logotyp och varumärke, [SuperRiderTH](https://github.com/SuperRiderTH) för startvideon till Steam-spelläge, [evlaV](https://gitlab.com/evlaV) *(numera pensionerad)*, [ChimeraOS](https://chimeraos.org/), [Jovian-NixOS](https://github.com/Jovian-Experiments), [sentry](https://copr.fedorainfracloud.org/coprs/sentry/), [nicknamenamenick](https://github.com/nicknamenamenick), Steam Deck Homebrew och [cyrv6737](https://github.com/cyrv6737) för deras omfattande bidrag och inspiration.
