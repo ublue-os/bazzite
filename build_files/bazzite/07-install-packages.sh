@@ -138,6 +138,14 @@ systemctl mask iscsi
 systemctl mask systemd-remount-fs.service
 systemctl mask fedora-atomic-desktop-appstream-cache-refresh
 
+# Mask systemd-gpt-auto-generator. Since ostree 2026.3 it can locate the root
+# disk, and on a "Linux home"-typed GPT partition it generates a home.mount for
+# /home, which is a symlink on ostree. That mount always fails and takes
+# local-fs.target with it, dropping the boot into emergency mode (#5533).
+# Masking restores the pre-2026.3 behaviour; /home, /boot and swap still come from fstab.
+mkdir -p /etc/systemd/system-generators
+ln -s /dev/null /etc/systemd/system-generators/systemd-gpt-auto-generator
+
 # -- Install extest libraries for both architectures --
 echo "==> Installing extest libraries..."
 mkdir -p /usr/lib/extest /usr/lib64/extest
