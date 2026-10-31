@@ -6,7 +6,17 @@ alias upgrade := update
 [group("system")]
 update:
     #!/usr/bin/bash
-    /usr/libexec/uupd-update | jq -r -R 'fromjson? | [(.title, .msg, .description) | select(.)] | join(" ")'
+    # uupd-manual.service logs at debug level, which includes the raw bootc progress
+    # JSON and "scanned progress" traces. Hide those and, on newer uupd versions,
+    # show the text of "Command output" records instead of the literal message.
+    /usr/libexec/uupd-update | jq -r -R '
+        fromjson?
+        | select(.msg != "scanned progress")
+        | [(.title, (if .msg == "Command output" then .output else .msg end), .description) | select(.)]
+        | join(" ")
+        | select(. != "")
+        | select(((try fromjson catch null) | type) != "object")
+    '
 
 alias changelog := changelogs
 
