@@ -41,6 +41,7 @@ cockpit ACTION="":
         if ! systemctl is-enabled --quiet sshd && ! systemctl is-enabled --quiet sshd.socket; then
           echo "${yellow}${bold}Note:${normal} Cockpit signs in to this machine over SSH, which is not enabled on boot."
           echo "Logging in to Cockpit will fail with \"Host is unknown\" whenever SSH is not running."
+          echo "Enabling SSH also allows SSH logins to this machine from your network."
           SSH_OPTION="Skip"
           # Only prompt when chosen from the menu; explicit options stay non-interactive
           if [[ "$OPTION" == "Enable" ]]; then
