@@ -23,6 +23,18 @@ glib-compile-schemas /usr/share/gnome-shell/extensions/hotedge@jonathan.jdoda.ca
 glib-compile-schemas /usr/share/gnome-shell/extensions/appindicatorsupport@rgcjonas.gmail.com/schemas
 glib-compile-schemas /usr/share/gnome-shell/extensions/add-to-steam@pupper.space/schemas
 
+# -- Compile Logo Menu translations --
+# Logo Menu only ships .po sources. GNOME Shell loads extension translations
+# from locale/<lang>/LC_MESSAGES/<gettext-domain>.mo inside the extension dir.
+echo "==> Compiling Logo Menu translations..."
+LOGOMENU_DIR=/usr/share/gnome-shell/extensions/logomenu@aryan_k
+LOGOMENU_DOMAIN="$(jq -r '."gettext-domain" // .uuid' "${LOGOMENU_DIR}/metadata.json")"
+for po in "${LOGOMENU_DIR}"/po/*.po; do
+    lang="$(basename "${po}" .po)"
+    mkdir -p "${LOGOMENU_DIR}/locale/${lang}/LC_MESSAGES"
+    msgfmt -o "${LOGOMENU_DIR}/locale/${lang}/LC_MESSAGES/${LOGOMENU_DOMAIN}.mo" "${po}"
+done
+
 # -- Install Caffeine extension --
 # Move the extracted Caffeine extension to its final location and compile schemas.
 echo "==> Installing Caffeine extension..."
