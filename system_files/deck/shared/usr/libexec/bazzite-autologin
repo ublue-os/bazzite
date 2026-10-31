@@ -10,7 +10,8 @@ HOLO_CONF="/etc/sddm.conf.d/zz-holo-autologin.conf"
 DESKTOP_AUTOLOGIN="/etc/bazzite/desktop_autologin"
 
 rm -f /etc/sddm.conf.d/zz-steamos-autologin.conf \
-      /etc/sddm.conf.d/steamos.conf
+      /etc/sddm.conf.d/steamos.conf \
+      /etc/sddm.conf.d/99-plasma-setup.conf
 
 if [[ ! -f ${DESKTOP_AUTOLOGIN} ]]; then
   SESSION="gamescope-session-ogui-steam.desktop"
