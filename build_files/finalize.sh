@@ -41,6 +41,7 @@ for copr in \
     ublue-os/bazzite-multilib \
     ublue-os/staging \
     ublue-os/packages \
+    imput/helium \
     ycollet/audinux \
     che/nerd-fonts; do
     dnf5 -y copr disable "${copr}"

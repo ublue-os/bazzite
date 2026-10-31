@@ -154,6 +154,8 @@ mkdir -p /etc/flatpak/remotes.d
 curl --fail --retry 3 --retry-all-errors -Lo /etc/flatpak/remotes.d/flathub.flatpakrepo \
     https://dl.flathub.org/repo/flathub.flatpakrepo
 
+sed -i 's|^SHELL=.*|SHELL=/usr/bin/zsh|' /etc/default/useradd
+
 # -- Configure systemd services --
 echo "==> Configuring systemd services..."
 systemctl enable brew-setup.service
