@@ -14,6 +14,7 @@ update:
         | select(.msg != "scanned progress")
         | [(.title, (if .msg == "Command output" then .output else .msg end), .description) | select(.)]
         | join(" ")
+        | select(. != "")
         | select(((try fromjson catch null) | type) != "object")
     '
 
