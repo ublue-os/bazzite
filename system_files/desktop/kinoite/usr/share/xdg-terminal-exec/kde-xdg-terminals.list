@@ -1,0 +1,3 @@
+# Default terminal for xdg-terminal-exec (used by Bazzite Portal and others).
+# Override per user in ~/.config/kde-xdg-terminals.list or ~/.config/xdg-terminals.list
+org.kde.konsole.desktop
