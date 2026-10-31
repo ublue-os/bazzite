@@ -36,7 +36,22 @@ cockpit ACTION="":
 
     case "$OPTION" in
       Enable|enable)
-        sudo systemctl enable --now cockpit.service
+        sudo systemctl enable --now cockpit.service || exit $?
+        # The Cockpit container logs in to this machine over SSH (127.0.0.1:22)
+        if ! systemctl is-enabled --quiet sshd && ! systemctl is-enabled --quiet sshd.socket; then
+          echo "${yellow}${bold}Note:${normal} Cockpit signs in to this machine over SSH, which is not enabled on boot."
+          echo "Logging in to Cockpit will fail with \"Host is unknown\" whenever SSH is not running."
+          SSH_OPTION="Skip"
+          # Only prompt when chosen from the menu; explicit options stay non-interactive
+          if [[ "$OPTION" == "Enable" ]]; then
+            SSH_OPTION=$(ugum choose "Enable SSH" "Skip")
+          fi
+          if [[ "$SSH_OPTION" == "Enable SSH" ]]; then
+            sudo systemctl enable --now sshd
+          else
+            echo "Run ${bold}ujust ssh enable${normal} to enable SSH later."
+          fi
+        fi
         ;;
       Disable|disable)
         sudo systemctl disable --now cockpit.service
