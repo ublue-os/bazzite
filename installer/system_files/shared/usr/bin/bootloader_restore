@@ -90,7 +90,7 @@ yad --text="This will restore the boot in the device $DISK_PATH, using $xboot_de
 }
 
 mount --mkdir "$xboot_dev" "$MNT"/boot || die "Failed to mount XBOOT partition"
-mount "$efi_dev" "$MNT"/boot/efi || die "Failed to mount EFI partition"
+mount --mkdir "$efi_dev" "$MNT"/boot/efi || die "Failed to mount EFI partition"
 
 if [[ $DRY_RUN -eq 1 ]]; then
     info "Script was executed with ${DRY_RUN@A}, skipping bootloader restoration..."
@@ -102,12 +102,15 @@ else
     fi
     run0 --user="$PKEXEC_UID" -- \
         xdg-terminal-exec --title="$_APP_NAME - Restoring bootloader" -- \
-        pkexec bash -c "bootupctl backend install
-            -vvvv
-        --auto
-        --write-uuid
-        --update-firmware
-        --device \"$DISK_PATH\" \"$MNT\"" &&
+        pkexec bash -c 'bootupctl backend install \
+            -vvvv \
+            --auto \
+            --write-uuid \
+            --update-firmware \
+            --device "$1" "$2"
+            rc=$?
+            read -rp "Press Enter to close this window..."
+            exit $rc' bootloader_restore "$DISK_PATH" "$MNT" &&
         info "Bootloader restored successfully." &&
         yad --text "Bootloader restored successfully." --button="OK:0"
 fi
