@@ -40,7 +40,7 @@ install-coolercontrol ACTION="":
     QUADLET=/etc/containers/systemd/coolercontrol.container
     IMAGE=docker.io/coolercontrol/coolercontrold:latest
     DESKTOP_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/applications"
-    DESKTOP_FILE="$DESKTOP_DIR/coolercontrol-web.desktop"
+    DESKTOP_FILE="$DESKTOP_DIR/org.coolercontrol.CoolerControl.desktop"
     ICON_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/icons/hicolor/scalable/apps"
     ICON_FILE="$ICON_DIR/coolercontrol-web.svg"
 
@@ -88,7 +88,7 @@ install-coolercontrol ACTION="":
         cleanup_layered_coolercontrol
 
         sudo podman pull "$IMAGE"
-        sudo mkdir -p /etc/coolercontrol /etc/containers/systemd
+        sudo mkdir -p /etc/coolercontrol /var/lib/coolercontrol/plugins /etc/containers/systemd
         sudo tee "$QUADLET" > /dev/null <<EOF
     [Unit]
     Description=CoolerControl Container
@@ -100,6 +100,7 @@ install-coolercontrol ACTION="":
     ContainerName=coolercontrold
     PublishPort=127.0.0.1:11987:11987
     Volume=/etc/coolercontrol:/etc/coolercontrol
+    Volume=/var/lib/coolercontrol:/var/lib/coolercontrol
     PodmanArgs=--privileged
     Label=io.containers.autoupdate=registry
 
@@ -116,16 +117,17 @@ install-coolercontrol ACTION="":
         curl -fsSL --remove-on-error \
             https://raw.githubusercontent.com/codifryed/coolercontrol/40c9d78888c3eebf40e136d759cd7206af70c724/packaging/metadata/org.coolercontrol.CoolerControl.svg \
             -o "$ICON_FILE"
-        cat > "$DESKTOP_FILE" <<'EOF'
+        cat > "$DESKTOP_FILE" <<EOF
     [Desktop Entry]
     Type=Application
     Name=CoolerControl Web UI
     Comment=Monitor sensors and configure fan and pump profiles
     Exec=xdg-open http://localhost:11987/
-    Icon=coolercontrol-web
+    Icon=$ICON_FILE
     Terminal=false
     Categories=System;Monitor;
     EOF
+        rm -f "$DESKTOP_DIR/coolercontrol-web.desktop"
         echo 'Added CoolerControl Web UI to the application menu.'
         echo 'CoolerControl is available at http://localhost:11987/'
         echo 'The container runs privileged for hardware access. See https://docs.coolercontrol.org/installation/docker.html#device-access to restrict access.'
@@ -141,7 +143,7 @@ install-coolercontrol ACTION="":
         fi
         sudo podman rm -f --ignore coolercontrold
         sudo podman image rm --ignore "$IMAGE"
-        rm -f "$DESKTOP_FILE" "$ICON_FILE"
+        rm -f "$DESKTOP_FILE" "$DESKTOP_DIR/coolercontrol-web.desktop" "$ICON_FILE"
         echo 'CoolerControl uninstalled. Configuration is preserved in /etc/coolercontrol.'
     }
 
