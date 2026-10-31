@@ -163,7 +163,26 @@ rebase_to() {
       full_ref="ostree-image-signed:docker://ghcr.io/ublue-os/$DEFAULT_IMAGE:$target"
       ;;
   esac
-  
+
+  # rpm-ostree refuses to rebase onto the ref the default (pending or booted)
+  # deployment already tracks ("Old and new refs are equal"). If that deployment
+  # is pending, the rebase was already staged (e.g. by an earlier, timed-out call
+  # from Steam), so report success. If it is the booted one, there is nothing to
+  # do; keep a non-zero exit so callers like `brh rebase ... && reboot` don't reboot.
+  local default_ref default_booted
+  {
+    read -r default_ref
+    read -r default_booted
+  } < <(rpm-ostree status --json | jq -r '.deployments[0] | (.["container-image-reference"] // ""), (.booted // false)')
+  if [[ -n "$default_ref" && "$default_ref" == "$full_ref" ]]; then
+    if [[ "$default_booted" == true ]]; then
+      echo "Already on ${bold}$full_ref${normal}, nothing to do."
+      return 1
+    fi
+    echo "${green}Rebase to ${bold}$full_ref${normal}${green} is already pending.${normal} Reboot to apply changes."
+    return 0
+  fi
+
   echo "Rebasing to: ${bold}$full_ref${normal}"
   
   if [[ "$skip_confirm" != true ]]; then
