@@ -1,0 +1,3 @@
+# Default terminal for xdg-terminal-exec (used by Bazzite Portal and others).
+# Override per user in ~/.config/gnome-xdg-terminals.list or ~/.config/xdg-terminals.list
+org.gnome.Ptyxis.desktop
