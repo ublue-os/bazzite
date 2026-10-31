@@ -28,7 +28,13 @@ dnf5 -y remove \
 echo "==> Configuring desktop presets..."
 if [[ "${BASE_IMAGE_NAME}" == "kinoite" ]]; then
     dnf5 -y remove steamdeck-kde-presets-desktop
-    dnf5 -y install steamdeck-kde-presets
+    # Temporarily replace KWin 6.8.1's conflicting rules with the Deck presets.
+    (
+        presets_dir=$(mktemp -d)
+        trap 'rm -f "${presets_dir}"/*.rpm; rmdir "${presets_dir}"' EXIT
+        dnf5 download --destdir="${presets_dir}" steamdeck-kde-presets
+        rpm -Uvh --replacefiles "${presets_dir}"/steamdeck-kde-presets-*.noarch.rpm
+    )
 else
     ln -sf /usr/share/wallpapers/convergence.jxl /usr/share/backgrounds/default.jxl
     ln -sf /usr/share/wallpapers/convergence.jxl /usr/share/backgrounds/default-dark.jxl
