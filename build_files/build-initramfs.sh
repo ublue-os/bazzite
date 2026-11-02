@@ -9,6 +9,9 @@ set -xeuo pipefail
 echo "::group::Build initramfs"
 trap 'echo "::endgroup::"' EXIT
 
+# Increase plymouth timeout
+sed -i 's/^DeviceTimeout=.*/DeviceTimeout=15/' /usr/share/plymouth/plymouthd.defaults
+
 # Set KERNEL_SUFFIX based on KERNEL_FLAVOR, defaulting to empty.
 if [[ "${KERNEL_FLAVOR:-}" == "surface" ]]; then
     KERNEL_SUFFIX="surface"
