@@ -223,7 +223,7 @@ assign_chunk bazzite-hardware-config monthly \
     /usr/lib/udev/rules.d/{30-steamdeck,40-backlights,50-ally-fingerprint,50-ally-x-controller}.rules \
     /usr/lib/udev/rules.d/{50-gpd-win-4-fingerprint,50-gpd-wm2-fingerprint}.rules \
     /usr/lib/udev/rules.d/{60-schedulers,70-steam-jupiter-leds,80-gpu-reset,90-dolphin-motion}.rules \
-    /usr/lib/udev/rules.d/{99-cec-bluetooth,99-powertargets,99-steamcontroller-wakeup}.rules
+    /usr/lib/udev/rules.d/{99-cec-bluetooth,99-powertargets,99-steamcontroller-wakeup,99-valve-leds}.rules
 
 assign_chunk bazzite-desktop-config quarterly \
     /etc/dconf/db/distro.d/*bazzite* \
