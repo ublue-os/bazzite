@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 # Script version
-VER=36
+VER=37
 # Allows to version the manager based on its contents.
 # Bump VER whenever we want to trigger a run explicitly event though the script is not changed.
 SCRIPT_HASH=$(tr -d '[:space:]' <"$0" | sha256sum | cut -d ' ' -f 1)
@@ -34,9 +34,18 @@ flatpak remote-modify --system --enable flathub || :
 flatpak remote-modify --disable fedora || :
 flatpak remote-modify --disable fedora-testing || :
 
+# Add Flatpark remote
+flatpak remote-add --if-not-exists --system flatpark https://dl.flatpark.org/flatpark.flatpakrepo || : 
+flatpak remote-modify --system --enable flatpark || :
+
 # Filter out references from Flathub remote
 if [[ -f /usr/share/ublue-os/flatpak-blocklist ]]; then
   flatpak remote-modify --system --filter=/usr/share/ublue-os/flatpak-blocklist flathub
+fi
+
+# Filter out references from Flatpark remote
+if [[ -f /usr/share/ublue-os/flatpark-allowlist ]]; then
+  flatpak remote-modify --system --filter=/usr/share/ublue-os/flatpark-allowlist flatpark
 fi
 
 # Remove Bazzite Portal Flatpak Leftovers if present
