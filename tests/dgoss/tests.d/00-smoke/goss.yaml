@@ -84,7 +84,7 @@ command:
     stdout:
       - "/^OK:/"
 
-  # Deck images disable uupd.timer in the Containerfile.
+  # Deck images disable uupd.timer in build_files/bazzite-deck/05-finalize.sh.
   uupd_timer_enabled:
     exec: |
       sh -lc '

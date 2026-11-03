@@ -8,18 +8,21 @@ Quick start:
     ./build.py build                       # build "bazzite" (the default)
     ./build.py build --image bazzite-deck  # build a specific variant
     ./build.py shell                       # build if needed, then drop into it
-    ./build.py build --image bazzite-deck-nvidia --dry-run   # show, don't run
+    ./build.py --dry-run build --image bazzite-deck-nvidia   # show, don't run
 
 CI usage:
 
     ./build.py matrix              # GitHub Actions matrix JSON (via fromJson)
     ./build.py version             # the one release tag shared by every image
     ./build.py resolve --image X   # build args + labels + tags, as JSON
-    ./build.py build --image X --rechunk --sbom --sign --push
+    ./build.py build --image X --resolved-json resolved.json --tag raw-img
+    ./build.py rechunk / sbom / packages / test / push / sign / sbom-attach
+        # one subcommand per CI step; see .github/workflows/build.yml
 
-Every subcommand accepts -v/--verbose and -q/--quiet. Diagnostic output goes
-to stderr; JSON/data output goes to stdout, so `./build.py matrix | jq` and
-`VALUE=$(./build.py resolve --image X | jq -r .version_tag)` both work
+-v/--verbose, -q/--quiet, and --dry-run go before the subcommand
+(`./build.py -v resolve ...`). Diagnostic output goes to stderr; JSON/data
+output goes to stdout, so `./build.py matrix | jq` and
+`VALUE=$(./build.py resolve --image X | jq -r .version)` both work
 cleanly even with logging turned up.
 """
 
@@ -195,10 +198,13 @@ class GitHubActionsFormatter(logging.Formatter):
 
 
 class PlainFormatter(logging.Formatter):
-    """levelname: message, with ANSI color only on a real terminal."""
+    """Format log records for a terminal or a plain log file.
+
+    INFO and DEBUG print the bare message. Warnings and errors print
+    "LEVEL: message", with ANSI color only on a real terminal.
+    """
 
     _COLORS: ClassVar[dict[int, str]] = {
-        logging.DEBUG: "\033[2m",
         logging.WARNING: "\033[33m",
         logging.ERROR: "\033[31m",
         logging.CRITICAL: "\033[31m",
@@ -296,8 +302,8 @@ def run(
     print image IDs to stdout, which would otherwise land in front of it.
     Only interactive commands (a shell in the image) keep the real stdout.
 
-    Only commands whose output is parsed (skopeo inspect, skopeo list-tags)
-    should pass capture=True, and those are logged at DEBUG rather than INFO.
+    Pass capture=True only when the caller parses the output. The command
+    line is always logged at INFO; captured output is logged at DEBUG.
     """
     printable = " ".join(cmd)
     log.info("+ %s%s", f"(cd {cwd} && " if cwd else "", printable + (")" if cwd else ""))
@@ -548,7 +554,11 @@ def cmd_doctor(args: argparse.Namespace) -> int:
 
 
 def list_tags(image_ref: str) -> set[str]:
-    """Tags currently in the registry for `image_ref`; empty if it doesn't exist yet."""
+    """Tags currently in the registry for `image_ref`.
+
+    Empty if the image doesn't exist yet, and also if skopeo fails for any
+    other reason (network, auth), so version dedup can't see existing tags.
+    """
     result = run(["skopeo", "list-tags", f"docker://{image_ref}"], capture=True, check=False)
     if result.returncode != 0:
         return set()
@@ -646,7 +656,7 @@ def cmd_build(args: argparse.Namespace) -> int:
     Local dev builds skip the registry entirely -- no release tag lookup,
     no version dedup -- since a contributor iterating on a package list
     doesn't care whether "44.20260820" collides with a published tag. CI
-    passes --resolved-json to reuse the build args/target that `resolve`
+    passes --resolved-json to reuse the build args that `resolve`
     already computed once, rather than resolving twice.
     """
     if args.resolved_json:
@@ -955,7 +965,7 @@ def cmd_sbom_attach(args: argparse.Namespace) -> int:
 
 def cmd_shell(args: argparse.Namespace) -> int:
     """Build the image if it doesn't exist locally, then drop into a shell in it."""
-    tag = f"localhost/{args.image}:build"
+    tag = args.tag or f"localhost/{args.image}:build"
     check = run(
         [args.container_mgr, "images", "--filter", f"reference={tag}", "--format", "{{.ID}}"],
         capture=True,
@@ -1016,7 +1026,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_resolve.add_argument("--pr-number", default=os.environ.get("PR_NUMBER"))
     p_resolve.add_argument("--image-vendor", default=IMAGE_VENDOR_DEFAULT)
     p_resolve.add_argument("--push-registry", default=PULL_REGISTRY)
-    p_resolve.add_argument("--kernel-evr", default=None, help="skip the in-image rpm query and use this instead")
+    p_resolve.add_argument("--kernel-evr", default=None, help="ostree.linux label value (default: the kernel_version from IMAGES)")
     p_resolve.add_argument("--skip-registry", action="store_true", help="skip point-release dedup against the registry")
     p_resolve.add_argument("--version", default=None, help="use this release version (from `version`) instead of resolving one")
     p_resolve.set_defaults(func=cmd_resolve)
@@ -1027,17 +1037,18 @@ def build_parser() -> argparse.ArgumentParser:
     p_version.add_argument("--skip-registry", action="store_true", help="skip point-release dedup against the registry")
     p_version.set_defaults(func=cmd_version)
 
-    p_build = sub.add_parser("build", help="build one image locally")
-    p_build.add_argument("--image", default=DEFAULT_IMAGE, choices=sorted(IMAGES))
-    p_build.add_argument("--container-mgr", default=None)
-    p_build.add_argument("--resolved-json", default=None, help="reuse build args/target from `resolve`'s output (CI)")
-    p_build.add_argument("--tag", default=None)
-    p_build.add_argument("--secret", default=None, help="passed through to --secret (e.g. id=GITHUB_TOKEN,env=GITHUB_TOKEN)")
+    # Shared because cmd_shell falls back to cmd_build.
+    build_opts = argparse.ArgumentParser(add_help=False)
+    build_opts.add_argument("--image", default=DEFAULT_IMAGE, choices=sorted(IMAGES))
+    build_opts.add_argument("--container-mgr", default=None)
+    build_opts.add_argument("--resolved-json", default=None, help="reuse build args from `resolve`'s output (CI)")
+    build_opts.add_argument("--tag", default=None)
+    build_opts.add_argument("--secret", default=None, help="passed through to --secret (e.g. id=GITHUB_TOKEN,env=GITHUB_TOKEN)")
+
+    p_build = sub.add_parser("build", parents=[build_opts], help="build one image locally")
     p_build.set_defaults(func=cmd_build)
 
-    p_shell = sub.add_parser("shell", help="build if needed, then shell into the image")
-    p_shell.add_argument("--image", default=DEFAULT_IMAGE, choices=sorted(IMAGES))
-    p_shell.add_argument("--container-mgr", default=None)
+    p_shell = sub.add_parser("shell", parents=[build_opts], help="build if needed, then shell into the image")
     p_shell.set_defaults(func=cmd_shell)
 
     p_rechunk = sub.add_parser("rechunk", help="rechunk a raw build into an OCI image via chunkah")

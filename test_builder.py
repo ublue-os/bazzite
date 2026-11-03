@@ -9,6 +9,8 @@ comment for why the table is hand-written rather than derived.
 
 import json
 import logging
+import re
+import subprocess
 from datetime import datetime, timezone
 
 import pytest
@@ -21,28 +23,45 @@ FEDORA = b.DEFAULTS["fedora_version"]
 KERNEL = b.DEFAULTS["kernel_version"]
 LTS_KERNEL = b.LTS_KERNEL_VERSION
 
-# Hand-derived by reading the base_image_name/nvidia/kernel rules directly
-# off each image name, independent of build.py's IMAGES table, so this
-# can't just echo a bug back.
+
+@pytest.fixture(autouse=True)
+def no_ci_env(monkeypatch):
+    """Clear the GitHub Actions environment.
+
+    build.py takes --sha, --ref-name, --pr-number, and --summary-file defaults
+    from it, so tests would otherwise behave differently on a runner.
+    """
+    for var in (
+        "GITHUB_ACTIONS", "GITHUB_SHA", "GITHUB_REF_NAME", "PR_NUMBER",
+        "GITHUB_STEP_SUMMARY", "RUNNER_TEMP",
+    ):
+        monkeypatch.delenv(var, raising=False)
+
+# Written out by hand from the naming rules (gnome -> silverblue, nvidia ->
+# install_nvidia, plain nvidia -> nvidia-lts on the LTS kernel) rather than
+# copied from build.py's IMAGES table. The exception is nvidia_flavor on the
+# four images without nvidia: it's nvidia-open because the Containerfile
+# always pulls akmods-${NVIDIA_FLAVOR} for the image's kernel, and
+# akmods-nvidia-lts has no tag for the main kernel.
 EXPECTED_VARIANTS = {
     "bazzite": {
         "base_image_name": "kinoite", "container_target": "bazzite",
-        "nvidia_base": "bazzite", "nvidia_flavor": "nvidia-lts", "install_nvidia": False,
+        "nvidia_base": "bazzite", "nvidia_flavor": "nvidia-open", "install_nvidia": False,
         "kernel_flavor": "ogc", "kernel_version": KERNEL,
     },
     "bazzite-gnome": {
         "base_image_name": "silverblue", "container_target": "bazzite",
-        "nvidia_base": "bazzite", "nvidia_flavor": "nvidia-lts", "install_nvidia": False,
+        "nvidia_base": "bazzite", "nvidia_flavor": "nvidia-open", "install_nvidia": False,
         "kernel_flavor": "ogc", "kernel_version": KERNEL,
     },
     "bazzite-deck": {
         "base_image_name": "kinoite", "container_target": "bazzite-deck",
-        "nvidia_base": "bazzite-deck", "nvidia_flavor": "nvidia-lts", "install_nvidia": False,
+        "nvidia_base": "bazzite-deck", "nvidia_flavor": "nvidia-open", "install_nvidia": False,
         "kernel_flavor": "ogc", "kernel_version": KERNEL,
     },
     "bazzite-deck-gnome": {
         "base_image_name": "silverblue", "container_target": "bazzite-deck",
-        "nvidia_base": "bazzite-deck", "nvidia_flavor": "nvidia-lts", "install_nvidia": False,
+        "nvidia_base": "bazzite-deck", "nvidia_flavor": "nvidia-open", "install_nvidia": False,
         "kernel_flavor": "ogc", "kernel_version": KERNEL,
     },
     "bazzite-deck-nvidia": {
@@ -78,12 +97,12 @@ EXPECTED_VARIANTS = {
 }
 
 
-def test_images_table_matches_ci_matrix():
+def test_images_table_has_expected_images():
     assert set(b.IMAGES) == set(EXPECTED_VARIANTS)
 
 
 @pytest.mark.parametrize("image", sorted(EXPECTED_VARIANTS))
-def test_variant_matches_ci_derivation(image):
+def test_variant_matches_expected(image):
     variant = b.get_variant(image)
     expected = EXPECTED_VARIANTS[image]
     assert variant.base_image_name == expected["base_image_name"]
@@ -108,16 +127,16 @@ def test_unknown_image_raises_with_valid_list():
         b.get_variant("bazzite-does-not-exist")
 
 
-# --- resolve_source_version ---
+# --- resolve_pretty_version ---
 
-def test_source_version_stable():
+def test_pretty_version_stable():
     pretty = b.resolve_pretty_version(
         ref_name="main", version="45.20261013", sha_short="abc1234", fedora_version=45,
     )
     assert pretty == "Stable (F45.20261013)"
 
 
-def test_source_version_unstable():
+def test_pretty_version_unstable():
     pretty = b.resolve_pretty_version(
         ref_name="unstable", version="unstable-45.20261013.2",
         sha_short="abc1234", fedora_version=45,
@@ -125,7 +144,7 @@ def test_source_version_unstable():
     assert pretty == "Unstable (F45.20261013.2, #abc1234)"
 
 
-def test_source_version_testing():
+def test_pretty_version_testing():
     pretty = b.resolve_pretty_version(
         ref_name="testing", version="testing-45.20261014",
         sha_short="c500b43", fedora_version=45,
@@ -133,7 +152,7 @@ def test_source_version_testing():
     assert pretty == "Testing (F45.20261014, #c500b43)"
 
 
-def test_source_version_pr_number_takes_priority_over_ref():
+def test_pretty_version_pr_number_takes_priority_over_ref():
     # pr_number takes priority regardless of ref_name
     pretty = b.resolve_pretty_version(
         ref_name="unstable", version="unstable-45.20261013", sha_short="abc1234",
@@ -191,83 +210,56 @@ def test_alias_tags_testing():
 
 # --- build_args ---
 
-def test_build_args_field_set_matches_ci():
-    variant = b.get_variant("bazzite-deck-nvidia")
+def test_build_args_match_containerfile_args():
+    """The args build.py passes, the Containerfile's ARGs, and this list agree.
+
+    ARGs declared before the first stage are only visible to FROM lines, so
+    anything a build script reads has to be in the stage.
+    """
     args = b.build_args(
-        variant, image_vendor="ublue-os", image_branch="main",
+        b.get_variant("bazzite-deck-nvidia"), image_vendor="ublue-os", image_branch="main",
         sha_head_short="abc1234", version_tag="44", version_pretty="Stable (F44)",
     )
-    # The exact set of build-args passed to podman/buildah -- deliberately
-    # excludes SOURCE_IMAGE, which isn't a real ARG in the Containerfile.
-    assert set(args) == {
-        "BASE_IMAGE_NAME", "FEDORA_VERSION", "BASE_IMAGE", "IMAGE_NAME",
-        "IMAGE_VENDOR", "IMAGE_BRANCH", "KERNEL_FLAVOR", "KERNEL_VERSION",
-        "NVIDIA_FLAVOR", "NVIDIA_BASE", "SHA_HEAD_SHORT", "VERSION_TAG",
-        "VERSION_PRETTY", "ARCH", "BUILD_DECK", "BUILD_NVIDIA",
+    stage_args = {
+        "BASE_IMAGE_NAME", "FEDORA_VERSION", "IMAGE_NAME", "IMAGE_VENDOR", "IMAGE_BRANCH",
+        "KERNEL_FLAVOR", "NVIDIA_FLAVOR", "SHA_HEAD_SHORT", "VERSION_TAG", "VERSION_PRETTY",
+        "BUILD_DECK", "BUILD_NVIDIA",
     }
+    from_only_args = {"BASE_IMAGE", "KERNEL_VERSION", "NVIDIA_BASE", "ARCH"}
+    assert set(args) == stage_args | from_only_args
+
+    def declared(text):
+        return set(re.findall(r"^ARG ([A-Z_]+)", text, flags=re.MULTILINE))
+
+    before_stage, stage = (b.REPO_ROOT / "Containerfile").read_text().split("FROM base-image AS bazzite")
+    assert declared(stage) == stage_args
+    assert declared(before_stage) | declared(stage) == set(args)
     assert args["SHA_HEAD_SHORT"] == "abc1234"  # never empty
 
-def test_build_args_build_no_deck_no_nvidia():
-    variants = [
-        "bazzite",
-        "bazzite-gnome",
-    ]
 
-    for variant_name in variants:
-        variant = b.get_variant(variant_name)
-        build_args = b.build_args(
-            variant, image_vendor="ublue-os", image_branch="main",
-            sha_head_short="abc1234", version_tag="44", version_pretty="Stable (F44)",
-        )
-        assert build_args["BUILD_DECK"] == "FALSE"
-        assert build_args["BUILD_NVIDIA"] == "FALSE"
+@pytest.mark.parametrize(
+    ("image", "deck", "nvidia"),
+    [
+        ("bazzite", "FALSE", "FALSE"),
+        ("bazzite-gnome", "FALSE", "FALSE"),
+        ("bazzite-deck", "TRUE", "FALSE"),
+        ("bazzite-deck-gnome", "TRUE", "FALSE"),
+        ("bazzite-nvidia", "FALSE", "TRUE"),
+        ("bazzite-gnome-nvidia", "FALSE", "TRUE"),
+        ("bazzite-nvidia-open", "FALSE", "TRUE"),
+        ("bazzite-gnome-nvidia-open", "FALSE", "TRUE"),
+        ("bazzite-deck-nvidia", "TRUE", "TRUE"),
+        ("bazzite-deck-nvidia-gnome", "TRUE", "TRUE"),
+    ],
+)
+def test_build_args_deck_and_nvidia_flags(image, deck, nvidia):
+    args = b.build_args(
+        b.get_variant(image), image_vendor="ublue-os", image_branch="main",
+        sha_head_short="abc1234", version_tag="44", version_pretty="Stable (F44)",
+    )
+    assert args["BUILD_DECK"] == deck
+    assert args["BUILD_NVIDIA"] == nvidia
 
-def test_build_args_build_deck_no_nvidia():
-    variants = [
-        "bazzite-deck",
-        "bazzite-deck-gnome",
-    ]
-
-    for variant_name in variants:
-        variant = b.get_variant(variant_name)
-        build_args = b.build_args(
-            variant, image_vendor="ublue-os", image_branch="main",
-            sha_head_short="abc1234", version_tag="44", version_pretty="Stable (F44)",
-        )
-        assert build_args["BUILD_DECK"] == "TRUE"
-        assert build_args["BUILD_NVIDIA"] == "FALSE"
-
-def test_build_args_build_nvidia_no_deck():
-    variants = [
-        "bazzite-nvidia",
-        "bazzite-gnome-nvidia",
-        "bazzite-nvidia-open",
-        "bazzite-gnome-nvidia-open",
-    ]
-
-    for variant_name in variants:
-        variant = b.get_variant(variant_name)
-        build_args = b.build_args(
-            variant, image_vendor="ublue-os", image_branch="main",
-            sha_head_short="abc1234", version_tag="44", version_pretty="Stable (F44)",
-        )
-        assert build_args["BUILD_DECK"] == "FALSE"
-        assert build_args["BUILD_NVIDIA"] == "TRUE"
-
-def test_build_args_build_nvidia_deck():
-    variants = [
-        "bazzite-deck-nvidia",
-        "bazzite-deck-nvidia-gnome",
-    ]
-
-    for variant_name in variants:
-        variant = b.get_variant(variant_name)
-        build_args = b.build_args(
-            variant, image_vendor="ublue-os", image_branch="main",
-            sha_head_short="abc1234", version_tag="44", version_pretty="Stable (F44)",
-        )
-        assert build_args["BUILD_DECK"] == "TRUE"
-        assert build_args["BUILD_NVIDIA"] == "TRUE"
 
 def test_labels_include_required_oci_fields():
     variant = b.get_variant("bazzite")
@@ -281,6 +273,7 @@ def test_labels_include_required_oci_fields():
     ):
         assert key in labels
     assert labels["ostree.bootable"] == "true"
+    assert labels["ostree.linux"] == "6.0.0"
 
 
 # --- CLI smoke tests ---
@@ -343,15 +336,15 @@ def test_resolve_uses_precomputed_version(capsys):
     assert out["build_args"]["VERSION_PRETTY"] == f"Unstable (F{FEDORA}.20260820.3, #deadbee)"
 
 
-def test_resolve_testing_uses_our_version_without_inspecting_base(capsys):
+def test_resolve_testing_uses_given_version(capsys):
     args = b.build_parser().parse_args([
-        "resolve", "--ref-name", "testing", "--version", "testing-45.20261014",
+        "resolve", "--ref-name", "testing", "--version", f"testing-{FEDORA}.20261014",
         "--sha", "c500b43",
     ])
     assert b.cmd_resolve(args) == 0
     out = json.loads(capsys.readouterr().out)
-    assert out["build_args"]["VERSION_TAG"] == "testing-45.20261014"
-    assert out["build_args"]["VERSION_PRETTY"] == "Testing (F45.20261014, #c500b43)"
+    assert out["build_args"]["VERSION_TAG"] == f"testing-{FEDORA}.20261014"
+    assert out["build_args"]["VERSION_PRETTY"] == f"Testing (F{FEDORA}.20261014, #c500b43)"
 
 
 def test_resolve_rejects_version_for_another_fedora_release():
@@ -423,7 +416,7 @@ def test_rechunk_verifies_chunkah_image_with_cosign(caplog):
     assert b.cmd_rechunk(args) == 0
     assert "cosign verify" in caplog.text
     assert "quay.io/coreos/chunkah:latest" in caplog.text
-    assert "coreos/chunkah" in caplog.text  # the --certificate-identity-regexp
+    assert r"--certificate-identity-regexp ^https://github\.com/coreos/chunkah/" in caplog.text
 
 
 def test_rechunk_uses_custom_chunkah_image(caplog):
@@ -495,7 +488,8 @@ def test_push_pushes_twice_and_copies_all_alias_tags(caplog):
     )
     assert b.cmd_push(args) == 0
     assert caplog.text.count("podman push") == 2
-    assert caplog.text.count("localhost/chunked-img") == 2  # rechunk-ref prefix stripped
+    assert caplog.text.count(" localhost/chunked-img docker://") == 2
+    assert "containers-storage:" not in caplog.text  # rechunk-ref prefix stripped
     for tag in ("stable-44.20260820", "latest", "stable", "stable-44"):
         assert f"docker://ghcr.io/testuser/bazzite-deck:{tag}" in caplog.text
 
@@ -537,6 +531,8 @@ def test_sign_uses_cosign_private_key_env(caplog):
     args = b.build_parser().parse_args(["--dry-run", "sign", "--ref", "ghcr.io/testuser/bazzite-deck@sha256:abc"])
     assert b.cmd_sign(args) == 0
     assert "env://COSIGN_PRIVATE_KEY" in caplog.text
+    # Key-based .sig signatures, which `cosign verify --new-bundle-format=false` checks.
+    assert "--new-bundle-format=false --use-signing-config=false" in caplog.text
     assert "ghcr.io/testuser/bazzite-deck@sha256:abc" in caplog.text
 
 
@@ -552,10 +548,10 @@ def test_resolve_bakes_image_vendor_into_build_args(capsys):
     """CI passes the lowercased repo owner, so fork builds identify as the fork."""
     args = b.build_parser().parse_args([
         "resolve", "--image", "bazzite", "--version", f"{FEDORA}.20260820",
-        "--image-vendor", "ublue-os",
+        "--image-vendor", "some-fork",
     ])
     assert b.cmd_resolve(args) == 0
-    assert json.loads(capsys.readouterr().out)["build_args"]["IMAGE_VENDOR"] == "ublue-os"
+    assert json.loads(capsys.readouterr().out)["build_args"]["IMAGE_VENDOR"] == "some-fork"
 
 
 def test_sbom_attach_passes_relative_path_from_sbom_dir(caplog):
@@ -593,3 +589,40 @@ def test_cmd_packages_writes_versioned_file_next_to_sbom(tmp_path, capsys):
     assert json.loads((tmp_path / "packages-bazzite-deck.json").read_text()) == {
         "image": "bazzite-deck", "version": version, "packages": {"steam": "1.0.0.87-5.fc45"},
     }
+
+
+def fake_run_with_stdout(monkeypatch, stdout):
+    calls = []
+
+    def fake_run(cmd, **kwargs):
+        calls.append(" ".join(cmd))
+        return subprocess.CompletedProcess(cmd, 0, stdout=stdout, stderr="")
+
+    monkeypatch.setattr(b, "run", fake_run)
+    return calls
+
+
+def test_shell_builds_first_when_image_is_missing(monkeypatch):
+    calls = fake_run_with_stdout(monkeypatch, stdout="")
+    assert b.main(["shell", "--image", "bazzite-deck", "--container-mgr", "podman"]) == 0
+    assert calls[1].startswith("podman build ")
+    assert "--tag localhost/bazzite-deck:build" in calls[1]
+    assert calls[2] == "podman run -it --rm localhost/bazzite-deck:build /usr/bin/bash"
+
+
+def test_shell_passes_build_options_to_its_build(monkeypatch):
+    calls = fake_run_with_stdout(monkeypatch, stdout="")
+    assert b.main([
+        "shell", "--image", "bazzite", "--container-mgr", "podman",
+        "--secret", "id=GITHUB_TOKEN,env=GITHUB_TOKEN", "--tag", "localhost/custom:dev",
+    ]) == 0
+    assert "--secret id=GITHUB_TOKEN,env=GITHUB_TOKEN" in calls[1]
+    assert "--tag localhost/custom:dev" in calls[1]
+    assert calls[2] == "podman run -it --rm localhost/custom:dev /usr/bin/bash"
+
+
+def test_shell_skips_build_when_image_exists(monkeypatch):
+    calls = fake_run_with_stdout(monkeypatch, stdout="abc123\n")
+    assert b.main(["shell", "--image", "bazzite", "--container-mgr", "podman"]) == 0
+    assert not any(call.startswith("podman build ") for call in calls)
+    assert calls[-1] == "podman run -it --rm localhost/bazzite:build /usr/bin/bash"
