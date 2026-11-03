@@ -78,7 +78,7 @@ Common variant available as `bazzite`, suitable for desktop computers.
 > **ISOs can be downloaded from our [website](https://download.bazzite.gg), and a helpful install guide can be found [here](https://docs.bazzite.gg/General/Installation_Guide/).**
 
 Rebase from an existing upstream Fedora Atomic to this image if you want **Open Source GPU Drivers**:
-(Please note: Mesa's Open Source option for NVIDIA GPUs, NVK is still prone to errors at the time of writing, for any issues relating to NVK [please submit a report with Mesa]([url](https://docs.mesa3d.org/bugs.html)), not Ublue/Bazzite)
+(Please note: Mesa's Open Source option for NVIDIA GPUs, NVK is still prone to errors at the time of writing, for any issues relating to NVK [please submit a report with Mesa](https://docs.mesa3d.org/bugs.html), not Ublue/Bazzite)
 
 ```bash
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite:stable
@@ -218,7 +218,7 @@ View [additional documentation](http://docs.bazzite.gg/) surrounding the project
 These images are signed with sigstore's [cosign](https://docs.sigstore.dev/cosign/key_management/overview/). You can verify the signature by downloading the `cosign.pub` key from this repo and running the following command:
 
 ```bash
-cosign verify --key cosign.pub ghcr.io/ublue-os/bazzite
+cosign verify --key cosign.pub --new-bundle-format=false ghcr.io/ublue-os/bazzite
 ```
 
 ## Secure Boot
@@ -270,14 +270,18 @@ Bazzite is a community effort and wouldn't exist without everyone's support. Bel
 
 Bazzite is built entirely via GitHub Actions. Creating your own custom version of it is as easy as forking this repository, adding a private signing key, and enabling the fork's GitHub Actions. Running the `Build Bazzite` workflow will then generate custom images for all variants of Bazzite.
 
-If you only want to generate images for the variants of Bazzite you are using, edit `.github/workflows/build.yml` to comment out the variants you do not wish to build in the `push-ghcr` job's `strategy`'s `matrix` list.
+If you only want to generate images for the variants of Bazzite you are using, remove the variants you do not wish to build from the `IMAGES` table in `build.py`. The build, ISO, and cleanup workflows read their image list from it. A few things still assume particular variants exist:
+
+- ISOs use `bazzite` or `bazzite-gnome` as their live environment, so keep the matching variant if you build ISOs.
+- `DEFAULT_IMAGE` in `build.py` must name a variant you kept.
+- `.github/workflows/retag.yml`, which is for emergency use only, has its own list of all variants.
 
 We also ship a config for the popular [pull app](https://github.com/apps/pull) if you'd like to keep your fork in sync with upstream. Enable this app on your repo to keep track of Bazzite changes while also making your own modifications.
 
 ### How to Sign Your Images
 
 1. First, [familiarize yourself](https://docs.github.com/en/actions/security-guides/encrypted-secrets) with keeping secrets on GitHub.
-2. [Generate a new key pair](https://docs.sigstore.dev/cosign/key_management/signing_with_self-managed_keys/) with Cosign (`cosign generate-key-pair`). This key pair must have no signature.
+2. [Generate a new key pair](https://docs.sigstore.dev/cosign/key_management/signing_with_self-managed_keys/) with Cosign (`cosign generate-key-pair`). This key pair must have no password.
 3. Replace the `cosign.pub` file in your public repo with the one you generated - you and your users will need it to check the signatures.
 4. Add the private key (stored as text inside the `cosign.key` file) as a Repository Secret in the fork's settings page, in the `Settings -> Secrets and variables -> Actions` menu. Name the secret `SIGNING_SECRET`.
 
