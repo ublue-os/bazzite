@@ -1,8 +1,10 @@
 [Desktop Entry]
 Comment=Create a new vkBasalt config from template
 Comment[sv]=Skapa en ny vkBasalt-konfiguration från mall
+Comment[uk]=Створити новий файл налаштувань vkBasalt із шаблону
 Icon=text-x-makefile
 Name=vkBasalt Config...
 Name[sv]=vkBasalt-konfiguration …
+Name[uk]=Файл налаштувань vkBasalt…
 Type=Link
 URL=file:/etc/vkBasalt.conf
