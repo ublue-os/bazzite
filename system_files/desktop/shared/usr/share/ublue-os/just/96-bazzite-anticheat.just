@@ -89,6 +89,7 @@ check-anticheat:
         pass "Secure Boot enabled"
     else
         fail "Secure Boot enabled" "Enable Secure Boot in your BIOS (mokutil says: ${SB_STATE//$'\n'/ })"
+        printf '       %s\n' "${bold}Note:${normal} We do not recommend enabling Secure Boot on Steam Deck or Steam Machine, as it is not fully supported."
     fi
 
     MOK_DIR=$(mktemp -d)
