@@ -112,15 +112,10 @@ Diese Variante wurde für die Nutzung als Alternative zu SteamOS auf dem Steam D
 - Integrierte Unterstützung für Windows-Dual-Boot dank der intakten Fedora-Installation von GRUB.
 - Update hat etwas kaputt gemacht? Rolle dank der Rollback-Funktion von `rpm-ostree` einfach zur vorherigen Bazzite-Version zurück. Du kannst sogar frühere Images beim Booten auswählen.
 - Steam und Lutris sind als Layered Packages auf dem Image vorinstalliert.
-- Verwendet standardmäßig ZRAM<sub><sup>(4GB)</sup></sub> mit dem LZ4-Komprimierungsalgorithmus.
-- [LAVD](https://crates.io/crates/scx_lavd) und [BORE](https://github.com/firelzrd/bore-scheduler) CPU-Scheduler für flüssiges und reaktionsschnelles Gameplay.
+- Unterstützung für [sched-ext](https://github.com/sched-ext/scx)-Scheduler ab Werk.
 - Kyber I/O-Scheduler, um I/O-Engpässe bei der Installation von Spielen oder während des `duperemove`-Hintergrundprozesses zu verhindern.
 - Wendest SteamOS' Kernel-Parameter an.
 - Farbkalibrierte Anzeigeprofile für matte und spiegelnde Steam Deck-Bildschirme enthalten.
-- Standardmäßig deaktivierte Power-User-Funktionen, einschließlich:
-  - Dienst für risikoarmes Undervolting des Steam Deck sowie von AMD Framework Laptops über [RyzenAdj](https://github.com/FlyGoat/RyzenAdj) und [Ryzen SMU](https://gitlab.com/leogx9r/ryzen_smu), siehe `ryzenadj.service` und `/etc/default/ryzenadj`.
-  - Integrierte Unterstützung für Display-Übertaktung. Füge zum Beispiel `CUSTOM_REFRESH_RATES=30-68` zu `/etc/environment` hinzu. Minimale und maximale Bildwiederholraten unterscheiden sich je nach Handheld!
-  - 32GB RAM-Mod für dein Steam Deck? Genieße die doppelte maximale VRAM-Menge, automatisch angewendet. <sup><sub>(Kannst du uns deine Lötkenntnisse mitteilen?)</sub></sup>
 - Steam Deck-Hardware-spezifische Dienste können durch Ausführen von `ujust disable-bios-updates` und `ujust disable-firmware-updates` im Terminal deaktiviert werden. Diese werden auf Nicht-Deck-Hardware und auf Decks mit DeckHD-Displays oder 32GB RAM-Mods automatisch deaktiviert.
 - Weitere Informationen zu den Bazzite Steam Deck Images findest du [hier](https://docs.bazzite.gg/Handheld_and_HTPC_edition/Steam_Gaming_Mode/).
 

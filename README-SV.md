@@ -94,12 +94,10 @@ Varianten `bazzite-deck` är ett alternativ till SteamOS på Steam Deck och ger 
 - Windows-dubbelstart stöds eftersom Fedoras GRUB-installation lämnas intakt.
 - Om en uppdatering orsakar problem kan du enkelt återgå till föregående Bazzite-version med `rpm-ostree`-återställning. Du kan även välja tidigare avbildningar vid start.
 - Steam och Lutris är förinstallerade som lagerpaket.
-- Använder ZRAM<sub><sup>(4 GB)</sup></sub> med komprimeringsalgoritmen LZ4 som standard.
-- [LAVD](https://crates.io/crates/scx_lavd)- och [BORE](https://github.com/firelzrd/bore-scheduler)-CPU-schemaläggare ger smidigt och responsivt spelande.
+- Inbyggt stöd för [sched-ext](https://github.com/sched-ext/scx)-schemaläggare.
 - Kyber I/O-schemaläggare förhindrar I/O-svält när spel installeras eller `duperemove` körs i bakgrunden.
 - Tillämpar SteamOS kärnparametrar.
 - Färgkalibrerade visningsprofiler för matta och blanka Steam Deck-skärmar ingår.
-- Avancerade funktioner som är avstängda som standard: skonsam undervoltning via [RyzenAdj](https://github.com/FlyGoat/RyzenAdj) och [Ryzen SMU](https://gitlab.com/leogx9r/ryzen_smu), överklockning av skärmens uppdateringsfrekvens samt automatiskt högre VRAM-gräns för Steam Deck med 32 GB RAM.
 - Steam Deck-specifika tjänster kan stängas av med `ujust disable-bios-updates` och `ujust disable-firmware-updates`. De är automatiskt avstängda på annan maskinvara och på Deck med DeckHD-skärm eller 32 GB RAM-modifiering.
 
 Mer information om Steam Deck-avbildningarna finns [här](https://docs.bazzite.gg/Handheld_and_HTPC_edition/Steam_Gaming_Mode/).

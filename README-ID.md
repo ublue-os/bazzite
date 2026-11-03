@@ -117,15 +117,10 @@ Varian `bazzite-deck` ini didesain untuk digunakan sebagai alternatif untuk Stea
 - Pembaruan merusak sesuatu? tinggal rollback ke versi sebelumnya berkat fitur rollback `rpm-ostree`. Anda bisa memilih versi image sebelumnya di boot menu.
 - Pra-install Steam dan Lutris sebagai paket sistem.
 - Pra-install [Discover Overlay](https://github.com/trigg/Discover) untuk Discord dan otomatis diluncurkan di Gamemode,dan di desktop jika Discord terinstall, [Lihat dokumentasinya disini](https://trigg.github.io/Discover/bazzite).
-- Menggunakan ZRAM<sub><sup>(4GB)</sup></sub> dengan kompresi LZ4 secara bawaan.
+- Dukungan bawaan untuk penjadwal [sched-ext](https://github.com/sched-ext/scx).
 - Penjadwal I/O untuk mencegah I/O starvation ketika memasang game atau ketika proses latar belakang `duperemove` dan `rmlint` bekerja.
 - Mengaplikasikan parameter kernel dari SteamOS.
 - Kalibrasi Warna Layar untuk layar matte dan reflektif Steam Deck.
-- Fitur-fitur pengguna advance yang tidak diaktifkan secara bawaan seperti:
-    - Service untuk undervolting Steam Deck yang beresiko rendah dengan [RyzenAdj](https://github.com/FlyGoat/RyzenAdj) dan [Ryzen SMU](https://gitlab.com/leogx9r/ryzen_smu), anda bisa mengecek `ryzenadj.service` dan `/etc/default/ryzenadj`.
-    - Dukungan bawaan untuk overclocking layar. Contohnya seperti ini, anda menambahkan `GAMESCOPE_OVERRIDE_REFRESH_RATE=40,70` di `/etc/environment`.
-    - Anda bisa menggunakan X11 jika diperlukan dengan mengedit `/etc/default/desktop-wayland`.
-    - Lu punya RAM 32 GB? anda bisa memakai 2x lipat VRAM yang diaplikasikan secara otomatis!. <sup><sub>(Coba bagikan skill ngesolder lu dong)</sub></sup>
 - Service yang spesifik ke Steam Deck dapat dimatikan dengan menjalankan `ujust disable-deck-services` di terminal, berguna untuk menjalankan image ini di konsol Handheld lain dan HTPC.
 - Informasi tambahan dapat ditemukan [disini](https://universal-blue.discourse.group/docs?topic=37) dibagian Bazzite Steam Deck Images.
 

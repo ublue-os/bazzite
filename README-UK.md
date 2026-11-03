@@ -108,15 +108,10 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:sta
 - Вбудована підтримка подвійного завантаження з Windows, оскільки встановлений Fedora завантажувач GRUB залишається недоторканим.
 - Оновлення щось зламало? Легко поверніться до попередньої версії Bazzite завдяки функції відкату `rpm-ostree`. Попередні образи можна навіть вибрати під час завантаження.
 - Steam і Lutris встановлені в образі як накладені пакети (layered packages).
-- Використовує ZRAM<sub><sup>(4 ГБ)</sup></sub> з алгоритмом стиснення LZ4 за замовчуванням.
-- Планувальники процесора [LAVD](https://crates.io/crates/scx_lavd) і [BORE](https://github.com/firelzrd/bore-scheduler) для плавного й чуйного ігрового процесу.
+- Підтримка планувальників [sched-ext](https://github.com/sched-ext/scx) із коробки.
 - Планувальник введення-виведення Kyber, який запобігає «голодуванню» I/O під час встановлення ігор або фонового процесу `duperemove`.
 - Застосовує параметри ядра SteamOS.
 - Містить відкалібровані за кольором профілі дисплея для матових і глянцевих екранів Steam Deck.
-- Вимкнені за замовчуванням функції для досвідчених користувачів, зокрема:
-    - Служба безпечного андервольтингу для Steam Deck, а також ноутбуків Framework з процесорами AMD через [RyzenAdj](https://github.com/FlyGoat/RyzenAdj) і [Ryzen SMU](https://gitlab.com/leogx9r/ryzen_smu); див. `ryzenadj.service` і `/etc/default/ryzenadj`.
-    - Вбудована підтримка розгону дисплея. Наприклад, додайте `CUSTOM_REFRESH_RATES=30-68` до `/etc/environment`. Мінімальна й максимальна частота оновлення відрізняються залежно від портативного пристрою!
-    - Встановили 32 ГБ RAM у свій Steam Deck? Отримайте вдвічі більший максимальний обсяг VRAM, який застосовується автоматично. <sup><sub>(Поділитеся своїми навичками паяння?)</sub></sup>
 - Служби, специфічні для обладнання Steam Deck, можна вимкнути командами `ujust disable-bios-updates` і `ujust disable-firmware-updates` у терміналі. На іншому обладнанні, а також на Deck з дисплеями DeckHD чи з модифікацією 32 ГБ RAM вони вимикаються автоматично.
 - Більше інформації про образи Bazzite для Steam Deck можна знайти [тут](https://docs.bazzite.gg/Handheld_and_HTPC_edition/Steam_Gaming_Mode/).
 

@@ -125,14 +125,10 @@ Varianten voor gebruik als alternatief voor SteamOS op de Steam Deck en voor con
 - Gaat een update fout? Ga gemakelijk terug naar een ouderen versie van Bazzite met `rpm-ostree`'s rollback functionaliteit. Je kan zelfs ouderen images selecteren tijdens het starten.
 - Steam en Lutris geïnstaleerd in de image.
 - [Discover Overlay](https://github.com/trigg/Discover) voor Discord geïntaleerd en start automatisch in Game mode en de Desktop als Discord beschikbaar is. [Zie de officiële documentatie hier](https://trigg.github.io/Discover/bazzite).
-- Gebruik van de <sub><sup>(4GB)</sup></sub> ZRAM met LZ4 compressie algoritme.
+- Directe ondersteuning voor [sched-ext](https://github.com/sched-ext/scx)-schedulers.
 - Kyber I/O scheduler om I/O starvation tegen te gaan tijdens het installeren van spellen of de achtergrond `duperemove` process.
 - Gebruikt SteamOS's kernel parameters.
 - Kleur gecalibreerde display profielen voor matte and reflectieven Steam Deck schermen.
-- Standaard uit, power-user opties zoals:
-    - Mogelijkheid voor laag-risico undervolting van de Steam Deck en AMD Framework Laptops via [RyzenAdj](https://github.com/FlyGoat/RyzenAdj) en [Ryzen SMU](https://gitlab.com/leogx9r/ryzen_smu), zie `ryzenadj.service` en `/etc/default/ryzenadj`.
-    - Mogelijkheid om het scherm te overclocken. Bijvoorbeeld, voeg `GAMESCOPE_OVERRIDE_REFRESH_RATE=40,70` toe in `/etc/environment`.
-    - Heb je 32GB ram in je Steam Deck? Geniet van de dubbelen maximalen VRAM, automatisch ingeschakeld <sup><sub>(Kan je je soldeer skills delen?)</sub></sup>
 - Steam Deck hardware-specifieken services kunnen uit gezet worden met `ujust disable-bios-updates` en `ujust disable-firmware-updates` in de terminal. Dezen staan al uit op non-Deck hardware en op Decks met DeckHD schermen of 32GB RAM mods.
 - Meer informatie kan [hier](https://universal-blue.discourse.group/docs?topic=37) gevonden worden voor de Bazzite Steam Deck images.
 
