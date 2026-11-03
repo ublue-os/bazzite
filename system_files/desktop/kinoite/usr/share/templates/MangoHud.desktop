@@ -1,8 +1,10 @@
 [Desktop Entry]
 Comment=Create a new MangoHud config from template
 Comment[sv]=Skapa en ny MangoHud-konfiguration från mall
+Comment[uk]=Створити новий файл налаштувань MangoHud із шаблону
 Icon=text-x-makefile
 Name=MangoHud Config...
 Name[sv]=MangoHud-konfiguration …
+Name[uk]=Файл налаштувань MangoHud…
 Type=Link
 URL=file:/usr/share/doc/mangohud/MangoHud.conf.example

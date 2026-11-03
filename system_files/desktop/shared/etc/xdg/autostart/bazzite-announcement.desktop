@@ -2,6 +2,7 @@
 Type=Application
 Name=Bazzite Announcements
 Name[sv]=Bazzite-meddelanden
+Name[uk]=Оголошення Bazzite
 Exec=/usr/libexec/bazzite-announcement
 Terminal=false
 StartupNotify=false

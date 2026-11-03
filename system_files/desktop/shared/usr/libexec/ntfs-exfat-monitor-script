@@ -112,6 +112,14 @@ case $lang in
     header=("Nieobsługiwany system plików")
     warning=("Podłączyłeś partycję NTFS/exFAT (Windows). Możesz jej używać do przechowywania danych, ale uruchamianie gier z dysków Windows spowoduje problemy.")
     ;;
+#ukrainian
+    "uk")
+    firstbutton=("Я розумію")
+    firstbutton_ignore=("Ігнорувати")
+    secondbutton=("Докладніше")
+    header=("Непідтримувана файлова система")
+    warning=("Ви підключили розділ NTFS/exFAT (Windows). Його можна використовувати для зберігання даних, але запуск ігор із дисків Windows спричинятиме проблеми.")
+    ;;
   *)
     firstbutton=("I understand")
     firstbutton_ignore=("Ignore")
