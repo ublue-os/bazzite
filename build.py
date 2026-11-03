@@ -66,7 +66,7 @@ DEFAULTS = {
 }
 
 #: Kernel for the nvidia-lts images, which stay on the LTS series.
-LTS_KERNEL_VERSION = "6.18.56-ogc1.1.fc45"
+LTS_KERNEL_VERSION = "6.18.60-ogc1.1.fc45"
 
 IMAGES: dict[str, dict] = {
     "bazzite": {
