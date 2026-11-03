@@ -118,15 +118,10 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:sta
 - 更新後出問題了嗎？透過 `rpm-ostree` 的 rollback 功能，可輕鬆還原至 Bazzite 的前一個版本。您甚至可以在開機時選擇先前的映像檔。
 - Steam 與 Lutris 已作為分層套件 (layered packages) 預裝在映像檔中。
 - Discord 的 [Discover Overlay](https://github.com/trigg/Discover) 已預裝，若安裝了 Discord，將自動在遊戲模式與桌面上啟動。[點此查看官方文件](https://trigg.github.io/Discover/bazzite)。
-- 預設使用採用 LZ4 壓縮演算法的 ZRAM<sub><sup>(4GB)</sup></sub>。
-- 使用 [LAVD](https://crates.io/crates/scx_lavd) 與 [BORE](https://github.com/firelzrd/bore-scheduler) CPU 排程器，提供流暢且靈敏的遊戲體驗。
+- 開箱即用地支援 [sched-ext](https://github.com/sched-ext/scx) 排程器。
 - 使用 Kyber I/O 排程器以防止在安裝遊戲或背景執行 `duperemove` 時發生 I/O 資源匱乏 (starvation)。
 - 套用 SteamOS 的 kernel 參數。
 - 包含適用於霧面 (matte) 和反光 (reflective) Steam Deck 螢幕的色彩校正設定檔。
-- 預設停用的進階使用者功能，包含：
-    - 透過 [RyzenAdj](https://github.com/FlyGoat/RyzenAdj) 與 [Ryzen SMU](https://gitlab.com/leogx9r/ryzen_smu) 為 Steam Deck 及 AMD Framework 筆記型電腦提供低風險的降壓服務，請參閱 `ryzenadj.service` 與 `/etc/default/ryzenadj`。
-    - 內建螢幕超頻支援。例如，新增 `CUSTOM_REFRESH_RATES=30-68` 至 `/etc/environment`。最小與最大更新率因掌上機而異！
-    - 您有將 Steam Deck 改裝為 32GB RAM 嗎？享受雙倍的最大 VRAM 容量，將自動套用。<sup><sub>(可以分享一下您的焊接技巧嗎？)</sub></sup>
 - Steam Deck 硬體專屬服務可透過在終端機執行 `ujust disable-bios-updates` 和 `ujust disable-firmware-updates` 來停用。這些服務在非 Deck 硬體，以及擁有 DeckHD 螢幕或 32GB RAM 改裝的 Deck 上會自動停用。
 - 更多關於 Bazzite Steam Deck 映像檔的資訊可以在 [這裡](https://docs.bazzite.gg/Handheld_and_HTPC_edition/Steam_Gaming_Mode/) 找到。
 

@@ -109,15 +109,10 @@ Steam Deck'te SteamOS'a alternatif olarak ve HTPC'lerde konsol benzeri bir deney
 - Fedora'nın GRUB kurulumunun bozulmadan kalması sayesinde Windows çift önyükleme için yerleşik destek.
 - Güncellemeler bir şey hatalı mı yaptı? `rpm-ostree` rollback işlevselliği sayesinde Bazzite'in önceki sürümüne kolayca geri dönün. Önyükleme sırasında önceki imajları bile seçebilirsiniz.
 - Steam ve Lutris önyüklü paketler olarak imaja önceden kurulu.
-- Varsayılan olarak LZ4 sıkıştırma algoritması ile ZRAM<sub><sup>(4GB)</sup></sub> kullanır.
-- Sorunsuz ve duyarlı oyun oynama için [LAVD](https://crates.io/crates/scx_lavd) ve [BORE](https://github.com/firelzrd/bore-scheduler) CPU Scheduler'ları.
+- [sched-ext](https://github.com/sched-ext/scx) zamanlayıcıları için kullanıma hazır destek.
 - Oyun yüklemesi veya arka plan `duperemove` işlemi sırasında I/O açlığını önlemek için Kyber I/O scheduler'ı.
 - SteamOS'un kernel parametrelerini uygular.
 - Mat ve yansıtıcı Steam Deck ekranları için renk kalibre edilmiş görüntü profilleri dahil.
-- Varsayılan olarak devre dışı bırakılmış güç kullanıcı özellikleri, dahil olmak üzere:
-    - [RyzenAdj](https://github.com/FlyGoat/RyzenAdj) ve [Ryzen SMU](https://gitlab.com/leogx9r/ryzen_smu) aracılığıyla Steam Deck'in ve AMD Framework Dizüstü Bilgisayarların düşük riskli alt voltajı için Servis, `ryzenadj.service` ve `/etc/default/ryzenadj` bölümüne bakın.
-    - Görüntü overclock'ı için yerleşik destek. Örneğin, `/etc/environment` öğesine `CUSTOM_REFRESH_RATES=30-68` ekleyin. Minimum ve maksimum yenileme hızları her el cihazında farklıdır!
-    - Steam Deck'inizi 32GB RAM mod ettiniz? Otomatik olarak uygulanan maksimum VRAM miktarının iki katını keyifle çıkarın. <sup><sub>(Lehim becerilerinizi paylaşabilir misiniz?)</sup></sub>
 - Steam Deck donanım özel hizmetleri terminal'de `ujust disable-bios-updates` ve `ujust disable-firmware-updates` komutları çalıştırılarak devre dışı bırakılabilir. Bunlar Deck olmayan donanım ve DeckHD ekranları veya 32GB RAM mod'lu Deck'ler üzerinde otomatik olarak devre dışıdır.
 - Bazzite Steam Deck imajları hakkında daha fazla bilgi [burada](https://docs.bazzite.gg/Handheld_and_HTPC_edition/Steam_Gaming_Mode/) bulunabilir.
 
