@@ -118,15 +118,10 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:sta
 - Встроена поддержка двойной загрузки Windows благодаря тому, что установка GRUB от Fedora остается нетронутой.
 - Обновление сломало что-то? Легко откатитесь к предыдущей версии Bazzite благодаря функции отката `rpm-ostree`. Можно даже выбрать предыдущие образы при загрузке.
 - Steam и Lutris предустановлены в образе как добавленные пакеты.
-- Используется ZRAM *(4GB)* с алгоритмом сжатия LZ4 по умолчанию.
-- [LAVD](https://crates.io/crates/scx_lavd) и [BORE](https://github.com/firelzrd/bore-scheduler) как планировщики CPU для плавного и отзывчивого геймплея.
+- Поддержка планировщиков [sched-ext](https://github.com/sched-ext/scx) из коробки.
 - Планировщик I/O Kyber, чтобы избежать сбоев ввода-вывода при установке игр или во время фонового процесса `duperemove`.
 - Применяются параметры ядра SteamOS.
 - Включены профили калибровки дисплея для матовых и зеркальных экранов Steam Deck.
-- Функции для опытных пользователей, отключенные по умолчанию, включая:
-  - Сервис для безопасного понижения напряжения Steam Deck и ноутбуков AMD Framework через [RyzenAdj](https://github.com/FlyGoat/RyzenAdj) и [Ryzen SMU](https://gitlab.com/leogx9r/ryzen_smu), см. `ryzenadj.service` и `/etc/default/ryzenadj`.
-  - Поддержка разгона дисплея. Например, добавьте `CUSTOM_REFRESH_RATES=30-68` в `/etc/environment`. Минимальная и максимальная частоты обновления зависят от устройства.
-  - У вас Steam Deck с модом на 32GB RAM? Наслаждайтесь автоматически применяемым удвоенным максимумом VRAM. *(Можете ли вы поделиться своими навыками пайки?)*
 - Аппаратные сервисы Steam Deck можно отключить командой `ujust disable-bios-updates` и `ujust disable-firmware-updates` в терминале. На не-Deck оборудовании и на Deck с экранами DeckHD или модами 32GB RAM они отключены автоматически.
 - Дополнительную информацию можно найти [здесь](https://docs.bazzite.gg/Handheld_and_HTPC_edition/Steam_Gaming_Mode/).
 

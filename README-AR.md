@@ -120,15 +120,10 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:sta
 - هل تسبب التحديث بعطل يمكنك الرجوع بسهولة إلى النسخة السابقة من Bazzite بفضل خاصية rollback في `rpm-ostree`. يمكنك حتى اختيار صور سابقة عند الإقلاع.
 - Steam وLutris مثبتان مسبقا كحزم مكدسة (layered packages).
 - [Discover Overlay](https://github.com/trigg/Discover) الخاص بـ Discord مثبت مسبقا ويتم تشغيله تلقائيا في وضع اللعب وعلى سطح المكتب إذا كان Discord مثبتا. [اطلع على الوثائق الرسمية هنا](https://trigg.github.io/Discover/bazzite).
-- استخدام ZRAM<sub><sup>(4GB)</sup></sub> بخوارزمية الضغط LZ4 افتراضيا.
-- جداول المعالج [LAVD](https://crates.io/crates/scx_lavd) و[BORE](https://github.com/firelzrd/bore-scheduler) لألعاب سلسة واستجابة عالية.
+- دعم جاهز للاستخدام لمجدولات [sched-ext](https://github.com/sched-ext/scx).
 - جدول I/O Kyber لمنع تجويع الإدخال/الإخراج أثناء تثبيت الألعاب أو خلال عملية `duperemove` في الخلفية.
 - تطبيق معاملات نواة SteamOS.
 - ملفات معايرة الألوان لشاشات Steam Deck غير اللامعة والعاكسة مضمنة.
-- ميزات افتراضيا معطلة لمستخدمي الخبرة تشمل:
-    - خدمة لكسر السرعة الآمن منخفض المخاطر لـ Steam Deck وكذلك لأجهزة AMD Framework Laptops عبر [RyzenAdj](https://github.com/FlyGoat/RyzenAdj) و[Ryzen SMU](https://gitlab.com/leogx9r/ryzen_smu) راجع `ryzenadj.service` و`/etc/default/ryzenadj`.
-    - دعم مدمج لرفع تردد الشاشة. على سبيل المثال أضف `CUSTOM_REFRESH_RATES=30-68` إلى `/etc/environment`. معدلات التحديث الدنيا والقصوى تختلف حسب الجهاز المحمول!
-    - عدلت RAM إلى 32GB على Steam Deck استمتع بضعف الحد الأقصى لـ VRAM يطبق تلقائيا. <sup><sub>(هل تشاركنا مهاراتك في اللحام)</sub></sup>
 - يمكن تعطيل الخدمات الخاصة بعتاد Steam Deck عبر تشغيل `ujust disable-bios-updates` و`ujust disable-firmware-updates` في الطرفية. يتم تعطيلها تلقائيا على الأجهزة غير Deck وعلى Decks ذات شاشات DeckHD أو تعديلات RAM إلى 32GB.
 - مزيد من المعلومات يمكن العثور عليها [هنا](https://docs.bazzite.gg/Handheld_and_HTPC_edition/Steam_Gaming_Mode/) حول صور Bazzite الخاصة بـ Steam Deck.
 
