@@ -305,7 +305,7 @@ assign_chunk bazzite-audio-config quarterly \
     /usr/share/alsa/ucm2/codecs/tas2783/init.conf \
     /usr/share/alsa/ucm2/sof-soundwire/tas2783.conf \
     /usr/share/alsa/ucm2/USB-Audio/Sony/DualSense-PS5.conf \
-    /usr/share/wireplumber/wireplumber.conf.d/{alsa-card0,alsa-card1,alsa-ps-controller,bluez}.conf
+    /usr/share/wireplumber/wireplumber.conf.d/{51-disable-suspension,alsa-card0,alsa-card1,alsa-ps-controller,bluez}.conf
 
 assign_chunk bazzite-power-config quarterly \
     /etc/scx_loader/config.toml \
