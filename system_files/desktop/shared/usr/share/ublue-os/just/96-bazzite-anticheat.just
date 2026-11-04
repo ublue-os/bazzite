@@ -260,6 +260,9 @@ check-anticheat:
     LOCKDOWN=$(sed -n 's/.*\[\(.*\)\].*/\1/p' /sys/kernel/security/lockdown 2>/dev/null)
     if [[ $LOCKDOWN == integrity || $LOCKDOWN == confidentiality ]]; then
         pass "Kernel lockdown integrity mode" "Lockdown mode is '${LOCKDOWN}'"
+    elif (( HANDHELD )); then
+        fail "Kernel lockdown integrity mode" "Lockdown mode is '${LOCKDOWN:-unavailable}'."
+        printf '       %s\n' "${bold}Note:${normal} Handheld users should hold off on enabling kernel lockdown for now. We're working on a solution."
     else
         fail "Kernel lockdown integrity mode" "Lockdown mode is '${LOCKDOWN:-unavailable}'. Run 'rpm-ostree kargs --append-if-missing=lockdown=integrity'"
     fi
