@@ -1,6 +1,6 @@
 %define packagename steamdeck-kde-presets
-%define packagever 0.23
-%global _default_patch_fuzz 2
+%define packagever 0.30
+%global _default_patch_fuzz 1
 
 Name:           steamdeck-kde-presets-desktop
 Version:        {{{ git_dir_version }}}
@@ -13,14 +13,13 @@ Source0:        https://gitlab.com/evlaV/%{packagename}/-/archive/%{packagever}/
 Source1:        kdeglobals-desktop
 Source2:        steamdeck-le.svg
 Source3:        bazzite_logo.svgz
-Source4:        metadata_vapor.json
-Source5:        metadata_vgui2.json
-Source6:        plasmarc
-Source7:        kscreenlockerrc
+Source4:        plasmarc
+Source5:        kscreenlockerrc
 Patch0:         multiuser.patch
 Patch1:         bazzite_logo.patch
 Patch2:         ublue.patch
 Patch3:         splash.patch
+Patch4:         vapor-metadata.patch
 
 BuildArch:      noarch
 
@@ -50,26 +49,29 @@ cp -rv etc/* %{buildroot}%{_sysconfdir}
 cp usr/bin/steamos-add-to-steam %{buildroot}%{_bindir}/steamos-add-to-steam
 mv %{buildroot}%{_datadir}/icons/hicolor/scalable/places/distributor-logo-steamdeck.svg %{buildroot}%{_datadir}/icons/hicolor/scalable/places/steamdeck.svg
 cp %{SOURCE2} %{buildroot}%{_datadir}/icons/hicolor/scalable/places/steamdeck-le.svg
-cp %{SOURCE6} %{buildroot}%{_datadir}/plasma/desktoptheme/Vapor/plasmarc
+cp %{SOURCE4} %{buildroot}%{_datadir}/plasma/desktoptheme/Vapor/plasmarc
+rm -rf %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vapor.desktop
+mv %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vapor.deck.desktop %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vapor.desktop
 # Remove unneeded files
-rm -rf %{buildroot}%{_datadir}/applications/steam/steamos-nested-desktop
+rm %{buildroot}%{_sysconfdir}/xdg/autostart/defaultbrightness.desktop
+rm %{buildroot}%{_sysconfdir}/xdg/autostart/setup-kwallet.desktop
+rm %{buildroot}%{_datadir}/applications/steam/steamos-nested-desktop
 rm %{buildroot}%{_datadir}/applications/org.mozilla.firefox.desktop
-rm %{buildroot}%{_datadir}/kservices5/ServiceMenus/steam.desktop
-rm %{buildroot}%{_datadir}/X11/xorg.conf.d/99-pointer.conf
+rm %{buildroot}%{_datadir}/kio/servicemenus/steam.desktop
 rm %{buildroot}%{_datadir}/icons/hicolor/scalable/places/distributor-logo.svg
 rm %{buildroot}%{_sysconfdir}/profile.d/kde.sh
 rm %{buildroot}%{_sysconfdir}/sddm.conf.d/steamdeck.conf
 rm %{buildroot}%{_sysconfdir}/skel/Desktop/Return.desktop
-rm %{buildroot}%{_sysconfdir}/X11/Xsession.d/50rotate-screen
+rm %{buildroot}%{_sysconfdir}/xdg/kded5rc
 rm %{buildroot}%{_sysconfdir}/xdg/autostart/ibus.desktop
 rm %{buildroot}%{_sysconfdir}/xdg/autostart/jupiter-plasma-bootstrap.desktop
 rm %{buildroot}%{_sysconfdir}/xdg/autostart/steam.desktop
 rm %{buildroot}%{_sysconfdir}/xdg/kcminputrc
-rm %{buildroot}%{_sysconfdir}/xdg/kwinrc
 rm %{buildroot}%{_sysconfdir}/xdg/kwinrulesrc
 rm %{buildroot}%{_sysconfdir}/xdg/plasma-nm
 rm %{buildroot}%{_sysconfdir}/xdg/plasma-workspace/env/ibus.sh
-rm %{buildroot}%{_sysconfdir}/xdg/powermanagementprofilesrc
+rm %{buildroot}%{_sysconfdir}/xdg/plasma-workspace/env/set-return-icon.sh
+rm %{buildroot}%{_sysconfdir}/xdg/powerdevilrc
 rm %{buildroot}%{_sysconfdir}/xdg/kscreenlockerrc
 rm %{buildroot}%{_sysconfdir}/xdg/baloofilerc
 rm %{buildroot}%{_sysconfdir}/xdg/kdeglobals
@@ -77,11 +79,10 @@ rm %{buildroot}%{_sysconfdir}/xdg/kcm-about-distrorc
 cp %{SOURCE1} %{buildroot}%{_sysconfdir}/xdg/kdeglobals
 rm %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vapor.desktop/contents/splash/images/deck_logo.svgz
 rm %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vgui.desktop/contents/splash/images/deck_logo.svgz
+rm -rf %{buildroot}%{_datadir}/kwalletd
 cp %{SOURCE3} %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vapor.desktop/contents/splash/images/bazzite_logo.svgz
 cp %{SOURCE3} %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vgui.desktop/contents/splash/images/bazzite_logo.svgz
-cp %{SOURCE4} %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vapor.desktop/metadata.json
-cp %{SOURCE5} %{buildroot}%{_datadir}/plasma/look-and-feel/com.valve.vgui.desktop/metadata.json
-cp %{SOURCE7} %{buildroot}%{_sysconfdir}/xdg/kscreenlockerrc
+cp %{SOURCE5} %{buildroot}%{_sysconfdir}/xdg/kscreenlockerrc
 
 # Do post-installation
 %post

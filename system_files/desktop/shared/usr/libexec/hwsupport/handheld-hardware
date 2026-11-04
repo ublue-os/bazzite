@@ -1,0 +1,4 @@
+#!/usr/bin/bash
+# Returns true for any supported handheld
+
+/usr/libexec/hwsupport/valve-hardware || /usr/libexec/hwsupport/non-valve-handheld-hardware

@@ -1,0 +1,1 @@
+ACTION=="add|change", SUBSYSTEM=="leds", KERNEL=="*:rgb:*", RUN+="/usr/bin/sh -c 'cd /sys/class/leds/%k && chmod 0666 brightness brightness_scale brightness_startup effect enabled mode multi_intensity multi_intensity_startup profile speed delay trigger delay_on delay_off 2>/dev/null; exit 0'"

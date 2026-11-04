@@ -1,0 +1,15 @@
+#!/usr/bin/bash
+# Returns true for HTPCs that need PowerStation for TDP control.
+
+DMI="/sys/devices/virtual/dmi/id"
+PRODUCT_FAMILY="$(cat "$DMI/product_family" 2>/dev/null)"
+BOARD_VENDOR="$(cat "$DMI/board_vendor" 2>/dev/null)"
+
+board_vendor_lc="${BOARD_VENDOR,,}"
+
+# Framework Desktop
+if [[ "$PRODUCT_FAMILY" == "Desktop" && "$board_vendor_lc" == "framework" ]]; then
+	exit 0
+fi
+
+exit 1

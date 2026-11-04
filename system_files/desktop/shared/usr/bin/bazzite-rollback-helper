@@ -156,16 +156,33 @@ rebase_to() {
   local full_ref="$target"
   case "$target" in
     ostree-*) ;;
-    *:*) 
-      local scheme=$(signing_scheme)
-      full_ref="$scheme/ublue-os/$target"
+    *:*)
+      full_ref="ostree-image-signed:docker://ghcr.io/ublue-os/$target"
       ;;
     *)
-      local scheme=$(signing_scheme)
-      full_ref="$scheme/ublue-os/$DEFAULT_IMAGE:$target"
+      full_ref="ostree-image-signed:docker://ghcr.io/ublue-os/$DEFAULT_IMAGE:$target"
       ;;
   esac
-  
+
+  # rpm-ostree refuses to rebase onto the ref the default (pending or booted)
+  # deployment already tracks ("Old and new refs are equal"). If that deployment
+  # is pending, the rebase was already staged (e.g. by an earlier, timed-out call
+  # from Steam), so report success. If it is the booted one, there is nothing to
+  # do; keep a non-zero exit so callers like `brh rebase ... && reboot` don't reboot.
+  local default_ref default_booted
+  {
+    read -r default_ref
+    read -r default_booted
+  } < <(rpm-ostree status --json | jq -r '.deployments[0] | (.["container-image-reference"] // ""), (.booted // false)')
+  if [[ -n "$default_ref" && "$default_ref" == "$full_ref" ]]; then
+    if [[ "$default_booted" == true ]]; then
+      echo "Already on ${bold}$full_ref${normal}, nothing to do."
+      return 1
+    fi
+    echo "${green}Rebase to ${bold}$full_ref${normal}${green} is already pending.${normal} Reboot to apply changes."
+    return 0
+  fi
+
   echo "Rebasing to: ${bold}$full_ref${normal}"
   
   if [[ "$skip_confirm" != true ]]; then
@@ -253,7 +270,23 @@ list_images() {
 }
 
 current() {
-  rpm-ostree status -vb
+  local pretty_IMAGE
+  local pretty_TAG
+  {
+  read -r pretty_IMAGE
+  read -r pretty_TAG
+  } < <(
+    rpm-ostree status --json | jq -r '
+      .deployments[]
+      | select(.booted)
+      | .["container-image-reference"]
+      | capture(".*/(?<image>[^:]+):(?<tag>[^:]+)$")
+      | .image, .tag
+    '
+  )
+
+  echo -e "IMAGE:\t${b}$pretty_IMAGE${n}"
+  echo -e "TAG:\t${b}$pretty_TAG${n}"
 }
 
 rollback() {
@@ -333,7 +366,7 @@ interactive_menu() {
             local version=$(pick_version "ublue-os" "$img" "${filter,,}")
             [[ "$version" != "Back" && -n "$version" ]] && {
               clear
-              rebase_to "$(signing_scheme)/ublue-os/$img:$version"
+              rebase_to "ostree-image-signed:docker://ghcr.io/ublue-os/$img:$version"
               press_any_key
             }
           fi

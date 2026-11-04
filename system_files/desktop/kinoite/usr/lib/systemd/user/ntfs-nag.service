@@ -5,7 +5,7 @@ After=xdg-desktop-autostart.target
 
 [Service]
 Type=simple
-ExecStart=/usr/libexec/ntfs_exfat_monitor_script
+ExecStart=/usr/libexec/ntfs-exfat-monitor-script
 
 [Install]
 WantedBy=xdg-desktop-autostart.target

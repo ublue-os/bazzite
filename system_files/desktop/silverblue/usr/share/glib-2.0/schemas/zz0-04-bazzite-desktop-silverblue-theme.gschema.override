@@ -1,6 +1,3 @@
-[org.gnome.shell.extensions.user-theme]
-name='Bazzite'
-
 [org.gnome.desktop.wm.preferences]
 button-layout='appmenu:minimize,maximize,close'
 
@@ -58,7 +55,7 @@ blur=true
 blur=true
 
 [org.gnome.shell.extensions.blur-my-shell.dash-to-dock]
-blur=false
+blur=true
 
 [org.gnome.shell.extensions.blur-my-shell.applications]
 opacity=255
@@ -71,10 +68,13 @@ resize-effect=true
 [org.gnome.shell.extensions.ncom.github.hermes83.compiz-alike-magic-lamp-effect]
 duration=250
 
-[org/gnome/shell/extensions/desktop-cube]
+[org.gnome.shell.extensions.desktop-cube]
 last-first-gap=false
 enable-desktop-edge-switch=false
 enable-panel-dragging=true
 enable-desktop-dragging=true
 enable-overview-edge-switch=false
 enable-overview-dragging=false
+
+[org.gnome.shell.extensions.touchup]
+navigation-bar-mode='buttons'

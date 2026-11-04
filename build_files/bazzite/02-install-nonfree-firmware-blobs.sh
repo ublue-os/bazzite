@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+#
+# Install firmware blobs from the ctx directory into the root filesystem,
+# tagging them as non-free Bazzite components.
+#
+set -xeuo pipefail
+
+echo "::group::Install non-free firmware blobs"
+trap 'echo "::endgroup::"' EXIT
+
+# -- Copy firmware into temporary staging area --
+# Extract firmware files to /tmp/firmware for processing.
+echo "==> Copying firmware files..."
+cp -a /ctx/firmware/. /tmp/firmware
+
+# -- Tag firmware as non-free --
+# Mark each firmware file with the 'bazzite-nonfree' component attribute.
+echo "==> Tagging firmware as non-free..."
+find /tmp/firmware -type f -exec setfattr -n user.component -v "bazzite-nonfree" {} +
+find /tmp/firmware -type f -exec setfattr -n user.update-interval -v "yearly" {} +
+
+# -- Remove git metadata --
+# Clean up git history to keep the image size minimal.
+echo "==> Removing git metadata..."
+rm -rf /tmp/firmware/.git || true
+
+# -- Install firmware into root filesystem --
+# Copy processed firmware files into /usr/lib/firmware or equivalent.
+echo "==> Installing firmware..."
+cp -a /tmp/firmware/. /
+
+# -- Cleanup --
+rm -rf /tmp/firmware || true

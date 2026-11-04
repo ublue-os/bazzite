@@ -1,0 +1,45 @@
+#!/bin/bash
+# This script is now deprecated, please use steamosctl.
+# It exists for Steam client compatibility
+
+set -e
+
+session="${1:-gamescope}"
+
+IMAGE_INFO="/usr/share/ublue-os/image-info.json"
+BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
+
+if [[ "$BASE_IMAGE_NAME" == "kinoite" ]]; then
+  desktop_session="plasma.desktop"
+else
+  desktop_session="gnome.desktop"
+fi
+
+die() { echo >&2 "!! $*"; exit 1; }
+
+case "$session" in
+  plasma-wayland-persistent)
+    steamosctl set-default-login-mode desktop
+    steamosctl set-default-desktop-session $desktop_session
+    steamosctl switch-to-desktop-mode
+  ;;
+  plasma-x11-persistent)
+    steamosctl set-default-login-mode desktop
+    steamosctl set-default-desktop-session $desktop_session
+    steamosctl switch-to-desktop-mode
+  ;;
+  plasma)
+    steamosctl switch-to-desktop-mode $desktop_session
+  ;;
+  plasma-wayland)
+    steamosctl switch-to-desktop-mode $desktop_session
+  ;;
+  gamescope)
+    steamosctl set-default-login-mode game
+    steamosctl switch-to-game-mode
+  ;;
+  *)
+    echo >&2 "!! Unrecognized session '$session'"
+    exit 1
+  ;;
+esac

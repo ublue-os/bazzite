@@ -1,0 +1,35 @@
+# Adapted from https://github.com/ShadowBlip/InputPlumber/blob/main/rootfs/usr/share/inputplumber/devices/60-cec.yaml
+# yaml-language-server: $schema=https://raw.githubusercontent.com/ShadowBlip/InputPlumber/main/rootfs/usr/share/inputplumber/schema/composite_device_v1.json
+version: 1
+kind: CompositeDevice
+name: CEC Remote
+
+matches: []
+
+maximum_sources: 1
+
+source_devices:
+  - group: keyboard
+    udev:
+      subsystem: input
+      attributes:
+        - name: name
+          value: "DP-*"
+
+##untested pulse8 matching
+#  - group: gamepad
+#    unique: true
+#    evdev:
+#      vendor_id: "2548"
+#      product_id: "{1001,1002}"
+#      handler: event*
+
+
+target_devices:
+  - gamepad
+
+capability_map_id: cec_remote
+
+options:
+  #enabled, so that inputplumber automatically creates/manages the virtual gamepad device
+  auto_manage: true

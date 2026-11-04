@@ -1,0 +1,45 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/ShadowBlip/InputPlumber/main/rootfs/usr/share/inputplumber/schema/capability_map_v2.json
+# Schema version number
+version: 2
+
+# The type of configuration schema
+kind: CapabilityMap
+
+# Name for the device event map
+name: "Acer Atlas 8 QAM"
+
+# Unique identifier of the capability mapping
+id: acer_atlas8_hid_type1
+
+# Idle HID Report (button tap)
+# Data: 37 00 00
+# BUF[1] = 0x81 = QAM Tapped
+# BUF[2] = 0xff = QAM Tapped
+
+# Idle HID Report (button hold)
+# Data: 03 00 00 00 00 00 00 00 00
+# BUF[1] = 0x08 = Guide Held Down
+# BUF[3] = 0x2b = Guide Held Down
+# BUF[3] = 0x71 = QAM Held down
+
+# List of mapped events that are activated by a specific set of activation keys.
+mapping:
+  - name: QAM (tap)
+    source_events:
+      - hidraw:
+          value_type: bool
+          byte_start: 2
+    target_event:
+      gamepad:
+        button: QuickAccess
+  - name: QAM (hold)
+    source_events:
+      - hidraw:
+          value_type: bool
+          byte_start: 3
+    target_event:
+      gamepad:
+        button: QuickAccess2
+
+# List of events to filter from the source devices
+filtered_events: []

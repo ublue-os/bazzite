@@ -6,3 +6,4 @@ pref("browser.tabs.groups.smart.enabled", false);
 pref("browser.ml.chat.enabled", false);
 pref("extensions.ml.enabled", false);
 pref("browser.ml.enable", false);
+pref("widget.use-xdg-desktop-portal.native-messaging-proxy", 2);

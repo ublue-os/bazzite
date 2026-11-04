@@ -1,5 +1,10 @@
 ﻿<p align="center">
-  <a href="https://bazzite.gg/"><img src="/repo_content/Bazzite_Tagline.svg?raw=true" alt="Bazzite"/></a>
+  <a href="https://bazzite.gg/">
+    <picture>
+      <source srcset="repo_content/Bazzite_Light.svg" media="(prefers-color-scheme: dark)">
+      <img src="repo_content/Bazzite.svg" alt="Bazzite"/>
+    </picture>
+  </a>
 </p>
 
 [![build-bazzite](https://github.com/ublue-os/bazzite/actions/workflows/build.yml/badge.svg)](https://github.com/ublue-os/bazzite/actions/workflows/build.yml) [![build-bazzite-isos](https://github.com/ublue-os/bazzite/actions/workflows/build_iso.yml/badge.svg)](https://github.com/ublue-os/bazzite/actions/workflows/build_iso.yml) [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/ublue-os/bazzite) [![LFX Health Score](https://insights.linuxfoundation.org/api/badge/health-score?project=ublue-os-bazzite)](https://insights.linuxfoundation.org/project/ublue-os-bazzite) [![LFX Active Contributors](https://insights.linuxfoundation.org/api/badge/active-contributors?project=ublue-os-bazzite)](https://insights.linuxfoundation.org/project/ublue-os-bazzite)
@@ -49,6 +54,7 @@ Bazzite مبنية من [ublue-os/main](https://github.com/ublue-os/main) و[ubl
 - دعم كامل لتسريع العتاد لترميز H264 في فك التشفير.
 - دعم كامل لبيئات التشغيل OpenCL/HIP من AMD (ROCM).
 - تعريف [xone](https://github.com/medusalix/xone) لوحدات تحكم Xbox.
+- دعم محسن لعجلات القيادة مع عدة تعريفات إضافية.
 - دعم كامل لـ[DisplayLink](https://www.synaptics.com/products/displaylink-graphics).
 - تتضمن ثيمات KDE من Valve في SteamOS.
 - تثبيت افتراضي لكل من [LatencyFleX](https://github.com/ishitatsuyuki/LatencyFleX) [vkBasalt](https://github.com/DadSchoorse/vkBasalt) [MangoHud](https://github.com/flightlessmango/Mangohud) و[OBS VkCapture](https://github.com/nowrep/obs-vkcapture) ومتاح استخدامها مباشرة.
@@ -77,7 +83,7 @@ Bazzite مبنية من [ublue-os/main](https://github.com/ublue-os/main) و[ubl
 
 النسخة العامة المتاحة باسم `bazzite` مناسبة لأجهزة الكمبيوتر المكتبية.
 
-- تحديثات تلقائية للنظام وFlatpaks وغيرها  تعتمد على [ublue-update](https://github.com/ublue-os/ublue-update) و[topgrade](https://github.com/topgrade-rs/topgrade).
+- تحديثات تلقائية للنظام وFlatpaks وغيرها  تعتمد على [uupd](https://github.com/ublue-os/uupd).
 
 > [!IMPORTANT]
 > **يمكن تنزيل ملفات ISO من [موقعنا](https://download.bazzite.gg) ويمكن العثور على دليل تثبيت مفيد [هنا](https://docs.bazzite.gg/General/Installation_Guide/).**
@@ -102,30 +108,22 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:sta
 
 - الإقلاع مباشرة إلى وضع اللعب بما يطابق سلوك SteamOS.
 - **`duperemove` التلقائي يقلل بشكل كبير من حجم compatdata.**
-- **أحدث إصدار من Mesa ينشئ مخازن تظليل أصغر ولا يحتاجها لمنع التقطيع.**
-- **يمكن الإقلاع حتى إذا كان القرص ممتلئا.**
 - **دعم لكل لغة مدعومة من Fedora العليا.**
 - **استخدام Wayland على سطح المكتب مع [دعم لإدخال Steam](https://github.com/Supreeeme/extest).**
-- يتضمن [HHD](https://github.com/hhd-dev/hhd) لتوسيع دعم الإدخال على الأجهزة المحمولة غير التابعة لـ Valve.
-- ميزات نقلت لمعظم حزم SteamOS بما في ذلك التعريفات وأدوات تحديث Firmware ووحدات التحكم بالمراوح [من مستودع evlaV](https://gitlab.com/evlaV).
+- ميزات نقلت لمعظم حزم SteamOS بما في ذلك التعريفات وأدوات تحديث Firmware ووحدات التحكم بالمراوح.
 - Mesa معدلة للتحكم الصحيح بمعدل الإطارات من Gamescope.
 - تأتي مع تصحيحات من [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) لدعم كامل لـ BTRFS لبطاقة SD بشكل افتراضي.
 - تشحن بنسخة منقولة من [SDGyroDSU](https://github.com/kmicki/SteamDeckGyroDSU) ممكنة افتراضيا.
 - خيار لتثبيت [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader) [EmuDeck](https://www.emudeck.com/) [RetroDECK](https://retrodeck.net/) و[ProtonUp-Qt](https://davidotek.github.io/protonup-qt/) إلى جانب العديد من الحزم المفيدة الأخرى أثناء التثبيت.
-- نظام تحديث مخصص يسمح بتحديث النظام وFlatpaks وغيرها مباشرة من واجهة وضع اللعب يعتمد على [ublue-update](https://github.com/ublue-os/ublue-update) و[topgrade](https://github.com/topgrade-rs/topgrade).
+- نظام تحديث مخصص يسمح بتحديث النظام وFlatpaks وغيرها مباشرة من واجهة وضع اللعب يعتمد على [uupd](https://github.com/ublue-os/uupd).
 - دعم مدمج للإقلاع المزدوج مع ويندوز بفضل ترك تثبيت GRUB من Fedora كما هو.
 - هل تسبب التحديث بعطل يمكنك الرجوع بسهولة إلى النسخة السابقة من Bazzite بفضل خاصية rollback في `rpm-ostree`. يمكنك حتى اختيار صور سابقة عند الإقلاع.
 - Steam وLutris مثبتان مسبقا كحزم مكدسة (layered packages).
 - [Discover Overlay](https://github.com/trigg/Discover) الخاص بـ Discord مثبت مسبقا ويتم تشغيله تلقائيا في وضع اللعب وعلى سطح المكتب إذا كان Discord مثبتا. [اطلع على الوثائق الرسمية هنا](https://trigg.github.io/Discover/bazzite).
-- استخدام ZRAM<sub><sup>(4GB)</sup></sub> بخوارزمية الضغط LZ4 افتراضيا.
-- جداول المعالج [LAVD](https://crates.io/crates/scx_lavd) و[BORE](https://github.com/firelzrd/bore-scheduler) لألعاب سلسة واستجابة عالية.
+- دعم جاهز للاستخدام لمجدولات [sched-ext](https://github.com/sched-ext/scx).
 - جدول I/O Kyber لمنع تجويع الإدخال/الإخراج أثناء تثبيت الألعاب أو خلال عملية `duperemove` في الخلفية.
 - تطبيق معاملات نواة SteamOS.
 - ملفات معايرة الألوان لشاشات Steam Deck غير اللامعة والعاكسة مضمنة.
-- ميزات افتراضيا معطلة لمستخدمي الخبرة تشمل:
-    - خدمة لكسر السرعة الآمن منخفض المخاطر لـ Steam Deck وكذلك لأجهزة AMD Framework Laptops عبر [RyzenAdj](https://github.com/FlyGoat/RyzenAdj) و[Ryzen SMU](https://gitlab.com/leogx9r/ryzen_smu) راجع `ryzenadj.service` و`/etc/default/ryzenadj`.
-    - دعم مدمج لرفع تردد الشاشة. على سبيل المثال أضف `CUSTOM_REFRESH_RATES=30-68` إلى `/etc/environment`. معدلات التحديث الدنيا والقصوى تختلف حسب الجهاز المحمول!
-    - عدلت RAM إلى 32GB على Steam Deck استمتع بضعف الحد الأقصى لـ VRAM يطبق تلقائيا. <sup><sub>(هل تشاركنا مهاراتك في اللحام)</sub></sup>
 - يمكن تعطيل الخدمات الخاصة بعتاد Steam Deck عبر تشغيل `ujust disable-bios-updates` و`ujust disable-firmware-updates` في الطرفية. يتم تعطيلها تلقائيا على الأجهزة غير Deck وعلى Decks ذات شاشات DeckHD أو تعديلات RAM إلى 32GB.
 - مزيد من المعلومات يمكن العثور عليها [هنا](https://docs.bazzite.gg/Handheld_and_HTPC_edition/Steam_Gaming_Mode/) حول صور Bazzite الخاصة بـ Steam Deck.
 
@@ -141,14 +139,6 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck:stabl
 #### أجهزة محمولة بديلة
 
 يرجى الرجوع إلى [ويكي الأجهزة المحمولة](https://docs.bazzite.gg/Handheld_and_HTPC_edition/Handheld_Wiki/) للتغييرات المطلوبة في الإعدادات وإضافات Decky Loader لوضع Steam Gaming في جهازك المحمول المحدد.
-
-**تأكد أيضا من قراءة [وثائق hhd](https://github.com/hhd-dev/hhd#after-install) بعض الأجهزة المحمولة تتطلب تغييرات/تحسينات محددة لتعمل بشكل صحيح.**
-
-نشحن أيضا بأوامر `ujust` لتثبيت ثيمات [CSS Loader](https://docs.deckthemes.com/CSSLoader/Install/#linux-or-steam-deck) المختلفة التي لا يمكن العثور عليها في متجر CSS Loader. سيتم تحديثها تلقائيا مع Bazzite إذا كانت مثبتة.
-```bash
-# تثبيت ثيم Handheld Controller (https://github.com/victor-borges/handheld-controller-glyphs)
-ujust install-hhd-controller-glyph-theme
-```
 
 ### جنوم
 
@@ -217,11 +207,11 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck-gnome
 
 ![KDE Vapor Theme](/repo_content/desktop1.png?raw=true "ثيم KDE Vapor")
 ![KDE VGUI2 Theme](/repo_content/desktop2.png?raw=true "ثيم KDE VGUI2")
-![Steam Game Mode](/repo_content/gamemode.png?raw=true "وضع اللعب في Steam")
+![Steam Gaming Mode](/repo_content/gamemode.png?raw=true "وضع اللعب في Steam")
 ![Waydroid](/repo_content/waydroid.png?raw=true "Waydroid")
 ![Distrobox Terminals](/repo_content/distrobox.png?raw=true "طرفيات Distrobox")
-![GNOME Vapor Theme](/repo_content/gnome1.png?raw=true "ثيم GNOME Vapor")
-![GNOME VGUI2 Theme](/repo_content/gnome2.png?raw=true "ثيم GNOME VGUI2")
+![GNOME](/repo_content/gnome1.png?raw=true "GNOME")
+![GNOME](/repo_content/gnome2.png?raw=true "GNOME")
 
 ## التوثيق
 
@@ -276,7 +266,7 @@ Bazzite جهد مجتمعي ولن توجد دون دعم الجميع. فيما
 
 - [amelia.svg](https://bsky.app/profile/ameliasvg.bsky.social)  لابتكار شعارنا وهوية علامتنا.
 - [SuperRiderTH](https://github.com/SuperRiderTH)  لابتكار فيديو بدء وضع اللعب في Steam.
-- [evlaV](https://gitlab.com/evlaV)  لجعل كود Valve متاحا ولأنه [هذا الشخص](https://xkcd.com/2347/).
+- [evlaV](https://gitlab.com/evlaV) *(متقاعد الآن)* لجعل كود Valve متاحا ولأنه [هذا الشخص](https://xkcd.com/2347/).
 - [ChimeraOS](https://chimeraos.org/)  من أجل gamescope-session والدعم القيم على طول الطريق.
 - [Jovian-NixOS](https://github.com/Jovian-Experiments)  لدعمنا في القضايا التقنية ولابتكار مشروع مماثل. حقا اطلع عليه. إنه ابن عمنا القائم على Nix.
 - [sentry](https://copr.fedorainfracloud.org/coprs/sentry/)  للمساعدة في تصحيحات النواة المطلوبة ولإنشاء [مستودع kernel-fsync](https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/) الذي نستخدمه الآن.

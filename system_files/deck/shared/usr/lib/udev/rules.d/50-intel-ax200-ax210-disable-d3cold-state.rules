@@ -1,0 +1,6 @@
+# Fix a segfault with Intel AX200/AX210 Wifi Card when a system suspend/resume (sleep)
+# As of iwlwifi-ty-a0-gf-a0-89.ucode - this bug is still present
+# The bug: The card try to go to D3cold state, but the driver doesn't handle this state and segfault
+# The effect: Intel AX200/AX210 stay stuck in D3cold state, even accross reboot, some motherboard aggressively try to wake up the card
+# causing instability on the whole system (at least on Ayaneo Air devices with this card)
+ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x8086", ATTR{device}=="0x2725", ATTR{d3cold_allowed}="0"

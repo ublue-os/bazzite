@@ -1,0 +1,72 @@
+From 14c82dce8a7e9714d6f9cd03229e0fb55460aa25 Mon Sep 17 00:00:00 2001
+From: Zygo Blaxell <bees@furryterror.org>
+Date: Wed, 11 Feb 2026 22:23:35 -0500
+Subject: [PATCH] openat2: adjust prototype to match glibc declaration
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+glibc 2.43 has added a prototype for openat2 which conficts
+with the interim prototype from the kernel commits:
+
+ * glibc 2.43+r5+g856c426a7534-1
+ * gcc 15.2.1+r604+g0b99615a8aef-1
+
+```
+In file included from /usr/include/bits/fcntl.h:61,
+                 from /usr/include/fcntl.h:35,
+                 from openat2.cc:18:
+/usr/include/bits/fcntl-linux.h:484:12: error: conflicting declaration of C function ‘int openat2(int, const char*, const open_how*, long unsigned int)’
+  484 | extern int openat2 (int __dfd, const char * __filename,
+      |            ^~~~~~~
+In file included from openat2.cc:1:
+../include/crucible/openat2.h:48:5: note: previous declaration ‘int openat2(int, const char*, open_how*, size_t)’
+   48 | int openat2(int dirfd, const char *pathname, struct open_how *how, size_t size) throw();
+      |     ^~~~~~~
+In file included from /usr/include/bits/fcntl-linux.h:492:
+/usr/include/bits/fcntl-linux-fortify.h:36:1: error: conflicting declaration of C function ‘int openat2(int, const char*, const open_how*, size_t)’
+   36 | openat2 (int __dfd, const char *__filename, const struct open_how *__how,
+      | ^~~~~~~
+../include/crucible/openat2.h:48:5: note: previous declaration ‘int openat2(int, const char*, open_how*, size_t)’
+   48 | int openat2(int dirfd, const char *pathname, struct open_how *how, size_t size) throw();
+      |     ^~~~~~~
+make[1]: *** [Makefile:42: openat2.o] Error 1
+make[1]: Leaving directory '/data/src/bees/lib'
+make: *** [Makefile:35: lib] Error 2
+```
+
+Fix by adding the missing `const` on `open_how`.
+
+Fixes: https://github.com/Zygo/bees/issues/333
+Signed-off-by: Zygo Blaxell <bees@furryterror.org>
+---
+ include/crucible/openat2.h | 2 +-
+ lib/openat2.cc             | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/include/crucible/openat2.h b/include/crucible/openat2.h
+index c4081185..6ccb34ef 100644
+--- a/include/crucible/openat2.h
++++ b/include/crucible/openat2.h
+@@ -45,7 +45,7 @@ struct open_how {
+ extern "C" {
+ 
+ /// Weak symbol to support libc with no syscall wrapper
+-int openat2(int dirfd, const char *pathname, struct open_how *how, size_t size) throw();
++int openat2(int dirfd, const char *pathname, const struct open_how *how, size_t size) throw();
+ 
+ };
+ 
+diff --git a/lib/openat2.cc b/lib/openat2.cc
+index 5b76bb0f..2912f864 100644
+--- a/lib/openat2.cc
++++ b/lib/openat2.cc
+@@ -26,7 +26,7 @@ extern "C" {
+ 
+ int
+ __attribute__((weak))
+-openat2(int const dirfd, const char *const pathname, struct open_how *const how, size_t const size)
++openat2(int const dirfd, const char *const pathname, const struct open_how *const how, size_t const size)
+ throw()
+ {
+ #ifdef SYS_openat2

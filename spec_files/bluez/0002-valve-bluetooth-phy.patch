@@ -14,14 +14,14 @@ Verify that multiple controllers can connect and work well.
 
 Co-Authored-By: Rachel Blackman <rachel.blackman@synapse.com>
 ---
- src/adapter.c | 46 ++++++++++++++++++++++++++++
+ src/adapter.c | 46 +++++++++++++++++++++++++++++++++
  src/btd.h     |  2 ++
- src/main.c    | 85 +++++++++++++++++++++++++++++++++++++++++++++++++++
- src/main.conf |  5 +++
- 4 files changed, 138 insertions(+)
+ src/main.c    | 81 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ src/main.conf |  5 ++++
+ 4 files changed, 134 insertions(+)
 
 diff --git a/src/adapter.c b/src/adapter.c
-index 5ebfc4752..bc1e1d418 100644
+index 2102252..b950826 100644
 --- a/src/adapter.c
 +++ b/src/adapter.c
 @@ -86,6 +86,18 @@
@@ -43,7 +43,7 @@ index 5ebfc4752..bc1e1d418 100644
  /*
   * These are known security keys that have been compromised.
   * If this grows or there are needs to be platform specific, it is
-@@ -844,6 +856,36 @@ static bool set_discoverable(struct btd_adapter *adapter, uint8_t mode,
+@@ -867,6 +879,36 @@ static bool set_discoverable(struct btd_adapter *adapter, uint8_t mode,
  	return false;
  }
  
@@ -80,7 +80,7 @@ index 5ebfc4752..bc1e1d418 100644
  static bool pairable_timeout_handler(gpointer user_data)
  {
  	struct btd_adapter *adapter = user_data;
-@@ -10387,6 +10429,10 @@ static void read_info_complete(uint8_t status, uint16_t length,
+@@ -10552,6 +10594,10 @@ static void read_info_complete(uint8_t status, uint16_t length,
  	if (btd_adapter_get_powered(adapter))
  		adapter_start(adapter);
  
@@ -92,10 +92,10 @@ index 5ebfc4752..bc1e1d418 100644
  
  failed:
 diff --git a/src/btd.h b/src/btd.h
-index b7e7ebd61..2b84f7a51 100644
+index db2e812..de432ca 100644
 --- a/src/btd.h
 +++ b/src/btd.h
-@@ -151,6 +151,8 @@ struct btd_opts {
+@@ -178,6 +178,8 @@ struct btd_opts {
  	struct btd_advmon_opts	advmon;
  
  	struct btd_csis csis;
@@ -105,10 +105,10 @@ index b7e7ebd61..2b84f7a51 100644
  
  extern struct btd_opts btd_opts;
 diff --git a/src/main.c b/src/main.c
-index 2134fcf75..700c83c78 100644
+index 8aa19a3..ee936b9 100644
 --- a/src/main.c
 +++ b/src/main.c
-@@ -127,6 +127,7 @@ static const char *le_options[] = {
+@@ -133,6 +133,7 @@ static const char *le_options[] = {
  	"AdvMonAllowlistScanDuration",
  	"AdvMonNoFilterScanDuration",
  	"EnableAdvMonInterleaveScan",
@@ -116,7 +116,7 @@ index 2134fcf75..700c83c78 100644
  	NULL
  };
  
-@@ -180,10 +181,32 @@ static const struct group_table {
+@@ -205,6 +206,24 @@ static const struct group_table {
  	{ }
  };
  
@@ -138,18 +138,10 @@ index 2134fcf75..700c83c78 100644
 +	"LECODEDRX",
 +};
 +
- #ifndef MIN
- #define MIN(x, y) ((x) < (y) ? (x) : (y))
- #endif
- 
-+#ifndef NELEM
-+#define NELEM(x) (sizeof(x) / sizeof((x)[0]))
-+#endif
-+
  static int8_t check_sirk_alpha_numeric(char *str)
  {
  	int8_t val = 0;
-@@ -224,6 +247,54 @@ static size_t hex2bin(const char *hexstr, uint8_t *buf, size_t buflen)
+@@ -245,6 +264,54 @@ static size_t hex2bin(const char *hexstr, uint8_t *buf, size_t buflen)
  	return len;
  }
  
@@ -162,7 +154,7 @@ index 2134fcf75..700c83c78 100644
 +	off = 0;
 +	str[0] = '\0';
 +
-+	for (i = 0; i < NELEM(conf_phys_str); i++) {
++	for (i = 0; i < ARRAY_SIZE(conf_phys_str); i++) {
 +		if ((phys & (1 << i)) != 0)
 +			off += snprintf(str + off, sizeof(str) - off, "%s ",
 +							conf_phys_str[i]);
@@ -175,7 +167,7 @@ index 2134fcf75..700c83c78 100644
 +{
 +	unsigned int i;
 +
-+	for (i = 0; i < NELEM(conf_phys_str); i++) {
++	for (i = 0; i < ARRAY_SIZE(conf_phys_str); i++) {
 +		if (strcasecmp(conf_phys_str[i], phy_str) == 0) {
 +			*phy_val = (1 << i);
 +			return true;
@@ -204,7 +196,7 @@ index 2134fcf75..700c83c78 100644
  GKeyFile *btd_get_main_conf(void)
  {
  	return main_conf;
-@@ -674,6 +745,20 @@ static void parse_le_config(GKeyFile *config)
+@@ -751,6 +818,20 @@ static void parse_le_config(GKeyFile *config)
  		return;
  
  	parse_mode_config(config, "LE", params, ARRAY_SIZE(params));
@@ -226,10 +218,10 @@ index 2134fcf75..700c83c78 100644
  
  static bool match_experimental(const void *data, const void *match_data)
 diff --git a/src/main.conf b/src/main.conf
-index cb9b241df..c086a17d0 100644
+index 663ffb1..79ee2e1 100644
 --- a/src/main.conf
 +++ b/src/main.conf
-@@ -231,6 +231,11 @@ MultiProfile = multiple
+@@ -253,6 +253,11 @@ ScanWindowSuspend=224
  # Defaults to 1
  #EnableAdvMonInterleaveScan=
  
@@ -242,5 +234,5 @@ index cb9b241df..c086a17d0 100644
  # GATT attribute cache.
  # Possible values:
 -- 
-2.41.0
+2.51.0
 

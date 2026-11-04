@@ -1,29 +1,31 @@
 <p align="center">
-  <a href="https://bazzite.gg/"><img src="/repo_content/Bazzite_Tagline.svg?raw=true" alt="Bazzite"/></a>
+  <a href="https://bazzite.gg/">
+    <picture>
+      <source srcset="repo_content/Bazzite_Light.svg" media="(prefers-color-scheme: dark)">
+      <img src="repo_content/Bazzite.svg" alt="Bazzite"/>
+    </picture>
+  </a>
 </p>
 
 [![build-bazzite](https://github.com/ublue-os/bazzite/actions/workflows/build.yml/badge.svg)](https://github.com/ublue-os/bazzite/actions/workflows/build.yml) [![build-bazzite-isos](https://github.com/ublue-os/bazzite/actions/workflows/build_iso.yml/badge.svg)](https://github.com/ublue-os/bazzite/actions/workflows/build_iso.yml)
 
-# [🇺🇸](https://github.com/ublue-os/bazzite/blob/main/README.md) [🇪🇸](https://github.com/ublue-os/bazzite/blob/main/README-SPA.md) [🇮🇩](https://github.com/ublue-os/bazzite/blob/main/README-ID.md) [🇫🇷](https://github.com/ublue-os/bazzite/blob/main/README-FR.md) [🇧🇷](https://github.com/ublue-os/bazzite/blob/main/README-BR.md) [🇳🇱](https://github.com/ublue-os/bazzite/blob/main/README-NL.md) [🇹🇼](https://github.com/ublue-os/bazzite/blob/main/README-ZH-TW.md)
+# [🇺🇸](https://github.com/ublue-os/bazzite/blob/main/README.md) [🇪🇸](https://github.com/ublue-os/bazzite/blob/main/README-SPA.md) [🇮🇩](https://github.com/ublue-os/bazzite/blob/main/README-ID.md) [🇨🇳](https://github.com/ublue-os/bazzite/blob/main/README-zh-cn.md) [🇫🇷](https://github.com/ublue-os/bazzite/blob/main/README-FR.md) [🇧🇷](https://github.com/ublue-os/bazzite/blob/main/README-BR.md) [🇳🇱](https://github.com/ublue-os/bazzite/blob/main/README-NL.md) [🇷🇺](https://github.com/ublue-os/bazzite/blob/main/README-RU.md) [🇩🇪](https://github.com/ublue-os/bazzite/blob/main/README-DE.md) [🇹🇼](https://github.com/ublue-os/bazzite/blob/main/README-ZH-TW.md) [🇹🇷](https://github.com/ublue-os/bazzite/blob/main/README-TR.md)
 
 <p align="center">
   <a href="https://bazzite.gg/#image-picker"><img src="/repo_content/download.png?raw=true" alt="Download Bazzite"/></a>
 </p>
 
 ---
-# Seleccionador de Imágenes
-Usa nuestro [seleccionador de imágenes](https://bazzite.gg/#image-picker) para encontrar la imagen correcta basada en tu hardware y tus preferencias.
 
 # Tabla de Contenidos
 - [🇺🇸 🇪🇸 🇮🇩 🇫🇷 🇧🇷 🇳🇱 🇹🇼](#------)
-- [Seleccionador de Imágenes](#seleccionador-de-imágenes)
 - [Tabla de Contenidos](#tabla-de-contenidos)
   - [Acerca de y Características](#acerca-de-y-características)
-    - [Computadoras de Escritorio](#computadoras-de-escritorio)
+    - [Escritorio](#escritorio)
     - [Steam Deck/Computadoras para Cine en Casa (HTPCs)](#steam-deckcomputadoras-para-cine-en-casa-htpcs)
-      - [Computadoras handheld alternativas](#computadoras-handheld-alternativas)
+      - [Portátiles alternativas](#portátiles-alternativas)
     - [GNOME](#gnome)
-    - [Características del Upstream](#características-del-upstream)
+    - [Características de Upstream](#características-de-upstream)
       - [Universal Blue](#universal-blue)
       - [Características de Fedora Linux (Kinoite \& Silverblue)](#características-de-fedora-linux-kinoite--silverblue)
   - [¿Por qué?](#por-qué)
@@ -53,6 +55,7 @@ Bazzite es creado con [ublue-os/main](https://github.com/ublue-os/main) y [ublue
 - Soporte total de decodificación acelerada por hardware del codec de video H264.
 - Soporte completo para los tiempos de ejecución (runtimes) de ROCM OpenCL/HIP de AMD
 - Se incluye el driver [xone](https://github.com/medusalix/xone), para mandos de videojuegos de Xbox.
+- Soporte mejorado para volantes con varios drivers adicionales.
 - Soporte completo de [DisplayLink](https://www.synaptics.com/products/displaylink-graphics).
 - Incluye los temas para KDE de SteamOS, hechos por Valve.
 - También se incluyen temas opcionales de GTK3/4 inspirados en Valve, que igualan a los temas Vapor y VGUI2 de SteamOS. Para poderlos utilizar, solo tienes que instalar [Gradience](https://flathub.org/apps/com.github.GradienceTeam.Gradience).
@@ -81,11 +84,11 @@ Bazzite es creado con [ublue-os/main](https://github.com/ublue-os/main) y [ublue
 - [XwaylandVideoBridge](https://invent.kde.org/system/xwaylandvideobridge) esta disponible para hacer posible compartir tu pantalla con Discord usando Wayland.
 - [Webapp Manager](https://github.com/linuxmint/webapp-manager) esta disponible para crear aplicaciones de sitios web con una variedad de navegadores web, incluyendo Firefox.
 
-### Computadoras de Escritorio
+### Escritorio
 
 Esta variante común/genérica esta disponible como `bazzite`, la cual es adecuada para computadoras de escritorio, esta variante incluye la siguiente característica:
 
-- Actualizaciones automáticas para el sistema operativo, Flatpaks y más.
+- Actualizaciones automáticas para el sistema operativo, Flatpaks y más, mediante [uupd](https://github.com/ublue-os/uupd).
 
 > \[!IMPORTANT\]\
 > **Las imágenes de disco (ISOs) pueden descargarse desde nuestra página de lanzamientos (releases) [aquí (en inglés)](https://github.com/ublue-os/bazzite/releases), también puedes encontrar una útil guía de instalación [aquí (en inglés)](https://universal-blue.discourse.group/docs?topic=30).**
@@ -115,30 +118,22 @@ Esta variante esta diseñada para usarse como una alternativa de SteamOS en la S
 
 - Al arrancar tu dispositivo, inicia directamente en Game Mode, emulando el mismo comportamiento que SteamOS.
 - **Se aplica el servicio `duperemove` automáticamente el cual recorta por mucho el tamaño del directorio compatdata, el directorio usado por Proton para almacenar los prefijos de WINE para correr juegos de Windows en Linux.**
-- **Incluye la versión mas actual de Mesa, el cual crea cachés de shaders mas pequeños, y los cuales no son requeridos para prevenir tirones/parones.**
-- **Habilidad de arrancar el sistema incluso si el disco esta lleno.**
 - **Soporte para cada uno de los lenguajes directamente soportados por Fedora (upstream).**
 - **Uso del servidor gráfico Wayland en el escritorio con [soporte para Steam input](https://github.com/Supreeeme/extest).**
-- Se incluye [HHD](https://github.com/hhd-dev/hhd) para expander el soporte de los mandos de videojuegos integrados en otras computadoras handheld que no sean de Valve
-- Incluye versiones portadas de la mayoría de los paquetes de SteamOS, incluyendo drivers, actualizadores de firmware y controladores de ventiladores [del repositorio de evlaV](https://gitlab.com/evlaV).
+- Incluye versiones portadas de la mayoría de los paquetes de SteamOS, incluyendo drivers, actualizadores de firmware y controladores de ventiladores.
 - Version parchada de Mesa para controlar correctamente la tasa de fotogramas (framerate) usando Gamescope.
 - Incluye los parches de [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) por defecto, los cuales proveen soporte completo del sistema de archivos BTRFS para tarjetas SD.
 - Se incluye una copia portada de [SDGyroDSU](https://github.com/kmicki/SteamDeckGyroDSU), habilitada por defecto.
 - Opción para instalar [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader), [EmuDeck](https://www.emudeck.com/), [RetroDECK](https://retrodeck.net/), y [ProtonUp-Qt](https://davidotek.github.io/protonup-qt/), ademas de un sin fin de paquetes útiles al momento de instalar el sistema.
-- Un sistema personalizado de actualizaciones que permite que tanto el sistema operativo, los Flatpaks, y más sean actualizables directamente desde la interfaz de Gamemode gracias al poder de [ublue-update](https://github.com/ublue-os/ublue-update) y [topgrade](https://github.com/topgrade-rs/topgrade).
+- Un sistema personalizado de actualizaciones que permite que tanto el sistema operativo, los Flatpaks, y más sean actualizables directamente desde la interfaz de Gamemode gracias al poder de [uupd](https://github.com/ublue-os/uupd).
 - Soporte incluido para el arranque dual (dual-boot) con Windows, gracias a que se deja intacta la instalación de GRUB por defecto de Fedora.
 - ¿Algo se rompió o dejo de funcionar después de actualizar?, ¡descuida!, puedes fácilmente retroceder a una versión previa de Bazzite, gracias a la función de reversión (rollback) de `rpm-ostree`. Inclusive puedes seleccionar imágenes previas del sistema directamente desde el menú que aparece al arrancar tu dispositivo.
 - Steam y Lutris vienen pre-instalados en la imagen como paquetes en capas (layered).
 - La utilidad [Discover Overlay](https://github.com/trigg/Discover) para Discord viene pre-instalada y es lanzada automáticamente tanto en Gamemode como en el escritorio, si Discord esta instalado. [Puedes ver la documentación oficial aquí (en inglés)](https://trigg.github.io/Discover/bazzite).
-- Se incluye ZRAM<sub><sup>(4GB)</sup></sub>, un avanzado sistema de swap ubicado directamente en la memoria RAM, con el algoritmo de compresión de datos LZ4 por defecto.
+- Soporte listo para usar para los planificadores [sched-ext](https://github.com/sched-ext/scx).
 - Se incluye el planificador (scheduler) Kyber I/O para prevenir la inanición (starvation) de E/S al instalar juegos o cuando el proceso `duperemove` corre en el fondo.
 - Se aplican los parámetros del kernel de SteamOS.
 - Se incluyen perfiles de color calibrados para los diferentes tipos de pantalla de la Steam Deck, mate o glossy.
-- Características para usuarios avanzados que vienen desactivadas por defecto, las cuales incluyen:
-  - Un servicio de bajo riesgo para reducir el voltaje de la Steam Deck gracias a [RyzenAdj](https://github.com/FlyGoat/RyzenAdj) y [Ryzen SMU](https://gitlab.com/leogx9r/ryzen_smu), véase `ryzenadj.service` y `/etc/default/ryzenadj`.
-  - Soporte incorporado para el overclock de la pantalla, es decir, para incrementar la tasa de refresco que el panel tiene por defecto (60Hz en modelos LCD). Por ejemplo, añade `GAMESCOPE_OVERRIDE_REFRESH_RATE=40,70` a `/etc/environment`.
-  - La habilidad de utilizar el servidor gráfico X11 en vez de Wayland, si así se desea, tan solo editando `/etc/default/desktop-wayland`.
-  - ¿Aplicaste el mod de 32 GB de memoria RAM en tu Steam Deck?, disfruta del doble de la cantidad máxima de VRAM, el cual es aplicado automáticamente. <sup><sub>(Hablando de, ¿crees que podrías compartirnos semejante habilidad para soldar?)</sub></sup>
 - Servicios que son específicos para el hardware de la Steam Deck pueden ser deshabilitados simplemente ejecutando el siguiente comando en una terminal: `ujust disable-deck-services`, algo muy útil cuando tratas de usar esta variante en otras computadoras portátiles o HTPCs.
 - Puedes encontrar más información acerca de las imágenes Steam Deck de Bazzite [aquí](https://universal-blue.discourse.group/docs?topic=37).
 
@@ -156,11 +151,7 @@ Si deseas cambiar la base (rebase) de una imagen upstream existente de un sistem
 rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck:stable
 ```
 
-#### Computadoras handheld alternativas
-
-**Igualmente, asegurate de tambien leer la [documentación de HHD (en inglés)](https://github.com/hhd-dev/hhd#after-install), algunas computadoras Handheld requieren ciertos ajustes o tweaks especificos para funcionar correctamente.**
-
-Tambien incluimos ciertos comandos de `ujust` para instalar varios temas para [CSS Loader](https://docs.deckthemes.com/CSSLoader/Install/#linux-or-steam-deck) que no estan disponibles en su propia tienda. Si instalas estos temas, estos tambien serán actualizados automáticamente junto con Bazzite.
+#### Portátiles alternativas
 
 ### GNOME
 
@@ -198,7 +189,7 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck-gnome
 ```
 **Para usuarios con Secure Boot habilitado:** Sigue nuestra [documentación para usuarios de Secure Boot](#secure-boot) antes de cambiar la base.
 
-### Características del Upstream
+### Características de Upstream
 
 #### Universal Blue
 
@@ -233,15 +224,15 @@ Lee nuestras [preguntas frecuentes](https://universal-blue.discourse.group/docs?
 
 ![KDE VGUI2 Theme](/repo_content/desktop2.png?raw=true "KDE VGUI2 Theme")
 
-![Steam Game Mode](/repo_content/gamemode.png?raw=true "Steam Game Mode")
+![Steam Gaming Mode](/repo_content/gamemode.png?raw=true "Steam Gaming Mode")
 
 ![Waydroid](/repo_content/waydroid.png?raw=true "Waydroid")
 
 ![Distrobox Terminals](/repo_content/distrobox.png?raw=true "Distrobox Terminals")
 
-![GNOME Vapor Theme](/repo_content/gnome1.png?raw=true "GNOME Vapor Theme")
+![GNOME](/repo_content/gnome1.png?raw=true "GNOME")
 
-![GNOME VGUI2 Theme](/repo_content/gnome2.png?raw=true "GNOME VGUI2 Theme")
+![GNOME](/repo_content/gnome2.png?raw=true "GNOME")
 
 ## Documentación y Boletín informativo/Newsletters (En inglés)
 
@@ -298,7 +289,7 @@ Bazzite es producto de esfuerzo comunitario, y no existiría sin la contribució
 
 - [amelia.svg](https://bsky.app/profile/ameliasvg.bsky.social) - Por crear nuestro logo, y en general, nuestro branding.
 - [SuperRiderTH](https://github.com/SuperRiderTH) - Por crear nuestro lindo video de arranque al iniciar el Game Mode de Steam.
-- [evlaV](https://gitlab.com/evlaV) - Por ser [esta persona](https://xkcd.com/2347/) y liberar el código de Valve públicamente.
+- [evlaV](https://gitlab.com/evlaV) *(Ahora retirado)* - Por ser [esta persona](https://xkcd.com/2347/) y liberar el código de Valve públicamente.
 - [ChimeraOS](https://chimeraos.org/) - Por la creación de gamescope-session y su invaluable apoyo a lo largo del camino.
 - [Jovian-NixOS](https://github.com/Jovian-Experiments) - Por brindarnos su soporte con problemas técnicos y por crear un proyecto similar. ¡En serio!, [chécalo](https://github.com/Jovian-Experiments/Jovian-NixOS), es nuestro primo basado en Nix.
 - [sentry](https://copr.fedorainfracloud.org/coprs/sentry/) - Por su asistencia con unos parches necesarios en el kernel, y por crear el repositorio [kernel-fsync repo](https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/) que usamos actualmente.

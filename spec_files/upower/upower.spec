@@ -1,13 +1,12 @@
+Summary:        Power Management Service
 %global _default_patch_fuzz 2
 
-Summary:        Power Management Service
 Name:           upower
-Version:        1.90.10
+Version:        1.91.2
 Release:        1000.bazzite.{{{ git_dir_version }}}
 License:        GPL-2.0-or-later
 URL:            https://upower.freedesktop.org/
 Source0:        https://gitlab.freedesktop.org/upower/%{name}/-/archive/v%{version}/%{name}-v%{version}.tar.bz2
-
 Patch0:         valve.patch
 
 BuildRequires:  meson
@@ -106,7 +105,8 @@ mv $RPM_BUILD_ROOT%{_libexecdir}/upower $RPM_BUILD_ROOT%{_libexecdir}/installed-
 %ghost %dir %{_localstatedir}/lib/upower
 %dir %{_sysconfdir}/UPower
 %config %{_sysconfdir}/UPower/UPower.conf
-%{_bindir}/*
+%{_sysconfdir}/UPower/UPower.conf.d/README.md
+%{_bindir}/upower
 %{_libexecdir}/upowerd
 %{_mandir}/man1/*
 %{_mandir}/man7/*
@@ -114,6 +114,7 @@ mv $RPM_BUILD_ROOT%{_libexecdir}/upower $RPM_BUILD_ROOT%{_libexecdir}/installed-
 %{_datadir}/dbus-1/system-services/*.service
 %{_unitdir}/*.service
 %{_datadir}/polkit-1/actions/org.freedesktop.upower.policy
+%{_datadir}/polkit-1/rules.d/org.freedesktop.upower.rules
 %{_datadir}/zsh/*
 
 %files libs

@@ -1,7 +1,7 @@
-diff -Naur a/usr/share/plasma/look-and-feel/com.valve.vapor.desktop/contents/splash/Splash.qml b/usr/share/plasma/look-and-feel/com.valve.vapor.desktop/contents/splash/Splash.qml
---- a/usr/share/plasma/look-and-feel/com.valve.vapor.desktop/contents/splash/Splash.qml
-+++ b/usr/share/plasma/look-and-feel/com.valve.vapor.desktop/contents/splash/Splash.qml
-@@ -42,7 +42,7 @@
+diff -Naur a/usr/share/plasma/look-and-feel/com.valve.vapor.deck.desktop/contents/splash/Splash.qml b/usr/share/plasma/look-and-feel/com.valve.vapor.deck.desktop/contents/splash/Splash.qml
+--- a/usr/share/plasma/look-and-feel/com.valve.vapor.deck.desktop/contents/splash/Splash.qml
++++ b/usr/share/plasma/look-and-feel/com.valve.vapor.deck.desktop/contents/splash/Splash.qml
+@@ -41,7 +41,7 @@
  
              anchors.centerIn: parent
  

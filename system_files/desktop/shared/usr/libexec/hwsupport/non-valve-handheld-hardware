@@ -1,0 +1,4 @@
+#!/usr/bin/bash
+# Returns true for any supported non-Valve handheld
+
+/usr/libexec/hwsupport/steamos-manager-hardware || /usr/libexec/hwsupport/powerstation-hardware

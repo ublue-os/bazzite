@@ -18,7 +18,7 @@ BAZZITE_CONFIG_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/bazzite"
 mkdir -p "$BAZZITE_CONFIG_DIR"
 
 # SCRIPT VERSION
-USER_SETUP_VER=48
+USER_SETUP_VER=58
 USER_SETUP_VER_FILE="$BAZZITE_CONFIG_DIR/version"
 USER_SETUP_FEDORA_VER_FILE="$BAZZITE_CONFIG_DIR/fedora_version"
 USER_SETUP_IMAGE_VER_FILE=$BAZZITE_CONFIG_DIR/image_name""
@@ -46,37 +46,17 @@ fi
 # Handle privileged tasks
 pkexec /usr/libexec/bazzite-privileged-user-setup "$USER"
 
-PTYXIS_THEME_DIR="/etc/skel/.local/share/org.gnome.Ptyxis/palettes"
-PTYXIS_DIR="$HOME/.local/share/org.gnome.Ptyxis/palettes"
-mkdir -p "$PTYXIS_DIR"
-if [[ ! -f "$PTYXIS_DIR/vapor.palette" ]]; then
-  cp "$PTYXIS_THEME_DIR/vapor.palette" "$PTYXIS_DIR/vapor.palette"
-fi
-if [[ ! -f "$PTYXIS_DIR/vgui2.palette" ]]; then
-  cp "$PTYXIS_THEME_DIR/vgui2.palette" "$PTYXIS_DIR/vgui2.palette"
-fi
-
-# Initialize Ptyxis config
-# This is intentionally run on both images to ensure a user rebasing from Silverblue to Kinoite
-# doesn't get their Ptyxis config wiped out.
-if [[ ! -f "$BAZZITE_CONFIG_DIR/ptyxis-initialized" ]]; then
-  echo 'Configuring Ptyxis'
-  if [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
-    dconf load / < /usr/share/ublue-os/dconfs/desktop-kinoite/zz0-00-bazzite-desktop-kinoite-global
-    dconf load / < /usr/share/ublue-os/dconfs/desktop-kinoite/00-bazzite-desktop-kinoite-ptyxis
-  fi
-  touch "$BAZZITE_CONFIG_DIR/ptyxis-initialized"
-fi
-
 if [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
   echo 'Running setup for Kinoite'
 
-  if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" ]]; then
+  if [[ $IMAGE_NAME =~ "deck" ]]; then
     echo 'Running setup for Kinoite on Steam Deck'
     if [[ ! -f "$HOME/Desktop/Return.desktop" ]]; then
       echo 'Re-creating return to gamemode shortcut'
       mkdir -p $HOME/Desktop/
       cp "/etc/skel/Desktop/Return.desktop" "$HOME/Desktop/Return.desktop"
+    else
+      sed -i 's|Exec=.*|Exec=/usr/bin/return-to-gamemode|' "$HOME/Desktop/Return.desktop"
     fi
   fi
 
@@ -109,6 +89,19 @@ if [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
   fi
 else
   echo 'Running setup for Silverblue'
+
+  echo "Enabling Bazaar Integration extension"
+  gnome-extensions enable bazaar-integration@kolunmi.github.io
+
+  PTYXIS_THEME_DIR="/etc/skel/.local/share/org.gnome.Ptyxis/palettes"
+  PTYXIS_DIR="$HOME/.local/share/org.gnome.Ptyxis/palettes"
+  mkdir -p "$PTYXIS_DIR"
+  if [[ ! -f "$PTYXIS_DIR/vapor.palette" ]]; then
+    cp "$PTYXIS_THEME_DIR/vapor.palette" "$PTYXIS_DIR/vapor.palette"
+  fi
+  if [[ ! -f "$PTYXIS_DIR/vgui2.palette" ]]; then
+    cp "$PTYXIS_THEME_DIR/vgui2.palette" "$PTYXIS_DIR/vgui2.palette"
+  fi
 
   if [[ ! -f "$BAZZITE_CONFIG_DIR/tiling-fix" ]]; then
     dconf write /org/gnome/mutter/edge-tiling true
@@ -145,6 +138,10 @@ else
         echo 'Applying font fix for Framework 13'
         dconf write /org/gnome/desktop/interface/text-scaling-factor 1.25
       fi
+      if [[ $SYS_ID == "Laptop (12"* ]]; then
+        echo 'Enabling improved touch screen behavior for Framework 12'
+        gnome-extensions enable touchup@mityax
+      fi
       touch "$BAZZITE_CONFIG_DIR/framework-initialized"
     fi
   fi
@@ -168,7 +165,7 @@ else
     ln -s "/usr/share/doc/mangohud/MangoHud.conf.example" "$TEMPLATES_DIR/MangoHud.conf"
   fi
 
-  if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" ]]; then
+  if [[ $IMAGE_NAME =~ "deck" ]]; then
     echo 'Running setup for Silverblue on Steam Deck'
 
     echo 'Tweaking GNOME indexer'
@@ -184,12 +181,86 @@ else
 fi
 
 # Deck Build Setup
-if [[ $IMAGE_NAME =~ "deck" || $IMAGE_NAME =~ "ally" ]]; then
+if [[ $IMAGE_NAME =~ "deck" ]]; then
   # SDGyroDSU Setup
   if /usr/libexec/hwsupport/valve-hardware; then
     systemctl --user enable --now sdgyrodsu.service
+    if [ ! -f "${XDG_DATA_HOME:-$HOME/.local/share}/applications/opengamepadui.desktop" ]; then
+      cp /usr/share/applications/opengamepadui.desktop "${XDG_DATA_HOME:-$HOME/.local/share}/applications/opengamepadui.desktop"
+      sed -i 's@\[Desktop Entry\]@\[Desktop Entry\]\nNoDisplay=true@g' "${XDG_DATA_HOME:-$HOME/.local/share}/applications/opengamepadui.desktop"
+    fi
   else
     systemctl --user disable --now sdgyrodsu.service
+    if [ -f "${XDG_DATA_HOME:-$HOME/.local/share}/applications/opengamepadui.desktop" ]; then
+      rm -rf "${XDG_DATA_HOME:-$HOME/.local/share}/applications/opengamepadui.desktop"
+    fi
+  fi
+
+  if ! /usr/libexec/hwsupport/handheld-hardware; then
+    systemctl --user mask cecd.service
+    systemctl --user mask steamos-manager-configure-cecd.service
+  fi
+
+  # Forcefully set steamos-manager default session. *Should* help
+  # combat steamos-manager not switching to desktop from a gamescope
+  # session.
+  if [[ "${BASE_IMAGE_NAME}" == "kinoite" ]]; then
+    DEFAULT_DESKTOP_SESSION="plasma.desktop"
+  else
+    DEFAULT_DESKTOP_SESSION="gnome.desktop"
+  fi
+  steamosctl set-default-desktop-session "${DEFAULT_DESKTOP_SESSION}"
+  echo "Set default desktop session to: ${DEFAULT_DESKTOP_SESSION}"
+
+  # Enable desktop TDP control extension/applet
+  if /usr/libexec/hwsupport/powerstation-hardware || \
+    /usr/libexec/hwsupport/powerstation-htpc-hardware || \
+    /usr/libexec/hwsupport/steamos-manager-hardware; then
+    if [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then
+      echo "Enabling TDP Control applet on KDE"
+      qdbus org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript '
+        const batteryApplet = "org.kde.plasma.battery";
+        const tdpApplet = "org.opengamingcollective.tdpcontrol";
+
+        for (const panel of panels()) {
+          for (const tray of panel.widgets("org.kde.plasma.systemtray")) {
+            const systrayId = tray.readConfig("SystrayContainmentId");
+            const systray = systrayId ? desktopById(systrayId) : null;
+            if (!systray) {
+              continue;
+            }
+
+            systray.currentConfigGroup = ["General"];
+            const extraItems = systray.readConfig("extraItems", "").split(",").filter(item => item);
+            const updatedItems = [];
+            let tdpAdded = false;
+
+            for (const item of extraItems) {
+              if (item === tdpApplet) {
+                continue;
+              }
+
+              updatedItems.push(item);
+              if (item === batteryApplet) {
+                updatedItems.push(tdpApplet);
+                tdpAdded = true;
+              }
+            }
+
+            if (!tdpAdded) {
+              updatedItems.push(tdpApplet);
+            }
+
+            systray.writeConfig("extraItems", updatedItems);
+            systray.reloadConfig();
+          }
+        }
+      '
+    else
+      echo "Enabling TDP Control & Add-to-Steam extension on GNOME"
+      gnome-extensions enable add-to-steam@pupper.space
+      gnome-extensions enable tdp-control@opengamingcollective.org
+    fi
   fi
 
   # Legion Rotation Fix
@@ -223,6 +294,16 @@ wp_audio_sinks() {
 
 if [[ ":83E1:ROG Ally RC71L:" =~ ":$SYS_ID:" ]]; then
   wpctl set-volume $(wp_audio_sinks | grep "17h/19h" | sed 's@^[^0-9]*\([0-9]\+\).*@\1@') 100% || true
+fi
+
+# fcitx5 flatpak migration
+if [[ ! -f "$BAZZITE_CONFIG_DIR/fcitx5-fix" ]]; then
+  touch "$BAZZITE_CONFIG_DIR/fcitx5-fix"
+  if [[ -d ~/.local/share/fcitx5 ]] && [[ -n "$(ls -A ~/.local/share/fcitx5 2>/dev/null)" ]]; then
+    echo "Configuration files found under ~/.local/share/fcitx5"
+    echo "Copying configuration to ~/.var/app/org.fcitx.Fcitx5/data..."
+    cp -r ~/.local/share/fcitx5 ~/.var/app/org.fcitx.Fcitx5/data
+  fi
 fi
 
 # Prevent future executions

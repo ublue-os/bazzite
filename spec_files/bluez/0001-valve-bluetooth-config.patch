@@ -1,5 +1,5 @@
 diff --git a/src/main.conf b/src/main.conf
-index d108934a8..ff0e98434 100644
+index 5846ef9..663ffb1 100644
 --- a/src/main.conf
 +++ b/src/main.conf
 @@ -60,14 +60,14 @@
@@ -19,7 +19,7 @@ index d108934a8..ff0e98434 100644
  
  # Default privacy setting.
  # Enables use of private address.
-@@ -193,8 +193,8 @@
+@@ -215,8 +215,8 @@
  
  # LE scanning parameters used for passive scanning supporting wake from suspend
  # scenarios
@@ -29,4 +29,4 @@ index d108934a8..ff0e98434 100644
 +ScanWindowSuspend=224
  
  # LE scanning parameters used for active scanning supporting discovery
- # proceedure
+ # procedure

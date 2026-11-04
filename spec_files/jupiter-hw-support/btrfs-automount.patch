@@ -61,11 +61,11 @@ index 67c6ec1..e5ba74b 100755
 +        OPTS="${STEAMOS_BTRFS_SDCARD_FAT_MOUNT_OPTS:-rw,noatime,lazytime,uid=1000,gid=1000,utf8=1}"
 +        FSTYPE="vfat"
 +    elif [[ "${ID_FS_TYPE}" == "exfat" ]]; then
-+        UDISKS2_ALLOW='uid=$UID,gid=$GID,dmask,errors,fmask,iocharset,namecase,umask'
++        UDISKS2_ALLOW='uid=$UID,gid=$GID,dmask,errors,fmask,iocharset,namecase,umask,sys_tz'
 +        OPTS="${STEAMOS_BTRFS_SDCARD_EXFAT_MOUNT_OPTS:-rw,noatime,lazytime,uid=1000,gid=1000}"
 +        FSTYPE="exfat"
 +    elif [[ "${ID_FS_TYPE}" == "ntfs" ]]; then
-+        UDISKS2_ALLOW='uid=$UID,gid=$GID,umask,dmask,fmask,locale,norecover,ignore_case,windows_names,compression,nocompression,big_writes,nls,nohidden,sys_immutable,sparse,showmeta,prealloc'
++        UDISKS2_ALLOW='uid=$UID,gid=$GID,umask,dmask,fmask,locale,norecover,ignore_case,windows_names,compression,nocompression,big_writes,nls,nohidden,sys_immutable,sparse,showmeta,prealloc,sys_tz'
 +        OPTS="${STEAMOS_BTRFS_SDCARD_NTFS_MOUNT_OPTS:-rw,noatime,lazytime,uid=1000,gid=1000,big_writes,umask=0022,ignore_case,windows_names}"
 +        FSTYPE="lowntfs-3g"
 +        if [[ ! -f /etc/filesystems ]] || ! grep -q '\b'"${FSTYPE}"'\b' /etc/filesystems; then

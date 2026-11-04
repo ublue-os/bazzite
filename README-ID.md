@@ -1,5 +1,10 @@
 <p align="center">
-  <img src="/repo_content/Bazzite_Tagline.svg?raw=true" alt="Bazzite"/>
+  <a href="https://bazzite.gg/">
+    <picture>
+      <source srcset="repo_content/Bazzite_Light.svg" media="(prefers-color-scheme: dark)">
+      <img src="repo_content/Bazzite.svg" alt="Bazzite"/>
+    </picture>
+  </a>
 </p>
 
 [![build-bazzite](https://github.com/ublue-os/bazzite/actions/workflows/build.yml/badge.svg)](https://github.com/ublue-os/bazzite/actions/workflows/build.yml)
@@ -42,6 +47,7 @@ Bazzite dibentuk dari [ublue-os/main](https://github.com/ublue-os/main) and [ubl
 - Dukungan penuh untuk kodek H264 yang diakselerasi perangkat keras
 - Dukungan penuh untuk runtime AMD ROCM OpenCL/HIP.
 - [xone](https://github.com/medusalix/xone), [xpadneo](https://github.com/atar-axis/xpadneo), dan [xpad-noone](https://github.com/ublue-os/xpad-noone) driver untuk Kontroller Xbox.
+- Dukungan yang ditingkatkan untuk setir balap dengan beberapa driver tambahan.
 - Dukungan penuh untuk [DisplayLink](https://www.synaptics.com/products/displaylink-graphics).
 - Menyertakan Tema KDE Valve dari SteamOS.
 - [LatencyFleX](https://github.com/ishitatsuyuki/LatencyFleX), [vkBasalt](https://github.com/DadSchoorse/vkBasalt), [MangoHud](https://github.com/flightlessmango/Mangohud), dan [OBS VkCapture](https://github.com/nowrep/obs-vkcapture) terinstall dan tersedia secara bawaan.
@@ -72,7 +78,7 @@ Bazzite dibentuk dari [ublue-os/main](https://github.com/ublue-os/main) and [ubl
 
 Varian umum yang tersedia sebagai `bazzite`, cocok untuk komputer desktop.
 
-- Pembaruan otomatis untuk Sistem Operasi,Flatpak, dan lainnya.
+- Pembaruan otomatis untuk Sistem Operasi,Flatpak, dan lainnya - didukung oleh [uupd](https://github.com/ublue-os/uupd).
 
 > [!IMPORTANT]
 > **ISO bisa diunduh dari halaman rilis kami [disini](https://github.com/ublue-os/bazzite/releases), dan berbagai macam panduan instalasi dapat ditemukan [disini](https://universal-blue.discourse.group/docs?topic=30).**
@@ -99,11 +105,9 @@ Varian `bazzite-deck` ini didesain untuk digunakan sebagai alternatif untuk Stea
 
 - Langsung boot ke Gamemode seperti SteamOS.
 - **`duperemove` secara otomatis yang berguna untuk mengurangi ukuran folder compatdata.**
-- **Versi terbaru dari Mesa yang menghasilkan ukuran shaders cache yang lebih kecil dan tidak diperlukan lagi untuk mencegah stutter.**
-- **Langsung bisa booting walaupun diska penuh.**
 - **Dukungan untuk setiap bahasa yang disupport oleh Fedora.**
 - **Menggunakan Wayland di desktop dengan [dukungan untuk Steam input](https://github.com/Supreeeme/extest).**
-- Fitur yang diporting dari SteamOS meliputi driver, pembaruan perangkat tegar, dan pengatur kecepatan kipas [dari repositori evlaV ](https://gitlab.com/evlaV).
+- Fitur yang diporting dari SteamOS meliputi driver, pembaruan perangkat tegar, dan pengatur kecepatan kipas.
 - Mesa yang dipatch untuk mengatur framerate di Gamescope.
 - Hadir dengan patch dari [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) untuk dukungan BTRFS di SD Card secara bawaan.
 - [SDGyroDSU](https://github.com/kmicki/SteamDeckGyroDSU) tersedia dan diaktifkan secara bawaan.
@@ -113,15 +117,10 @@ Varian `bazzite-deck` ini didesain untuk digunakan sebagai alternatif untuk Stea
 - Pembaruan merusak sesuatu? tinggal rollback ke versi sebelumnya berkat fitur rollback `rpm-ostree`. Anda bisa memilih versi image sebelumnya di boot menu.
 - Pra-install Steam dan Lutris sebagai paket sistem.
 - Pra-install [Discover Overlay](https://github.com/trigg/Discover) untuk Discord dan otomatis diluncurkan di Gamemode,dan di desktop jika Discord terinstall, [Lihat dokumentasinya disini](https://trigg.github.io/Discover/bazzite).
-- Menggunakan ZRAM<sub><sup>(4GB)</sup></sub> dengan kompresi LZ4 secara bawaan.
+- Dukungan bawaan untuk penjadwal [sched-ext](https://github.com/sched-ext/scx).
 - Penjadwal I/O untuk mencegah I/O starvation ketika memasang game atau ketika proses latar belakang `duperemove` dan `rmlint` bekerja.
 - Mengaplikasikan parameter kernel dari SteamOS.
 - Kalibrasi Warna Layar untuk layar matte dan reflektif Steam Deck.
-- Fitur-fitur pengguna advance yang tidak diaktifkan secara bawaan seperti:
-    - Service untuk undervolting Steam Deck yang beresiko rendah dengan [RyzenAdj](https://github.com/FlyGoat/RyzenAdj) dan [Ryzen SMU](https://gitlab.com/leogx9r/ryzen_smu), anda bisa mengecek `ryzenadj.service` dan `/etc/default/ryzenadj`.
-    - Dukungan bawaan untuk overclocking layar. Contohnya seperti ini, anda menambahkan `GAMESCOPE_OVERRIDE_REFRESH_RATE=40,70` di `/etc/environment`.
-    - Anda bisa menggunakan X11 jika diperlukan dengan mengedit `/etc/default/desktop-wayland`.
-    - Lu punya RAM 32 GB? anda bisa memakai 2x lipat VRAM yang diaplikasikan secara otomatis!. <sup><sub>(Coba bagikan skill ngesolder lu dong)</sub></sup>
 - Service yang spesifik ke Steam Deck dapat dimatikan dengan menjalankan `ujust disable-deck-services` di terminal, berguna untuk menjalankan image ini di konsol Handheld lain dan HTPC.
 - Informasi tambahan dapat ditemukan [disini](https://universal-blue.discourse.group/docs?topic=37) dibagian Bazzite Steam Deck Images.
 
@@ -208,11 +207,11 @@ Baca [FAQ](https://universal-blue.discourse.group/docs?topic=33) untuk tahu apa 
 
 ![KDE Vapor Theme](/repo_content/desktop1.png?raw=true "KDE Vapor Theme")
 ![KDE VGUI2 Theme](/repo_content/desktop2.png?raw=true "KDE VGUI2 Theme")
-![Steam Game Mode](/repo_content/gamemode.png?raw=true "Steam Game Mode")
+![Steam Gaming Mode](/repo_content/gamemode.png?raw=true "Steam Gaming Mode")
 ![Waydroid](/repo_content/waydroid.png?raw=true "Waydroid")
 ![Distrobox Terminals](/repo_content/distrobox.png?raw=true "Distrobox Terminals")
-![GNOME Vapor Theme](/repo_content/gnome1.png?raw=true "GNOME Vapor Theme")
-![GNOME VGUI2 Theme](/repo_content/gnome2.png?raw=true "GNOME VGUI2 Theme")
+![GNOME](/repo_content/gnome1.png?raw=true "GNOME")
+![GNOME](/repo_content/gnome2.png?raw=true "GNOME")
 
 ## Dokumentasi & Buletin
 
@@ -251,7 +250,7 @@ sudo mokutil --import secure_boot.der
 Bazzite merupakan upaya dari komunitas dan tidak akan pernah ada tanpa dukungan dari semua orang. berikut ini merupakan orang-orang yang telah membantu kami:
 
 - [amelia.svg](https://bsky.app/profile/ameliasvg.bsky.social) - Yang membuat logo dan branding.
-- [evlaV](https://gitlab.com/evlaV) - Untuk membuat kode dari Valve tersedia dan menjadi [orang ini](https://xkcd.com/2347/).
+- [evlaV](https://gitlab.com/evlaV) *(Kini pensiun)* - Untuk membuat kode dari Valve tersedia dan menjadi [orang ini](https://xkcd.com/2347/).
 - [ChimeraOS](https://chimeraos.org/) - Untuk gamescope-sesion dan mendukung kami diperjalanan ini.
 - [Jovian-NixOS](https://github.com/Jovian-Experiments) - Untuk mendukung kami dengan menyelesaikan masalah teknis kami dan membuat project yang mirip. Serius bro coba cek proyek mereka. Mereka pakai Nix!.
 - [sentry](https://copr.fedorainfracloud.org/coprs/sentry/) - Untuk membantu dengan patch kernel dan membuat repo [kernel-fsync repo](https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/) yang kami gunakan.

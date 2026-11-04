@@ -1,0 +1,46 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/ShadowBlip/InputPlumber/main/rootfs/usr/share/inputplumber/schema/capability_map_v2.json
+# Schema version number
+version: 2
+
+# The type of configuration schema
+kind: CapabilityMap
+
+# Name for the device event map
+name: "Acer Atlas 8 Extra Buttons"
+
+# Unique identifier of the capability mapping
+id: acer_atlas8_hid_type2
+
+# Idle HID Report
+# Data: 9a 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+# BUF[1] = 0x02 = M1 Pressed
+# BUF[1] = 0x04 = M2 Pressed
+# BUF[1] = 0x06 = M1+M2 Pressed
+
+# This implementation is incomplete as the driver seems to currently be incapable
+# of sending a button event depending on which bit is inside the selected byte section
+# Guide button will also be included here once we have a kernel quirk in place for the button release signal that is missing
+mapping:
+  - name: M1
+    source_events:
+      - hidraw:
+          value_type: uint8
+          byte_start: 1
+          min_value: 255
+          max_value: 255
+    target_event:
+      gamepad:
+        button: RightPaddle1
+  - name: M2
+    source_events:
+      - hidraw:
+          value_type: uint8
+          byte_start: 1
+          min_value: 77
+          max_value: 77
+    target_event:
+      gamepad:
+        button: LeftPaddle1
+
+# List of events to filter from the source devices
+filtered_events: []

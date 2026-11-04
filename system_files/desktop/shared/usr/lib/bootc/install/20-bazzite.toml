@@ -1,0 +1,5 @@
+[install]
+root-fs-type = "btrfs"
+
+# do not remove this, this is used during the installation for signed images
+enforce-container-sigpolicy = true

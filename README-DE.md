@@ -1,5 +1,10 @@
 <p align="center">
-  <a href="https://bazzite.gg/"><img src="/repo_content/Bazzite_Tagline.svg?raw=true" alt="Bazzite"/></a>
+  <a href="https://bazzite.gg/">
+    <picture>
+      <source srcset="repo_content/Bazzite_Light.svg" media="(prefers-color-scheme: dark)">
+      <img src="repo_content/Bazzite.svg" alt="Bazzite"/>
+    </picture>
+  </a>
 </p>
 
 [![build-bazzite](https://github.com/ublue-os/bazzite/actions/workflows/build.yml/badge.svg)](https://github.com/ublue-os/bazzite/actions/workflows/build.yml) [![build-bazzite-isos](https://github.com/ublue-os/bazzite/actions/workflows/build_iso.yml/badge.svg)](https://github.com/ublue-os/bazzite/actions/workflows/build_iso.yml)
@@ -33,6 +38,7 @@
   - [Star-Verlauf](#star-verlauf)
   - [Besonderer Dank](#besonderer-dank)
   - [Eigene Version erstellen](#eigene-version-erstellen)
+    - [Wie du deine Images signieren kannst](#wie-du-deine-images-signieren-kannst)
   - [Trete der Community bei](#trete-der-community-bei)
 
 ---
@@ -43,42 +49,33 @@ Für eine einsteigerfreundliche Erklärung von Bazzite [besuche bitte unsere Web
 
 [Bazzite](https://bazzite.gg/) ist ein angepasstes [Fedora Atomic](https://fedoraproject.org/atomic-desktops/)-Image, das mit [Cloud Native](https://universal-blue.org/#cloud-native)-Technologie erstellt wurde und das Beste des Linux-Gamings auf **alle deine Geräte bringt – einschließlich deines bevorzugten Handhelds**.
 
-Bazzite basiert auf [ublue-os/main](https://github.com/ublue-os/main) und [ublue-os/nvidia](https://github.com/ublue-os/nvidia) unter Verwendung der [Fedora](https://fedoraproject.org/)-Technologie. Dies bedeutet erweiterte Hardware-Unterstützung und integrierte Treiber. Zusätzlich bietet Bazzite die folgenden Funktionen:
+Bazzite basiert auf [ublue-os/main](https://github.com/ublue-os/main) unter Verwendung der [Fedora](https://fedoraproject.org/)-Technologie. Dies bedeutet erweiterte Hardware-Unterstützung und integrierte Treiber. Zusätzlich bietet Bazzite die folgenden Funktionen:
 
-- Verwendet den [Bazzite-Kernel](https://github.com/bazzite-org/kernel-bazzite), um HDR und erweiterte Hardware-Unterstützung zu ermöglichen, neben zahlreichen anderen enthaltenen Patches – basierend auf dem [fsync-Kernel](https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/).
-- HDR im Spielmodus verfügbar.
-- NVK auf Nicht-Nvidia-Builds verfügbar.
+- Verwendet den [OGC-Kernel](https://www.github.com/OpenGamingCollective/linux).
+- HDR und VRR standardmäßig verfügbar.
 - Volle Hardware-beschleunigte Codec-Unterstützung für H264-Dekodierung.
-- Volle Unterstützung für AMDs ROCM OpenCL/HIP Run-times.
 - [xone](https://github.com/medusalix/xone)-Treiber für Xbox-Controller.
+- Verbesserte Unterstützung für Lenkräder mit mehreren zusätzlichen Treibern.
 - Volle Unterstützung für [DisplayLink](https://www.synaptics.com/products/displaylink-graphics).
 - Enthält Valves KDE-Designs von SteamOS.
-- [LatencyFleX](https://github.com/ishitatsuyuki/LatencyFleX), [vkBasalt](https://github.com/DadSchoorse/vkBasalt), [MangoHud](https://github.com/flightlessmango/Mangohud) und [OBS VkCapture](https://github.com/nowrep/obs-vkcapture) standardmäßig installiert und verfügbar.
-- [Patched Switcheroo-Control](https://copr.fedorainfracloud.org/coprs/sentry/switcheroo-control_discrete/) das die standardmäßig defekte iGPU/dGPU-Umschaltung behebt.
+- [vkBasalt](https://github.com/DadSchoorse/vkBasalt), [MangoHud](https://github.com/flightlessmango/Mangohud) und [OBS VkCapture](https://github.com/nowrep/obs-vkcapture) standardmäßig installiert und verfügbar.
 - [ROM Properties Page shell extension](https://github.com/GerbilSoft/rom-properties) enthalten.
-- Volle Unterstützung für [Winesync/Fastsync/NTsync](https://github.com/Frogging-Family/wine-tkg-git/issues/936).
 - [Distrobox](https://github.com/89luca89/distrobox) vorinstalliert.
-- Vereinfachte Davinci Resolve-Installation mit [davincibox](https://github.com/zelikos/davincibox) (`ujust install-resolve`)
-- [Ptyxis Terminal](https://gitlab.gnome.org/chergert/ptyxis) wird standardmäßig in allen Images verwendet. Dieses Terminal wurde speziell für den Container-Workflow entwickelt, den du in Bazzite nutzen wirst. KDE Konsole und GNOME Console können bei Bedarf als Flatpaks installiert werden.
-- Automatischer `duperemove`-Dienst zur Reduzierung des von Wine-Prefix-Inhalten belegten Speicherplatzes.
-- Unterstützung für HDMI CEC über [libCEC](https://libcec.pulse-eight.com/).
-- Verwendet standardmäßig [Google's BBR TCP congestion control](https://github.com/google/bbr).
+- Automatischer `bees`-Dienst zur Reduzierung des von Wine-Prefix-Inhalten belegten Speicherplatzes.
+- Unterstützung für HDMI CEC.
 - [Input Remapper](https://github.com/sezanzeb/input-remapper) vorinstalliert und aktiviert. <sub><sup>(Verfügbar, aber standardmäßig deaktiviert auf der Deck-Variante, kann mit `ujust restore-input-remapper` aktiviert werden)</sup></sub>
+- [Bazzite Portal](https://github.com/ublue-os/yafti-gtk) bietet einen einfachen Weg an, um viele Anwendungen (und Anpassungen, inklusive [LACT](https://github.com/ilya-zlobintsev/LACT)) und IDEs über Brew zu installieren. Außerdem bietet es einfache Knöpfe für Aktualisierungen, Rebases und sogar Zurücksetzen des System-Images zum Standard.
 - [Waydroid](https://waydro.id/) vorinstalliert für die Ausführung von Android-Apps. Richte es mit dieser [Kurzanleitung (Englisch)](https://docs.bazzite.gg/Installing_and_Managing_Software/Waydroid_Setup_Guide/) ein.
 - Verwalte Anwendungen mit [Flatseal](https://github.com/tchx84/Flatseal), [Warehouse](https://github.com/flattool/warehouse) und [Gear Lever](https://github.com/mijorus/gearlever).
-- [OpenRGB](https://gitlab.com/CalcProgrammer1/OpenRGB) i2c-piix4- und i2c-nct6775-Treiber zur Steuerung von RGB auf bestimmten Motherboards.
-- [OpenRazer](https://openrazer.github.io)-Treiber integriert. Führe `ujust install-openrazer` in einem Terminal aus, um es zu verwenden.
-- [OpenTabletDriver](https://opentabletdriver.net/) udev rules integriert, mit der vollständigen Softwaresuite, die durch Ausführen von `ujust install-opentabletdriver` in einem Terminal installiert werden kann.
-- Out-of-the-Box-Unterstützung für [Wooting](https://wooting.io/)-Tastaturen.
-- Integrierte Unterstützung für Southern Islands <sub><sup>(HD 7000)</sup></sub> und Sea Islands <sub><sup>(HD 8000)</sup></sub> AMD GPUs unter dem `amdgpu`-Treiber.
-- [XwaylandVideoBridge](https://invent.kde.org/system/xwaylandvideobridge) ist für Discord-Screensharing unter Wayland verfügbar.
+- [OpenRazer](https://openrazer.github.io)-Treiber integriert. Wähle OpenRazer im Bazzite Portal oder führe `ujust install-openrazer` in einem Terminal aus, um es zu verwenden.
+- [OpenTabletDriver](https://opentabletdriver.net/) udev rules integriert, mit der vollständigen Softwaresuite, die im Bazzte Portal oder durch Ausführen von `ujust install-opentabletdriver` in einem Terminal installiert werden kann.
 - [Webapp Manager](https://github.com/linuxmint/webapp-manager) ist verfügbar, um Anwendungen aus Websites für eine Vielzahl von Browsern, einschließlich Firefox, zu erstellen.
 
 ### Desktop
 
 Standardvariante, verfügbar als `bazzite`, geeignet für Desktop-Computer.
 
-- Automatische Updates für das OS, Flatpaks und mehr – angetrieben von [ublue-update](https://github.com/ublue-os/ublue-update) und [topgrade](https://github.com/topgrade-rs/topgrade).
+- Automatische Updates für das OS, Flatpaks und mehr – angetrieben von [uupd](https://github.com/ublue-os/uupd).
 
 > [!IMPORTANT]
 > **ISOs können von unserer [Website](https://download.bazzite.gg) heruntergeladen werden, und eine hilfreiche Installationsanleitung findest du [hier](https://docs.bazzite.gg/General/Installation_Guide/) (Englisch).**
@@ -103,31 +100,22 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-nvidia:sta
 Diese Variante wurde für die Nutzung als Alternative zu SteamOS auf dem Steam Deck und für ein Konsolen-ähnliches Erlebnis auf HTPCs entwickelt, verfügbar als `bazzite-deck`:
 
 - Bootet direkt in den Spielmodus, passend zum Verhalten von SteamOS.
-- **Automatisches `duperemove` reduziert die Größe von Compatdata erheblich.**
-- **Die neueste Version von Mesa erzeugt kleinere Shader-Caches und benötigt diese nicht, um Ruckler zu verhindern.**
-- **Kann auch bei vollem Laufwerk gestartet werden.**
+- **Automatisches `bees` reduziert die Größe von Compatdata erheblich.**
 - **Unterstützung für jede von Upstream Fedora unterstützte Sprache.**
 - **Nutzt Wayland auf dem Desktop mit [Unterstützung für Steam Input](https://github.com/Supreeeme/extest).**
-- Enthält [HHD](https://github.com/hhd-dev/hhd) für erweiterte Eingabeunterstützung auf Nicht-Valve-Handhelds.
-- Bietet portierte Versionen der meisten SteamOS-Pakete, einschließlich Treiber, Firmware-Updater und Lüftersteuerungen [aus dem evlaV-repository](https://gitlab.com/evlaV).
+- Bietet portierte Versionen der meisten SteamOS-Pakete, einschließlich Treiber, Firmware-Updater und Lüftersteuerungen.
 - Gepatchtes Mesa für präzise Framerate-Kontrolle von Gamescope.
 - Kommt standardmäßig mit Patches von [SteamOS BTRFS](https://gitlab.com/popsulfr/steamos-btrfs) für volle BTRFS-Unterstützung der SD-Karte.
 - Liefert eine portierte Kopie von [SDGyroDSU](https://github.com/kmicki/SteamDeckGyroDSU) mit, die standardmäßig aktiviert ist.
 - Option zur Installation von [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader), [EmuDeck](https://www.emudeck.com/), [RetroDECK](https://retrodeck.net/) und [ProtonUp-Qt](https://davidotek.github.io/protonup-qt/), neben zahlreichen anderen nützlichen Paketen während der Installation.
-- Ein benutzerdefiniertes Update-System ermöglicht es, das OS, Flatpaks und mehr direkt über die Game-Mode-UI zu aktualisieren, angetrieben von [ublue-update](https://github.com/ublue-os/ublue-update) und [topgrade](https://github.com/topgrade-rs/topgrade).
+- Ein benutzerdefiniertes Update-System ermöglicht es, das OS, Flatpaks und mehr direkt über die Game-Mode-UI zu aktualisieren, angetrieben von [uupd](https://github.com/ublue-os/uupd).
 - Integrierte Unterstützung für Windows-Dual-Boot dank der intakten Fedora-Installation von GRUB.
 - Update hat etwas kaputt gemacht? Rolle dank der Rollback-Funktion von `rpm-ostree` einfach zur vorherigen Bazzite-Version zurück. Du kannst sogar frühere Images beim Booten auswählen.
 - Steam und Lutris sind als Layered Packages auf dem Image vorinstalliert.
-- [Discover Overlay](https://github.com/trigg/Discover) für Discord ist vorinstalliert und startet automatisch sowohl im Spielmodus als auch auf dem Desktop, wenn Discord installiert ist. [Die offizielle Dokumentation findest du hier](https://trigg.github.io/Discover/bazzite).
-- Verwendet standardmäßig ZRAM<sub><sup>(4GB)</sup></sub> mit dem LZ4-Komprimierungsalgorithmus.
-- [LAVD](https://crates.io/crates/scx_lavd) und [BORE](https://github.com/firelzrd/bore-scheduler) CPU-Scheduler für flüssiges und reaktionsschnelles Gameplay.
+- Unterstützung für [sched-ext](https://github.com/sched-ext/scx)-Scheduler ab Werk.
 - Kyber I/O-Scheduler, um I/O-Engpässe bei der Installation von Spielen oder während des `duperemove`-Hintergrundprozesses zu verhindern.
 - Wendest SteamOS' Kernel-Parameter an.
 - Farbkalibrierte Anzeigeprofile für matte und spiegelnde Steam Deck-Bildschirme enthalten.
-- Standardmäßig deaktivierte Power-User-Funktionen, einschließlich:
-  - Dienst für risikoarmes Undervolting des Steam Deck sowie von AMD Framework Laptops über [RyzenAdj](https://github.com/FlyGoat/RyzenAdj) und [Ryzen SMU](https://gitlab.com/leogx9r/ryzen_smu), siehe `ryzenadj.service` und `/etc/default/ryzenadj`.
-  - Integrierte Unterstützung für Display-Übertaktung. Füge zum Beispiel `CUSTOM_REFRESH_RATES=30-68` zu `/etc/environment` hinzu. Minimale und maximale Bildwiederholraten unterscheiden sich je nach Handheld!
-  - 32GB RAM-Mod für dein Steam Deck? Genieße die doppelte maximale VRAM-Menge, automatisch angewendet. <sup><sub>(Kannst du uns deine Lötkenntnisse mitteilen?)</sub></sup>
 - Steam Deck-Hardware-spezifische Dienste können durch Ausführen von `ujust disable-bios-updates` und `ujust disable-firmware-updates` im Terminal deaktiviert werden. Diese werden auf Nicht-Deck-Hardware und auf Decks mit DeckHD-Displays oder 32GB RAM-Mods automatisch deaktiviert.
 - Weitere Informationen zu den Bazzite Steam Deck Images findest du [hier](https://docs.bazzite.gg/Handheld_and_HTPC_edition/Steam_Gaming_Mode/).
 
@@ -143,15 +131,6 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/bazzite-deck:stabl
 #### Alternative Handhelds
 
 Bitte beziehe dich auf unser [Handheld-Wiki](https://docs.bazzite.gg/Handheld_and_HTPC_edition/Handheld_Wiki/) für notwendige Einstellungen und Decky Loader-Plugins für den Steam Gaming Mode auf deinem spezifischen Handheld.
-
-**Stelle sicher, dass du auch die [hhd-Dokumentation](https://github.com/hhd-dev/hhd#after-install) liest; einige Handhelds erfordern spezifische Einstellungänderungen/Anpassungen, um ordnungsgemäß zu funktionieren.**
-
-Wir liefern auch `ujust`-Befehle mit, um verschiedene [CSS Loader](https://docs.deckthemes.com/CSSLoader/Install/#linux-or-steam-deck)-Themes zu installieren, die im CSS Loader Store nicht gefunden werden können. Diese werden automatisch mit Bazzite aktualisiert, falls installiert.
-
-```bash
-# Install Handheld Controller Theme (https://github.com/victor-borges/handheld-controller-glyphs)
-ujust install-hhd-controller-glyph-theme
-```
 
 ### GNOME
 
@@ -220,11 +199,11 @@ Lese die [FAQ](https://docs.bazzite.gg/General/FAQ/) für Details dazu, was Bazz
 
 ![KDE Vapor Theme](/repo_content/desktop1.png?raw=true "KDE Vapor Theme")
 ![KDE VGUI2 Theme](/repo_content/desktop2.png?raw=true "KDE VGUI2 Theme")
-![Steam Game Mode](/repo_content/gamemode.png?raw=true "Steam Game Mode")
+![Steam Gaming Mode](/repo_content/gamemode.png?raw=true "Steam Gaming Mode")
 ![Waydroid](/repo_content/waydroid.png?raw=true "Waydroid")
 ![Distrobox Terminals](/repo_content/distrobox.png?raw=true "Distrobox Terminals")
-![GNOME Vapor Theme](/repo_content/gnome1.png?raw=true "GNOME Vapor Theme")
-![GNOME VGUI2 Theme](/repo_content/gnome2.png?raw=true "GNOME VGUI2 Theme")
+![GNOME](/repo_content/gnome1.png?raw=true "GNOME")
+![GNOME](/repo_content/gnome2.png?raw=true "GNOME")
 
 ## Dokumentation
 
@@ -279,29 +258,29 @@ Bazzite ist eine Gemeinschaftsleistung und würde ohne die Unterstützung aller 
 
 - [amelia.svg](https://bsky.app/profile/ameliasvg.bsky.social) – Für die Erstellung unseres Logos und des gesamten Brandings.
 - [SuperRiderTH](https://github.com/SuperRiderTH) – Für die Erstellung unseres Startvideos für den Steam Game Mode.
-- [evlaV](https://gitlab.com/evlaV) – Dafür, dass Valve's Code verfügbar gemacht wurde und dafür, dass er [diese Person](https://xkcd.com/2347/) ist.
+- [evlaV](https://gitlab.com/evlaV) *(Inzwischen im Ruhestand)* – Dafür, dass Valve's Code verfügbar gemacht wurde und dafür, dass er [diese Person](https://xkcd.com/2347/) ist.
 - [ChimeraOS](https://chimeraos.org/) – Für gamescope-session und für wertvolle Unterstützung auf unserem Weg.
 - [Jovian-NixOS](https://github.com/Jovian-Experiments) – Für die Unterstützung bei technischen Problemen und die Erstellung eines ähnlichen Projekts. Im Ernst, schau es dir an. Es ist unser Nix-basierter Cousin.
-- [sentry](https://copr.fedorainfracloud.org/coprs/sentry/) – Für die Unterstützung bei benötigten Kernel-Patches und die Erstellung des [kernel-fsync-Repos](https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/), das wir jetzt verwenden.
+- [sentry](https://copr.fedorainfracloud.org/coprs/sentry/) – Für die Unterstützung bei benötigten Kernel-Patches und die Erstellung des [kernel-fsync-Repos](https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/).
 - [nicknamenamenick](https://github.com/nicknamenamenick) – Dafür, dass er der MVP war, der fast im Alleingang unsere Dokumentation und Support-Literatur gepflegt und unzählige Male Benutzern geholfen hat.
 - [Steam Deck Homebrew](https://deckbrew.xyz) – Dafür, dass andere Distributionen als SteamOS trotz des Mehraufwands unterstützt werden, und ein besonderer Dank an [PartyWumpus](https://github.com/PartyWumpus) dafür, dass er Decky Loader für uns mit SELinux zum Laufen gebracht hat.
 - [cyrv6737](https://github.com/cyrv6737) – Für die anfängliche Inspiration und die Basis, die zu Bazzite-Arch wurde.
 
 ## Eigene Version erstellen
 
-Bazzite wird vollständig auf GitHub entwickelt, und das Erstellen einer eigenen, angepassten Version ist so einfach wie das Forken dieses Repositories, das Hinzufügen eines privaten Signierungsschlüssels und das Aktivieren von GitHub Actions.
+Bazzite wird vollständig auf GitHub entwickelt, und das Erstellen einer eigenen, angepassten Version ist so einfach wie das Forken dieses Repositories, das Hinzufügen eines privaten Signierungsschlüssels und das Aktivieren von GitHub Actions. Eine Ausführung des `Build Bazzite`-Workflows wird dann personalisierte System-Images für alle Bazzite-Varianten erstellen.
 
-[Mach dich vertraut](https://docs.github.com/en/actions/security-guides/encrypted-secrets) damit, wie du Geheimnisse auf GitHub sicher aufbewahrst. Du musst mit Cosign [ein neues Schlüsselpaar generieren](https://docs.sigstore.dev/cosign/signing/overview/). Der öffentliche Schlüssel kann in deinem öffentlichen Repo liegen <sub><sup>(Deine Benutzer benötigen ihn zur Überprüfung der Signaturen)</sup></sub>, und du kannst den privaten Schlüssel in `Settings -> Secrets -> Actions` mit dem Namen `SIGNING_SECRET` einfügen.
+Wenn du nur die Images der von dir benutzten Bazzite-Varianten erstellen willst, bearbeite `.github/workflows/build.yml` und kommentiere die Varianten aus, die du nicht erstellen willst, in `push-ghcr`-Job's `strategy`'s `matrix`-Liste.
 
 Wir liefern auch eine Konfiguration für die beliebte [Pull-App](https://github.com/apps/pull) mit, falls du deinen Fork mit dem Upstream synchron halten möchtest. Aktiviere diese App in deinem Repo, um Bazzite-Änderungen nachzuverfolgen und gleichzeitig deine eigenen Modifikationen vorzunehmen.
 
+### Wie du deine Images signieren kannst
+
+1. Zuerst, [mach dich vertraut](https://docs.github.com/en/actions/security-guides/encrypted-secrets) damit, wie du Geheimnisse auf GitHub sicher aufbewahrst.
+2. [Generiere ein neues Schlüsselpaar](https://docs.sigstore.dev/cosign/signing/overview/) mit Cosign (`cosign generate-key-pair`). Dieses Schlüsselpaar darf keine Signatur haben.
+3. Ersetze die `cosign.pub`-Datei in deinem öffentlichen Repo mit der von dir generierten - du und deine Benutzer benötigen ihn zur Überprüfung der Signaturen
+4. Füge den privaten Schlüssel (gespeichert als Text in der `cosign.pub`-Datei) als Repository Secret in der Einstellungsseite des Forks hinzu, im Menü `Settings -> Secrets -> Actions`. Benenne das Geheimnis `SIGNING_SECRET`.
+
 ## Trete der Community bei
 
-- Du findest uns auf dem [Universal Blue Discord](https://discord.gg/f8MUghG5PB)
-  - Sieh dir das [archive](https://www.answeroverflow.com/c/1072614816579063828/1143023993041993769) der Support-Threads ohne Konto an.
-
-- Diskutiere und erstelle Benutzeranleitungen in den [Universal Blue Discourse Forums](https://universal-blue.discourse.group/c/bazzite/5).
-
-- Folge Universal Blue auf [Mastodon](https://fosstodon.org/@UniversalBlue).
-
-[**Sieh dir die vollständige Liste der Bazzite-Ressourcen und der sozialen Präsenz an**](https://docs.bazzite.gg/Resources/).
+Du findest uns auf dem [Bazzite-Discord](https://discord.gg/f8MUghG5PB). Sieh dir das [Archiv](https://www.answeroverflow.com/c/1072614816579063828/1143023993041993769) der Support-Threads ohne Konto an.

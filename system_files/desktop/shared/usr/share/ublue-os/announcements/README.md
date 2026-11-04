@@ -17,6 +17,28 @@ These are JSON files with the following fields:
 - `if`: Shell line that can be used to conditionally skip the announcement.
   - To skip an announcement, the shell line should resolve to an exit code 1.
   - If should not be skipped, ommit the field or have it resolve to an exit code 0.
+- `seeMoreLabel`: Optional label for the URL button (defaults to "See more").
+- `dontShowAgainLabel`: Optional dismissal button label (defaults to "Dont show me this again").
+- `translations`: Optional object keyed by locale, containing translated `title`, `body`,
+  `seeMoreLabel`, and `dontShowAgainLabel` fields.
+
+An example:
+
+```json
+{
+  "title": "Announcement",
+  "body": "Read more about this change.",
+  "seeMoreUrl": "https://bazzite.gg",
+  "translations": {
+    "ja": {
+      "title": "お知らせ",
+      "body": "この変更の詳細をご確認ください。",
+      "seeMoreLabel": "詳細を見る",
+      "dontShowAgainLabel": "今後このメッセージを表示しない"
+    }
+  }
+}
+```
 
 One can use the `if` field to trigger an announcement using a image version, in order to setup an announcement beforehand.
 An example:

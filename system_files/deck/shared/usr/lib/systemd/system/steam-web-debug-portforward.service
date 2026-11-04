@@ -1,0 +1,7 @@
+[Unit]
+Description="Portforward CEF remote debug port"
+
+[Service]
+ExecStart=/lib/systemd/systemd-socket-proxyd --exit-idle-time=5m 127.0.0.1:8080
+User=cef-port-fwd
+DynamicUser=yes

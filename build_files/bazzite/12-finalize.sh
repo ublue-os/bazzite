@@ -1,0 +1,224 @@
+#!/usr/bin/env bash
+#
+# Final cleanup, service configuration, and image finalization for Bazzite.
+#
+set -xeuo pipefail
+
+echo "::group::Finalize bazzite image"
+trap 'echo "::endgroup::"' EXIT
+
+# -- Basic cleanup and setup --
+echo "==> Performing basic cleanup..."
+rm -f /etc/profile.d/toolbox.sh
+mkdir -p /var/tmp
+chmod 1777 /var/tmp
+
+# -- Copy libdrm symlinks --
+# Preserve libdrm symlinks for compatibility.
+echo "==> Configuring libdrm symlinks..."
+cp --no-dereference --preserve=links /usr/lib/libdrm.so.2 /usr/lib/libdrm.so
+cp --no-dereference --preserve=links /usr/lib64/libdrm.so.2 /usr/lib64/libdrm.so
+
+# -- Patch steam desktop entry --
+# Redirect steam.desktop to use bazzite-steam wrapper.
+echo "==> Patching steam desktop entry..."
+sed -i \
+    's@/usr/bin/steam@/usr/bin/bazzite-steam@g' \
+    /usr/share/applications/steam.desktop
+
+sed -i \
+    's@Exec=steam steam://open/bigpicture@Exec=/usr/bin/bazzite-steam-bpm@g' \
+    /usr/share/applications/steam.desktop
+
+# -- Configure steam autostart for all users --
+# Copy steam.desktop to skel autostart with silent flag.
+echo "==> Configuring steam autostart..."
+mkdir -p /etc/skel/.config/autostart/
+cp "/usr/share/applications/steam.desktop" \
+    "/etc/skel/.config/autostart/steam.desktop"
+sed -i \
+    's@/usr/bin/bazzite-steam %U@/usr/bin/bazzite-steam -silent %U@g' \
+    /etc/skel/.config/autostart/steam.desktop
+
+# -- Hide unnecessary desktop entries --
+echo "==> Hiding unnecessary desktop entries..."
+desktop-file-edit --set-key=Hidden --set-value=true \
+    /usr/share/applications/nvtop.desktop
+desktop-file-edit --set-key=Hidden --set-value=true \
+    /usr/share/applications/btop.desktop
+desktop-file-edit --set-key=Hidden --set-value=true \
+    /usr/share/applications/yad-icon-browser.desktop
+rm /usr/share/applications/com.microsoft.edit.desktop
+
+# -- Configure Bluetooth input --
+echo "==> Configuring Bluetooth input..."
+sed -i \
+    's/#UserspaceHID.*/UserspaceHID=true/' \
+    /etc/bluetooth/input.conf
+
+# -- Patch grub2-mkconfig --
+# Fix grub_probe path for chroot compatibility.
+echo "==> Patching grub2-mkconfig..."
+# Match literal backticks in the GRUB script.
+# shellcheck disable=SC2016
+sed -i \
+    's|grub_probe\} --target=device /`|grub_probe} --target=device /sysroot`|g' \
+    /usr/bin/grub2-mkconfig
+
+# -- Remove keep-warm service override --
+echo "==> Removing keep-warm service override..."
+rm -f /usr/lib/systemd/system/service.d/50-keep-warm.conf
+
+# -- Add justfile imports --
+echo "==> Adding justfile imports..."
+cat >> /usr/share/ublue-os/justfile <<'EOF'
+import "/usr/share/ublue-os/just/80-bazzite.just"
+import "/usr/share/ublue-os/just/81-bazzite-fixes.just"
+import "/usr/share/ublue-os/just/82-bazzite-apps.just"
+import "/usr/share/ublue-os/just/82-bazzite-cockpit.just"
+import "/usr/share/ublue-os/just/82-bazzite-beesd.just"
+import "/usr/share/ublue-os/just/82-bazzite-sunshine.just"
+import "/usr/share/ublue-os/just/82-bazzite-waydroid.just"
+import "/usr/share/ublue-os/just/83-bazzite-audio.just"
+import "/usr/share/ublue-os/just/85-bazzite-image.just"
+import "/usr/share/ublue-os/just/84-bazzite-virt.just"
+import "/usr/share/ublue-os/just/86-bazzite-windows.just"
+import "/usr/share/ublue-os/just/87-bazzite-framegen.just"
+import "/usr/share/ublue-os/just/88-bazzite-webapps.just"
+import "/usr/share/ublue-os/just/89-bazzite-mesa-git.just"
+import "/usr/share/ublue-os/just/90-bazzite-picker.just"
+import "/usr/share/ublue-os/just/90-bazzite-de.just"
+import "/usr/share/ublue-os/just/91-bazzite-decky.just"
+import "/usr/share/ublue-os/just/92-bazzite-verify.just"
+import "/usr/share/ublue-os/just/93-bazzite-update.just"
+import "/usr/share/ublue-os/just/94-bazzite-protonplus.just"
+import "/usr/share/ublue-os/just/95-bazzite-deck-session.just"
+import "/usr/share/ublue-os/just/96-bazzite-anticheat.just"
+EOF
+
+# -- Handle Silverblue dconf overrides --
+# Convert gschema overrides to dconf format for Silverblue images.
+echo "==> Configuring Silverblue dconf overrides..."
+if [[ "${BASE_IMAGE_NAME}" == "silverblue" ]]; then
+    mkdir -p "/usr/share/ublue-os/dconfs/desktop-silverblue/"
+    cp "/usr/share/glib-2.0/schemas/zz0-"*"-bazzite-desktop-silverblue-"*".gschema.override" \
+        "/usr/share/ublue-os/dconfs/desktop-silverblue/"
+    find "/etc/dconf/db/distro.d/" -maxdepth 1 -type f \
+        -exec cp {} "/usr/share/ublue-os/dconfs/desktop-silverblue/" \;
+
+    dconf-override-converter to-dconf \
+        "/usr/share/ublue-os/dconfs/desktop-silverblue/zz0-"*"-bazzite-desktop-silverblue-"*".gschema.override"
+
+    sed -i \
+        's/\[org.gtk.Settings.FileChooser\]/\[org\/gtk\/settings\/file-chooser\]/g; s/\[org.gtk.gtk4.Settings.FileChooser\]/\[org\/gtk\/gtk4\/settings\/file-chooser\]/g' \
+        "/usr/share/ublue-os/dconfs/desktop-silverblue/zz0-00-bazzite-desktop-silverblue-global"
+
+    rm "/usr/share/ublue-os/dconfs/desktop-silverblue/zz0-"*"-bazzite-desktop-silverblue-"*".gschema.override"
+
+    mkdir -p /tmp/bazzite-schema-test
+    find "/usr/share/glib-2.0/schemas/" -type f ! -name "*.gschema.override" \
+        -exec cp {} "/tmp/bazzite-schema-test/" \;
+    cp "/usr/share/glib-2.0/schemas/zz0-"*".gschema.override" "/tmp/bazzite-schema-test/"
+
+    glib-compile-schemas --strict /tmp/bazzite-schema-test
+    glib-compile-schemas /usr/share/glib-2.0/schemas &>/dev/null
+    rm -r /tmp/bazzite-schema-test
+fi
+
+# -- Patch tuned profiles --
+echo "==> Patching tuned profiles..."
+sed -i \
+    's/power-saver=powersave$/power-saver=powersave-bazzite/' \
+    /etc/tuned/ppd.conf
+
+sed -i \
+    's/balanced=balanced$/balanced=balanced-bazzite/' \
+    /etc/tuned/ppd.conf
+
+sed -i \
+    's/performance=throughput-performance$/performance=throughput-performance-bazzite/' \
+    /etc/tuned/ppd.conf
+
+sed -i \
+    's/balanced=balanced-battery$/balanced=balanced-battery-bazzite\npower-saver=powersave-battery-bazzite/' \
+    /etc/tuned/ppd.conf
+
+# -- Create pulseaudio stub --
+echo "==> Creating pulseaudio stub..."
+ln -s /usr/bin/true /usr/bin/pulseaudio
+
+# -- Configure Flatpak --
+echo "==> Configuring Flatpak..."
+mkdir -p /etc/flatpak/remotes.d
+curl --fail --retry 3 --retry-all-errors -Lo /etc/flatpak/remotes.d/flathub.flatpakrepo \
+    https://dl.flathub.org/repo/flathub.flatpakrepo
+
+# -- Configure systemd services --
+echo "==> Configuring systemd services..."
+systemctl enable brew-setup.service
+systemctl disable fw-fanctrl.service
+systemctl disable scx_loader.service
+systemctl enable input-remapper.service
+systemctl enable bazzite-flatpak-manager.service
+systemctl disable rpm-ostreed-automatic.timer
+systemctl enable uupd.timer
+systemctl enable incus-workaround.service
+systemctl enable bazzite-hardware-setup.service
+systemctl enable bazzite-iwd-migration.service
+systemctl disable tailscaled.service
+systemctl enable dev-hugepages1G.mount
+systemctl enable ds-inhibit.service
+systemctl --global enable bazzite-user-setup.service
+systemctl --global enable podman.socket
+systemctl --global enable systemd-tmpfiles-setup.service
+systemctl disable waydroid-container.service
+systemctl enable greenboot-healthcheck.service
+systemctl enable greenboot-set-rollback-trigger.service
+systemctl disable force-wol.service
+systemctl --global enable bazzite-dynamic-fixes.service
+systemctl --global enable ntfs-nag.service
+systemctl enable dmemcg-booster-system.service
+systemctl --global enable dmemcg-booster-user.service
+systemctl enable cardwired.service
+systemctl enable bluetooth.service
+
+# -- Download DXVK example config --
+echo "==> Downloading DXVK example config..."
+/ctx/tools/ghcurl \
+    "https://raw.githubusercontent.com/doitsujin/dxvk/3a4c6fa3cb1548d56a90a38dd8f526b6c13e63fd/dxvk.conf" \
+    -Lo /etc/dxvk-example.conf
+
+# -- Download waydroid GPU selector --
+echo "==> Downloading waydroid GPU selector..."
+/ctx/tools/ghcurl \
+    "https://raw.githubusercontent.com/ublue-os/waydroid-scripts/main/waydroid-choose-gpu.sh" \
+    -Lo /usr/bin/waydroid-choose-gpu
+chmod +x /usr/bin/waydroid-choose-gpu
+
+# -- Download distrobox configs --
+echo "==> Downloading distrobox configs..."
+/ctx/tools/ghcurl \
+    "https://github.com/ublue-os/toolboxes/raw/refs/heads/main/apps/docker/distrobox.ini" \
+    -Lo /etc/distrobox/docker.ini
+setfattr \
+    -n user.component \
+    -v "toolbox-config" \
+    /etc/distrobox/docker.ini
+
+/ctx/tools/ghcurl \
+    "https://github.com/ublue-os/toolboxes/raw/refs/heads/main/apps/incus/distrobox.ini" \
+    -Lo /etc/distrobox/incus.ini
+setfattr \
+    -n user.component \
+    -v "toolbox-config" \
+    /etc/distrobox/incus.ini
+
+# -- Download bash-preexec --
+echo "==> Downloading bash-preexec..."
+/ctx/tools/ghcurl \
+    "https://raw.githubusercontent.com/ublue-os/bash-preexec/master/bash-preexec.sh" \
+    -Lo /usr/share/bash-prexec
+setfattr \
+    -n user.component \
+    -v "bash-preexec" \
+    /usr/share/bash-prexec

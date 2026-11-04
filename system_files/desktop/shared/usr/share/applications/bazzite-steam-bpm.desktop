@@ -1,9 +1,11 @@
 [Desktop Entry]
 Name=Steam Big Picture Mode
+Name[sv]=Steam Big Picture-läge
 Name[cs]=Režim Steam Big Picture
 Name[fr]=Mode Big Picture
 Name[el]=Λειτουργία Steam Big Picture
 Name[ru]=Режим Steam Big Picture
+Name[uk]=Режим Steam Big Picture
 Exec=/usr/bin/bazzite-steam-bpm %U
 Icon=steam
 Terminal=false

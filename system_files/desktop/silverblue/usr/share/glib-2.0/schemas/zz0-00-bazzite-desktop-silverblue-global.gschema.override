@@ -17,7 +17,6 @@ sort-directories-first=true
 show-create-link=true
 
 [org.gnome.mutter]
-experimental-features=['variable-refresh-rate', 'scale-monitor-framebuffer', 'xwayland-native-scaling']
 check-alive-timeout=uint32 20000
 
 [org.gnome.software]
@@ -32,6 +31,9 @@ audible-bell=false
 
 [org.gnome.shell.extensions.appindicator]
 legacy-tray-enabled=false
+
+[org.gnome.desktop.thumbnailers]
+disable=['inode/directory']
 
 #-------------- REMAINING SCHEMAS IN THIS SETTING SECTION ARE LOCATED IN DCONF --------------#
 # Settings bellow are supported with gschema override, but other settings, which are relocatable schemas, are not. Edit dconfs if you need to modify relocatable schemas.

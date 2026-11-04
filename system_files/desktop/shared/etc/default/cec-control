@@ -1,3 +1,4 @@
+CEC_MODE=dgpu
 CEC_TVID=0
 CEC_WAKE=true
 CEC_SETSOURCE=true

@@ -3,6 +3,13 @@ ACTION="$1"
 
 source /etc/default/cec-control
 
+# Only the dGPU/external-adapter mode should use this legacy script. Native
+# mode is handled by cecd/SteamOS Manager and must not race this script.
+CEC_MODE=${CEC_MODE:-dgpu}
+if [[ "$CEC_MODE" == "native" || "$CEC_MODE" == "cecd" ]]; then
+    exit 0
+fi
+
 # OVERRIDE WITH DEFAULTS IF NOT SET
 CEC_TVID=${CEC_TVID:-0}
 CEC_WAKE=${CEC_WAKE:-true}
@@ -42,13 +49,17 @@ function perform_standby {
         # Kernel CEC path
         cec-ctl -d "$CEC_DEVICE" --playback 2>/dev/null || true
         
-        for id in $CEC_TVID; do
+        for id in ${CEC_TVID[@]}; do
             cec-ctl -d "$CEC_DEVICE" --to "$id" --standby 2>/dev/null || \
                 echo "Warning: Failed to send standby to CEC device $id" >&2
+            
+            #delay after sending standby command, to prevent the TV's Standby response
+            #from being saved during the suspend process, and causing re-suspend on wake
+            sleep 5
         done
     else
         # libcec path
-        for id in $CEC_TVID; do
+        for id in ${CEC_TVID[@]}; do
             echo "standby $id" | cec-client ${args[@]}
         done
     fi
@@ -59,12 +70,14 @@ function perform_activate {
         # Kernel CEC path
         cec-ctl -d "$CEC_DEVICE" --playback 2>/dev/null || true
         
-        for id in $CEC_TVID; do
+        for id in ${CEC_TVID[@]}; do
             cec-ctl -d "$CEC_DEVICE" --to "$id" --image-view-on 2>/dev/null || \
                 echo "Warning: Failed to send image-view-on to CEC device $id" >&2
         done
         
         if [ "$CEC_SETSOURCE" = true ]; then
+            # Add a short delay so that the CEC device has time to acknowledge this command
+            sleep 0.1
             # Get our physical address if we are setting source
             local phys_addr=$(cec-ctl -d "$CEC_DEVICE" 2>/dev/null | grep "Physical Address" | awk '{print $4}')
             if [[ -n "$phys_addr" ]]; then
@@ -73,7 +86,7 @@ function perform_activate {
         fi
     else
         # libcec path
-        for id in $CEC_TVID; do
+        for id in ${CEC_TVID[@]}; do
             echo "on $id" | cec-client ${args[@]}
         done
 

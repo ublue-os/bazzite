@@ -1,0 +1,1 @@
+ACTION=="add|change", SUBSYSTEM=="leds", KERNEL=="valve-leds*", RUN+="/usr/bin/chmod a+w /sys%p/brightness /sys%p/multi_intensity /sys%p/effect /sys%p/enabled /sys%p/delay /sys%p/color_shift /sys%p/breath_level /sys%p/breath_offset /sys%p/patrol_num"

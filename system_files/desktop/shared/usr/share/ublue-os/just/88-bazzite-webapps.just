@@ -34,6 +34,14 @@ get-media-app service="":
     }
     # Check for StreamingServiceLauncher and install if needed
     [ ! -f "$HOME/Applications/StreamingServiceLauncher.AppImage" ] && install_launcher
+    notify_shortcut_added() {
+        local service_name="$1"
+        if command -v notify-send >/dev/null 2>&1; then
+            notify-send --app-name=Bazzite \
+                "Steam shortcut added" \
+                "$service_name is now available in your Steam library."
+        fi
+    }
     # Create scripts directory
     mkdir -p "$HOME/Applications/streaming_scripts"
     # Display menu
@@ -73,8 +81,13 @@ get-media-app service="":
         echo "#!/bin/bash" > "$script_path"
         echo "\"$HOME/.local/bin/streaming-service-launcher\" \"$2\"" >> "$script_path"
         chmod +x "$script_path"
-        steamos-add-to-steam "$script_path"
-        echo "Added $1 to Steam successfully!"
+        if steamos-add-to-steam "$script_path"; then
+            notify_shortcut_added "$CHOICE"
+            echo "Added $CHOICE to Steam successfully!"
+        else
+            echo "Failed to add $CHOICE to Steam." >&2
+            return 1
+        fi
     }
     install_vacuumtube() {
         local installed=false
@@ -152,17 +165,17 @@ get-media-app service="":
     }
     install_jellyfin_media_player() {
         local installed=false
-        if grep -q 'com.github.iwalton3.jellyfin-media-player' <<< $(flatpak list); then
+        if grep -q 'org.jellyfin.JellyfinDesktop' <<< $(flatpak list); then
             echo "Jellyfin Media Player is already installed"
             installed=true
         else
             echo "Installing Jellyfin Media Player..."
-            if flatpak install --system -y com.github.iwalton3.jellyfin-media-player; then
+            if flatpak install --system -y org.jellyfin.JellyfinDesktop; then
                 echo "Jellyfin Media Player installed successfully"
                 installed=true
             else
                 echo "Failed to install Jellyfin Media Player. Please try installing manually with:"
-                echo "flatpak install --system com.github.iwalton3.jellyfin-media-player"
+                echo "flatpak install --system org.jellyfin.JellyfinDesktop"
             fi
         fi
         # Only proceed with Steam integration if installation was successful
@@ -170,7 +183,7 @@ get-media-app service="":
             # Create launcher script for Steam
             local script_path="$HOME/Applications/streaming_scripts/jellyfin-media-player"
             echo "#!/bin/bash" > "$script_path"
-            echo "flatpak run com.github.iwalton3.jellyfin-media-player" >> "$script_path"
+            echo "flatpak run org.jellyfin.JellyfinDesktop" >> "$script_path"
             chmod +x "$script_path"
             # Add to Steam
             steamos-add-to-steam "$script_path"

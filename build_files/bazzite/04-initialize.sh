@@ -1,0 +1,94 @@
+#!/usr/bin/env bash
+#
+# Initialize
+#
+# Setup Copr repositories, install Terra packages, configure Tailscale,
+# and apply repository priorities and exclusions for Bazzite.
+#
+set -xeuo pipefail
+
+echo "::group::Initialize"
+trap 'echo "::endgroup::"' EXIT
+
+# -- Cache configuration --
+# Ensure cache directory exists and enable package caching in DNF.
+echo "==> Configuring DNF cache..."
+mkdir -p /var/roothome
+dnf5 config-manager setopt keepcache=1
+
+# -- Enable Copr repositories --
+# Enable each Copr repo and set its priority to 98.
+echo "==> Enabling Copr repositories..."
+
+for copr in \
+    ublue-os/bazzite \
+    ublue-os/bazzite-multilib \
+    ublue-os/staging \
+    ublue-os/packages \
+    ycollet/audinux \
+    che/nerd-fonts; \
+do
+    echo "    Enabling copr: ${copr}..."
+    dnf5 -y copr enable "${copr}"
+    dnf5 -y config-manager \
+        setopt "copr:copr.fedorainfracloud.org:${copr////:}.priority=98"
+done
+
+# Disable third party copr repos
+dnf5 -y copr disable "ycollet/audinux"
+dnf5 -y copr disable "che/nerd-fonts"
+
+# -- Install Terra-release packages --
+# Add the Terra repository and install its release packages.
+echo "==> Installing Terra release packages..."
+# DNF expands releasever, not the build shell.
+# shellcheck disable=SC2016
+dnf5 -y install \
+    --nogpgcheck \
+    --setopt=terra.skip_if_unavailable=False \
+    --repofrompath 'terra,https://repos.fyralabs.com/terra$releasever' \
+    terra-release{,-extras,-mesa}
+
+dnf5 config-manager setopt '*terra*.skip_if_unavailable=False'
+
+# -- Add Tailscale repository --
+echo "==> Adding Tailscale repository..."
+dnf5 -y config-manager \
+    addrepo \
+    --overwrite \
+    --from-repofile=https://pkgs.tailscale.com/stable/fedora/tailscale.repo
+
+# -- Enable negativo17 multimedia repository --
+echo "==> Enabling negativo17 multimedia repository..."
+dnf5 config-manager enable 'fedora-multimedia*'
+
+# -- Configure repository priorities and exclusions --
+# Set priority and exclusion rules for each repository.
+echo "==> Configuring repository priorities and exclusions..."
+
+dnf5 -y config-manager \
+    setopt "*terra*".priority=1 \
+           "*terra*.exclude=nerd-fonts"
+
+dnf5 -y config-manager setopt "*bazzite*".priority=2
+
+eval "$(/ctx/tools/dnf5-setopt setopt '*negativo17*' priority=4 exclude='mesa-* *xone*')"
+
+dnf5 -y config-manager \
+    setopt "*fedora*.exclude=mesa-* kernel-core-* kernel-modules-* kernel-uki-virt-* steam noopenh264"
+
+dnf5 -y config-manager setopt "updates*.exclude=noopenh264"
+
+dnf5 -y config-manager setopt "*audinux*.exclude=kernel*"
+
+dnf5 -y config-manager \
+    setopt "*staging*.exclude=scx-tools scx-scheds kf6-* mesa* mutter*"
+
+# -- Versionlock KDE packages for Kinoite --
+# On Kinoite images, lock qt6 and plasma packages to prevent unwanted updates.
+echo "==> Checking for Kinoite image..."
+if [[ "${BASE_IMAGE_NAME}" == "kinoite" ]]; then
+    echo "    Detected Kinoite, versionlocking qt6 and plasma packages..."
+    dnf versionlock add "qt6-*"
+    dnf versionlock add "plasma-*"
+fi

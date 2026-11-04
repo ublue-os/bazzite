@@ -1,0 +1,6 @@
+# ASUS ROG Ally X / ASUS ROG Xbox Ally / ASUS ROG Xbox Ally X Controller
+
+# Disable the internal controller from being a wakeup source, so that unintentional
+# input events (Like analog stick movements) don't prematurely wake up the device
+# before it fully suspends.
+ACTION=="add", SUBSYSTEM=="usb", DRIVER=="usb", ATTR{idVendor}=="0b05", ATTR{idProduct}=="1b4c", ATTR{power/wakeup}="disabled"

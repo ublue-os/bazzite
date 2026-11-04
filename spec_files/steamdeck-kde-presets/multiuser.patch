@@ -4,7 +4,6 @@ index 19fff81..42b336f 100644
 +++ b/etc/xdg/kdeglobals
 @@ -2,15 +2,6 @@
  LookAndFeelPackage=com.valve.vapor.desktop
- SingleClick=false
  
 -[KDE Action Restrictions][$i]
 -action/switch_user=false

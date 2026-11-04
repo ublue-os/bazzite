@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+#
+# Install Steam, Lutris, and supporting gaming packages for the Bazzite image.
+#
+set -xeuo pipefail
+
+echo "::group::Install gaming-related packages"
+trap 'echo "::endgroup::"' EXIT
+
+# -- Install dmemcg booster --
+# Install the dmemcg-booster package, with desktop-specific variants.
+echo "==> Installing dmemcg booster..."
+dnf5 -y install dmemcg-booster
+
+if [[ "${BASE_IMAGE_NAME}" == "kinoite" ]]; then
+    dnf5 -y install plasma-foreground-booster-dmemcg
+    desktop-file-edit \
+        --set-key=Hidden \
+        --set-value=true \
+        /usr/share/applications/org.kde.foreground-booster.desktop
+else
+    dnf5 -y swap \
+        --repo terra-extras \
+        uresourced uresourced-dmemcg
+fi
+
+# -- Install gaming stack --
+# Install gamescope, Proton, Wine, and related graphics libraries.
+echo "==> Installing gaming stack..."
+dnf5 -y install \
+    terra-gamescope.x86_64 \
+    terra-gamescope-libs.x86_64 \
+    terra-gamescope-libs.i686 \
+    jupiter-sd-mounting-btrfs \
+    umu-wrapper \
+    umu-launcher \
+    dbus-x11 \
+    xrandr \
+    evtest \
+    xdg-user-dirs \
+    xdg-terminal-exec \
+    gobject-introspection \
+    libFAudio.x86_64 \
+    libFAudio.i686 \
+    vkBasalt.x86_64 \
+    vkBasalt.i686 \
+    terra-mangohud.x86_64 \
+    terra-mangohud.i686 \
+    obs-studio-plugin-vkcapture-hook-libs.x86_64 \
+    obs-studio-plugin-vkcapture-hook-libs.i686 \
+    openxr \
+    openxr-libs
+
+# -- Install Steam and Lutris --
+# Install the main gaming launchers without weak dependencies.
+echo "==> Installing Steam and Lutris..."
+dnf5 -y --setopt=install_weak_deps=False \
+    install steam lutris
+
+# -- Remove feral interactive gamemode --
+echo "==> Removing gamemode..."
+dnf5 -y remove gamemode
+
+# -- Install Winetricks --
+# Download and install the pinned version of Winetricks.
+echo "==> Installing Winetricks..."
+/ctx/tools/ghcurl \
+    "https://raw.githubusercontent.com/Winetricks/winetricks/b76e1ee79ac57d7aceb384f74518fc423265810c/src/winetricks" \
+    -Lo /usr/bin/winetricks
+
+chmod +x /usr/bin/winetricks
+setfattr \
+    -n user.component \
+    -v "winetricks" \
+    /usr/bin/winetricks
