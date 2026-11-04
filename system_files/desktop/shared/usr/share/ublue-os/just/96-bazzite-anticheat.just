@@ -53,10 +53,12 @@ check-anticheat:
         SIGNER_CN=$(sed -n 's|^ *- subject: .*/CN=\([^/]*\).*|\1|p' <<<"$SIGNERS" | head -n1)
         if ! grep -q 'subject:' <<<"$SIGNERS"; then
             fail "Signed kernel" "Kernel $(uname -r) is not signed"
-        elif grep -Eq "$WELL_KNOWN_KEYS" <<<"$SIGNERS"; then
-            pass "Signed kernel" "Kernel $(uname -r) is signed by '${SIGNER_CN}'"
+        elif WELL_KNOWN_LINE=$(grep -Em1 "$WELL_KNOWN_KEYS" <<<"$SIGNERS"); then
+            # A kernel can have several signatures, so name the well-known one
+            SIGNER_CN=$(sed -n 's|.*/CN=\([^/]*\).*|\1|p' <<<"$WELL_KNOWN_LINE")
+            pass "Signed kernel" "Kernel $(uname -r) is signed by '${SIGNER_CN:-unnamed}'"
         else
-            fail "Signed kernel" "Kernel $(uname -r) is signed by '${SIGNER_CN}', which is not a well-known key"
+            fail "Signed kernel" "Kernel $(uname -r) is signed by '${SIGNER_CN:-unnamed}', which is not a well-known key"
         fi
     fi
 
@@ -101,14 +103,116 @@ check-anticheat:
     for der in "$MOK_DIR"/MOK-*.der; do
         [[ -e $der ]] || continue
         CERT=$(openssl x509 -inform DER -in "$der" -noout -subject -issuer 2>/dev/null)
-        if ! grep -Eq "$WELL_KNOWN_KEYS" <<<"$CERT"; then
-            UNKNOWN_MOKS+=("'$(sed -n 's/^subject=.*CN *= *\([^,]*\).*/\1/p' <<<"$CERT")'")
-        fi
+        grep -Eq "$WELL_KNOWN_KEYS" <<<"$CERT" || UNKNOWN_MOKS+=("$der")
     done
     if (( MOK_STATUS )); then
         fail "Only well-known Machine Owner Keys" "Couldn't read the enrolled keys (mokutil says: ${MOK_ERR//$'\n'/ })"
     elif (( ${#UNKNOWN_MOKS[@]} )); then
-        fail "Only well-known Machine Owner Keys" "Not well-known: ${UNKNOWN_MOKS[*]}. Export them with 'mokutil --export', then remove each with 'sudo mokutil --delete MOK-000N.der'"
+        # Never suggest deleting a key that the kernel, an EFI binary or a loaded module depends on
+        cert_cn() {
+            openssl x509 -inform DER -in "$1" -noout "$2" -nameopt multiline,utf8,-esc_msb 2>/dev/null | sed -n 's/^ *commonName *= *//p' | head -n1
+        }
+        ESP_DIR=/boot/efi/EFI
+        mapfile -t BOOT_FILES < <(find "$ESP_DIR" -type f -iname '*.efi' 2>/dev/null)
+        BOOT_READABLE=1
+        [[ ${#BOOT_FILES[@]} -gt 0 && -r $KERNEL ]] || BOOT_READABLE=0
+        BOOT_FILES+=("$KERNEL")
+        declare -A SIGNED_MODULES=()
+        while read -r mod _; do
+            SIGNER=$(modinfo -F signer "$mod" 2>/dev/null)
+            [[ -n $SIGNER ]] && SIGNED_MODULES[$SIGNER]+=" $mod"
+        done </proc/modules
+
+        # BOOT and fedora are this system's ESP folders, plus whichever entry the firmware booted, which may chainload them.
+        # If that's unknown, treat every folder as ours
+        EFI_ENTRIES=$(efibootmgr 2>/dev/null)
+        BOOT_CURRENT=$(sed -n 's/^BootCurrent: //p' <<<"$EFI_ENTRIES")
+        CURRENT_ENTRY=""
+        if [[ -n $BOOT_CURRENT ]]; then
+            CURRENT_ENTRY=$(grep -E "^Boot${BOOT_CURRENT}[* ]" <<<"$EFI_ENTRIES" | grep -oiE '\\EFI\\[^\\]+' | head -n1)
+            CURRENT_ENTRY=${CURRENT_ENTRY##*\\}
+        fi
+
+        KEY_LINES=()
+        SAFE_KEYS=""
+        SAFE_FILES=()
+        OTHER_FILES=()
+        for der in "${UNKNOWN_MOKS[@]}"; do
+            FILE=${der##*/}
+            NAME=$(cert_cn "$der" -subject)
+            ISSUER=$(cert_cn "$der" -issuer)
+            KEY="'${NAME:-unnamed}' (${FILE})"
+            DN=$(openssl x509 -inform DER -in "$der" -noout -subject -nameopt compat 2>/dev/null)
+            DN=${DN#subject=}
+            if [[ -z $DN ]]; then
+                KEY_LINES+=("${KEY}. It couldn't be read, so this system may need it to boot and it cannot be deleted.")
+                continue
+            fi
+            SIGNS_KERNEL=0
+            SIGNS_BOOTLOADER=0
+            declare -A OTHER_ENTRIES=()
+            for file in "${BOOT_FILES[@]}"; do
+                # Not sbverify --cert, which accepts any key for binaries that embed a certificate chain, like shim
+                sbverify --list "$file" 2>/dev/null | sed -E 's/^ *(- )?((subject|issuer): *)?//' | grep -Fx -- "$DN" >/dev/null || continue
+                ENTRY=${file#"$ESP_DIR"/}
+                ENTRY=${ENTRY%%/*}
+                if [[ $file == "$KERNEL" ]]; then
+                    SIGNS_KERNEL=1
+                elif [[ -z $CURRENT_ENTRY || ${ENTRY,,} == "${CURRENT_ENTRY,,}" || ${ENTRY,,} =~ ^(boot|fedora)$ ]]; then
+                    SIGNS_BOOTLOADER=1
+                else
+                    OTHER_ENTRIES[$ENTRY]=1
+                fi
+            done
+            # modinfo reports a module's signer by the issuer of its certificate, so check both names
+            DRIVERS=""
+            [[ -n $NAME ]] && DRIVERS=${SIGNED_MODULES[$NAME]:-}
+            [[ -n $ISSUER && $ISSUER != "$NAME" ]] && DRIVERS+=${SIGNED_MODULES[$ISSUER]:-}
+
+            if (( SIGNS_KERNEL || SIGNS_BOOTLOADER )); then
+                USES=()
+                (( SIGNS_KERNEL )) && USES+=("the running kernel")
+                (( SIGNS_BOOTLOADER )) && USES+=("this system's bootloader")
+                [[ -n $DRIVERS ]] && USES+=("these drivers:${DRIVERS}")
+                SIGNS=${USES[0]}
+                (( ${#USES[@]} == 3 )) && SIGNS+=", ${USES[1]}"
+                (( ${#USES[@]} > 1 )) && SIGNS+=" and ${USES[-1]}"
+                KEY_LINES+=("${KEY}. It signs ${SIGNS}. This system may not boot without it, so it cannot be deleted.")
+            elif [[ -n $DRIVERS ]]; then
+                KEY_LINES+=("${KEY}. It signs these drivers, which won't load without it, so it cannot be deleted:${DRIVERS}.")
+            elif (( ! BOOT_READABLE )); then
+                KEY_LINES+=("${KEY}. Couldn't read the kernel and the EFI binaries in /boot/efi, so this system may need it to boot. Check what it signs before deleting it.")
+            elif (( ${#OTHER_ENTRIES[@]} )); then
+                KEY_LINES+=("${KEY}. It signs the bootloader for another boot entry (${!OTHER_ENTRIES[*]}). This system doesn't need it, but only delete it if you no longer use that entry.")
+                OTHER_FILES+=("$FILE")
+            else
+                SAFE_KEYS+="${SAFE_KEYS:+, }${KEY}"
+                SAFE_FILES+=("$FILE")
+            fi
+        done
+
+        fail "Only well-known Machine Owner Keys"
+        for line in "${KEY_LINES[@]}"; do
+            printf '       %s\n' "Not well-known: ${line}"
+        done
+        EXPORT="run 'mokutil --export' in an empty directory"
+        if (( ${#SAFE_FILES[@]} )); then
+            THESE="These keys are"
+            IT=them
+            if (( ${#SAFE_FILES[@]} == 1 )); then
+                THESE="This key is"
+                IT=it
+            fi
+            printf '       %s\n' "Not well-known: ${SAFE_KEYS}. ${THESE} not used by the running kernel, any boot entry on this drive or any loaded driver, and may be safely deleted."
+            printf '       %s\n' "To delete ${IT}, ${EXPORT}, then 'sudo mokutil --delete ${SAFE_FILES[*]}'.${OTHER_FILES[*]:+ Add ${OTHER_FILES[*]} for any boot entry you no longer use.}"
+        elif (( ${#OTHER_FILES[@]} == 1 )); then
+            printf '       %s\n' "If you no longer use that entry, ${EXPORT}, then 'sudo mokutil --delete ${OTHER_FILES[0]}'."
+        elif (( ${#OTHER_FILES[@]} )); then
+            printf '       %s\n' "For any of those entries you no longer use, ${EXPORT}, then 'sudo mokutil --delete' with its key: ${OTHER_FILES[*]}."
+        fi
+        if (( ${#SAFE_FILES[@]} + ${#OTHER_FILES[@]} )); then
+            printf '       %s\n' "If asked for a password, use 'universalblue'. At next reboot, select 'Delete MOK' in the mokutil UEFI menu and enter 'universalblue' again."
+        fi
     else
         pass "Only well-known Machine Owner Keys"
     fi
@@ -120,7 +224,8 @@ check-anticheat:
     else
         # GRUB measures into PCRs 8 and 9, systemd-boot and systemd-stub into 11 and 12
         if ! PCRS=$(tpm2_eventlog "$EVENT_LOG" 2>/dev/null); then
-            fail "Measured boot" "Couldn't read the TPM boot log"
+            TPM_ERR=$(tpm2_eventlog "$EVENT_LOG" 2>&1 >/dev/null)
+            fail "Measured boot" "Couldn't read the TPM boot log (tpm2_eventlog says: ${TPM_ERR//$'\n'/ })"
         elif grep -Eq '^\s*PCRIndex: (8|9|11|12)$' <<<"$PCRS"; then
             pass "Measured boot" "The boot manager recorded its measurements"
         else
@@ -135,12 +240,14 @@ check-anticheat:
     done
     if [[ -z $PASSTHROUGH ]] && ! has_karg iommu.passthrough=0 &&
         grep -q '^CONFIG_IOMMU_DEFAULT_PASSTHROUGH=y' "/usr/lib/modules/$(uname -r)/config" 2>/dev/null; then
-        PASSTHROUGH="the kernel's default"
+        PASSTHROUGH=default
     fi
     if compgen -G '/sys/class/iommu/*' >/dev/null && [[ -z $PASSTHROUGH ]]; then
         pass "IOMMU enabled, passthrough disabled"
     elif (( HANDHELD )); then
         pass "IOMMU enabled, passthrough disabled" "Not required on handheld devices"
+    elif [[ $PASSTHROUGH == default ]]; then
+        fail "IOMMU enabled, passthrough disabled" "Passthrough is on by default in this kernel. Run 'rpm-ostree kargs --append-if-missing=iommu.passthrough=0'"
     elif [[ -n $PASSTHROUGH ]]; then
         fail "IOMMU enabled, passthrough disabled" "Passthrough is on (${PASSTHROUGH}). Remove it with 'rpm-ostree kargs --delete=${PASSTHROUGH}'"
     elif grep -q GenuineIntel /proc/cpuinfo; then
@@ -153,6 +260,9 @@ check-anticheat:
     LOCKDOWN=$(sed -n 's/.*\[\(.*\)\].*/\1/p' /sys/kernel/security/lockdown 2>/dev/null)
     if [[ $LOCKDOWN == integrity || $LOCKDOWN == confidentiality ]]; then
         pass "Kernel lockdown integrity mode" "Lockdown mode is '${LOCKDOWN}'"
+    elif (( HANDHELD )); then
+        fail "Kernel lockdown integrity mode" "Lockdown mode is '${LOCKDOWN:-unavailable}'."
+        printf '       %s\n' "${bold}Note:${normal} Handheld users should hold off on enabling kernel lockdown for now. We're working on a solution."
     else
         fail "Kernel lockdown integrity mode" "Lockdown mode is '${LOCKDOWN:-unavailable}'. Run 'rpm-ostree kargs --append-if-missing=lockdown=integrity'"
     fi
@@ -169,8 +279,10 @@ check-anticheat:
     LSMS=$(cat /sys/kernel/security/lsm 2>/dev/null)
     if [[ ,$LSMS, == *,bpf,* ]]; then
         pass "BPF LSM active"
+    elif [[ -z $LSMS ]]; then
+        fail "BPF LSM active" "Couldn't read the active LSMs from /sys/kernel/security/lsm"
     else
-        fail "BPF LSM active" "Active LSMs: ${LSMS:-unknown}. Run 'rpm-ostree kargs --append-if-missing=lsm=${LSMS:+$LSMS,}bpf'"
+        fail "BPF LSM active" "Active LSMs: ${LSMS}. Run 'rpm-ostree kargs --append-if-missing=lsm=${LSMS},bpf'"
     fi
 
     echo
