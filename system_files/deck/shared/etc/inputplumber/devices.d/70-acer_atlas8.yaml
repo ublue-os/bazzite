@@ -15,19 +15,14 @@ matches:
       sys_vendor: Acer
 
 source_devices:
-  - group: gamepad
-    evdev:
-      name: "  Xbox360 Controller for Windows Keyboard"
-      vendor_id: "0502"
-      product_id: "f901"
-      handler: event*
+  # Atlas 8 Gamepad
   - group: gamepad
     evdev:
       name: Generic X-Box pad
       vendor_id: "0502"
       product_id: "f901"
       handler: event*
-  # Atlas 8 QAM button
+  # Atlas 8 Guide and QAM buttons
   - group: gamepad
     hidraw:
       vendor_id: 0x0502
@@ -41,8 +36,6 @@ source_devices:
       product_id: 0xf901
       interface_num: 1
     capability_map_id: acer_atlas8_hid_type2
-
-capability_map_id: acer_atlas8
 
 # The target input device(s) to emulate by default
 target_devices:
