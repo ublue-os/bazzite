@@ -634,9 +634,9 @@ install-openrazer ACTION="":
         curl -s https://api.github.com/repos/openrazer/openrazer/releases/latest \
         | jq -r '.assets | sort_by(.created_at) | .[] | select (.name|test("openrazer.*tar.xz$")) | .browser_download_url' \
         | wget -qi - -O /tmp/openrazer/openrazer.tar.xz && \
-        tar --strip-components=1 -xvf /tmp/openrazer/openrazer.tar.xz -C /tmp/openrazer && \
+        tar --strip-components=1 -xvf /tmp/openrazer/openrazer.tar.xz -C /tmp/openrazer >/dev/null 2>&1 && \
         cd /tmp/openrazer/daemon && \
-        PREFIX=~/.local make install && \
+        PREFIX=~/.local make install >/dev/null 2>&1 && \
         mkdir -p ~/.config/systemd/user/ && \
         mv ~/.local/lib/systemd/user/openrazer-daemon.service ~/.config/systemd/user && \
         pip install daemonize gobject && \
@@ -647,21 +647,21 @@ install-openrazer ACTION="":
         fi
         sudo usermod -a -G plugdev "$USER"
         echo "$OPENRAZER_CONFIGURATOR_APP is installed"
-        echo "Please reboot to apply needed changes."
+        echo "Please re-login to apply needed changes."
     }
     cleanup_layered_openrazer() {
         if layered_package openrazer-daemon; then
             rpm-ostree uninstall -y openrazer-daemon
-            echo "OpenRazer daemon has been uninstalled."
+            echo "OpenRazer daemon RPM has been uninstalled. Please reboot to apply needed changes."
         else
             echo "OpenRazer daemon is not layered."
         fi
     }
     uninstall_openrazer() {
-        cleanup_layered_openrazer
         systemctl disable --user --now openrazer-daemon
+        cleanup_layered_openrazer
         rm ~/.local/bin/openrazer-daemon
-        pip uninstall openrazer_daemon
+        pip uninstall -y openrazer_daemon
         rm -rf ~/.local/share/openrazer
         rm ~/.local/share/man/man8/openrazer-daemon.8.gz
         rm ~/.local/share/man/man5/razer.conf.5.gz
@@ -672,7 +672,6 @@ install-openrazer ACTION="":
         if flatpak_installed app.polychromatic.controller; then
             flatpak --system remove -y app.polychromatic.controller
         fi
-        echo "Please reboot to apply needed changes."
     }
     OPTION="{{ ACTION }}"
     if [[ "$OPTION" == "help" ]]; then
