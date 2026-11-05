@@ -18,7 +18,6 @@ dnf5 -y install \
     gnome-shell-extension-gsconnect \
     gnome-search-yafti \
     rom-properties-gtk4 \
-    rom-properties-localsearch3 \
     ibus-mozc \
     openssh-askpass \
     firewall-config
