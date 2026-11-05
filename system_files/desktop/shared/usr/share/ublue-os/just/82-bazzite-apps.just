@@ -596,7 +596,7 @@ install-openrazer ACTION="":
         fi
     }
     get_current_status() {
-        if ! layered_package openrazer-daemon; then
+        if ! [[ -f "$HOME/.config/systemd/user/openrazer-daemon.service" ]]; then
             echo "Not Installed"
         elif flatpak_installed xyz.z3ntu.razergenie; then
             echo "Installed (Razer Genie)"
@@ -627,9 +627,21 @@ install-openrazer ACTION="":
             echo "Not Selecting GUI Frontend"
         fi
 
-        sudo rm -f /etc/yum.repos.d/hardware:razer.repo
-        just _enable_terra
-        rpm-ostree install -y openrazer-daemon
+        cleanup_layered_openrazer
+
+        echo "Installing Openrazer..."
+        mkdir -p /tmp/openrazer && \
+        curl -s https://api.github.com/repos/openrazer/openrazer/releases/latest \
+        | jq -r '.assets | sort_by(.created_at) | .[] | select (.name|test("openrazer.*tar.xz$")) | .browser_download_url' \
+        | wget -qi - -O /tmp/openrazer/openrazer.tar.xz && \
+        tar --strip-components=1 -xvf /tmp/openrazer/openrazer.tar.xz -C /tmp/openrazer && \
+        cd /tmp/openrazer/daemon && \
+        PREFIX=~/.local make install && \
+        mkdir -p ~/.config/systemd/user/ && \
+        mv ~/.local/lib/systemd/user/openrazer-daemon.service ~/.config/systemd/user && \
+        pip install daemonize gobject && \
+        systemctl --user daemon-reload && \
+        systemctl enable --user --now openrazer-daemon
         if ! grep -q "plugdev" /etc/group; then
             sudo bash -c 'grep "plugdev" /lib/group >> /etc/group'
         fi
@@ -637,13 +649,23 @@ install-openrazer ACTION="":
         echo "$OPENRAZER_CONFIGURATOR_APP is installed"
         echo "Please reboot to apply needed changes."
     }
-    uninstall_openrazer() {
+    cleanup_layered_openrazer() {
         if layered_package openrazer-daemon; then
             rpm-ostree uninstall -y openrazer-daemon
             echo "OpenRazer daemon has been uninstalled."
         else
             echo "OpenRazer daemon is not layered."
         fi
+    }
+    uninstall_openrazer() {
+        cleanup_layered_openrazer
+        systemctl disable --user --now openrazer-daemon
+        rm ~/.local/bin/openrazer-daemon
+        pip uninstall openrazer_daemon
+        rm -rf ~/.local/share/openrazer
+        rm ~/.local/share/man/man8/openrazer-daemon.8.gz
+        rm ~/.local/share/man/man5/razer.conf.5.gz
+        rm ~/.config/systemd/user/openrazer-daemon.service
         if flatpak_installed xyz.z3ntu.razergenie; then
             flatpak --system remove -y xyz.z3ntu.razergenie
         fi
