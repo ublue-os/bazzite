@@ -6,7 +6,7 @@ alias upgrade := update
 [group("system")]
 update:
     #!/usr/bin/bash
-    /usr/libexec/uupd-update | jq -r -R 'fromjson? | [(.title, .msg, .description) | select(.)] | join(" ")'
+    /usr/libexec/uupd-update | jq -r -R 'fromjson? | [(.title, .output, .description) | select(.)] | join(" ")'
 
 alias changelog := changelogs
 
