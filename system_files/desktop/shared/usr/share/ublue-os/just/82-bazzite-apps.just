@@ -87,6 +87,11 @@ install-coolercontrol ACTION="":
     install_coolercontrol() {
         cleanup_layered_coolercontrol
 
+        local podman_args="--privileged"
+        if command -v nvidia-smi > /dev/null; then
+            podman_args+=" --device=nvidia.com/gpu=all"
+        fi
+
         sudo podman pull "$IMAGE"
         sudo mkdir -p /etc/coolercontrol /var/lib/coolercontrol/plugins /etc/containers/systemd
         sudo tee "$QUADLET" > /dev/null <<EOF
@@ -101,7 +106,7 @@ install-coolercontrol ACTION="":
     PublishPort=127.0.0.1:11987:11987
     Volume=/etc/coolercontrol:/etc/coolercontrol
     Volume=/var/lib/coolercontrol:/var/lib/coolercontrol
-    PodmanArgs=--privileged
+    PodmanArgs=$podman_args
     Label=io.containers.autoupdate=registry
 
     [Service]
