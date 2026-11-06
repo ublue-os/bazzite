@@ -27,11 +27,7 @@ check-anticheat:
         [[ -n ${2:-} ]] && printf '       %s\n' "$2"
         SKIPPED=$((SKIPPED + 1))
     }
-    firmware_failed(){
-        printf '%s[FIRMWARE FAIL]%s %s\n' "${red}${bold}" "${normal}" "$1"
-        [[ -n ${2:-} ]] && printf '       %s\n' "$2"
-        FAILED=$((FAILED + 1))
-    }
+
     CMDLINE=()
     read -ra CMDLINE </proc/cmdline
     has_karg() {
@@ -41,10 +37,7 @@ check-anticheat:
         done
         return 1
     }
-     if /usr/libexec/hwsupport/valve-hardware; then
-      firmware_failed "Valve hardware detected. Unfortunately, Steam Deck and Steam Machine currently cannot support Anti-Cheat V2 at the firmware level. Please do not enable Secure Boot on these devices! Doing so has a very high risk of bricking the device. This is on Valve to fix, there is nothing the Bazzite team can do about it."
-      exit 0
-    fi
+
     SYS_VENDOR=$(cat /sys/class/dmi/id/sys_vendor 2>/dev/null)
     CHASSIS=$(cat /sys/class/dmi/id/chassis_type 2>/dev/null)
     HANDHELD=0
@@ -58,6 +51,11 @@ check-anticheat:
     echo "${bold}Easy Anti-Cheat Linux v2 readiness check${normal}"
     echo "Requirements: ${REQUIREMENTS_URL}"
     echo
+
+    if /usr/libexec/hwsupport/valve-hardware; then
+        fail "Supported hardware" "This device's firmware doesn't fully support Secure Boot yet, so don't enable it. Contact the manufacturer about a firmware update."
+        exit 0
+    fi
 
     # 1. Signed kernel & kernel modules
     KERNEL="/usr/lib/modules/$(uname -r)/vmlinuz"
