@@ -1,0 +1,17 @@
+name: AYANEO 3 plugin image checks
+on:
+  pull_request:
+    paths:
+      - "tests/ayaneo3-plugin-readiness.py"
+      - "tests/test_ayaneo3_plugin_readiness.py"
+      - ".github/workflows/ayaneo3-plugin-readiness.yml"
+      - "system_files/deck/shared/usr/lib/udev/rules.d/70-steam-jupiter-leds.rules"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  fixtures:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - run: python3 -B -m unittest discover -s tests -p test_ayaneo3_plugin_readiness.py -v
