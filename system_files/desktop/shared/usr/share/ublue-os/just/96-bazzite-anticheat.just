@@ -11,6 +11,7 @@ check-anticheat:
 
     PASSED=0
     FAILED=0
+    SKIPPED=0
     pass() {
         printf '%s[PASS]%s %s\n' "${green}${bold}" "${normal}" "$1"
         [[ -n ${2:-} ]] && printf '       %s\n' "$2"
@@ -20,6 +21,11 @@ check-anticheat:
         printf '%s[FAIL]%s %s\n' "${red}${bold}" "${normal}" "$1"
         [[ -n ${2:-} ]] && printf '       %s\n' "$2"
         FAILED=$((FAILED + 1))
+    }
+    skip() {
+        printf '%s[SKIP]%s %s\n' "${yellow}${bold}" "${normal}" "$1"
+        [[ -n ${2:-} ]] && printf '       %s\n' "$2"
+        SKIPPED=$((SKIPPED + 1))
     }
     firmware_failed(){
         printf '%s[FIRMWARE FAIL]%s %s\n' "${red}${bold}" "${normal}" "$1"
@@ -44,6 +50,10 @@ check-anticheat:
     HANDHELD=0
     # SMBIOS chassis types 30-32 are tablet, convertible and detachable, which is how handhelds report
     [[ $SYS_VENDOR == Valve || $CHASSIS =~ ^3[012]$ ]] && HANDHELD=1
+
+    SB_STATE=$(mokutil --sb-state 2>&1)
+    SECURE_BOOT=0
+    [[ $SB_STATE == *"SecureBoot enabled"* && $SB_STATE != *"validation is disabled"* ]] && SECURE_BOOT=1
 
     echo "${bold}Easy Anti-Cheat Linux v2 readiness check${normal}"
     echo "Requirements: ${REQUIREMENTS_URL}"
@@ -75,7 +85,10 @@ check-anticheat:
         MODULES=$((MODULES + 1))
         [[ $(cat "/sys/module/$mod/taint" 2>/dev/null) == *E* ]] && UNSIGNED+=("$mod")
     done </proc/modules
-    if (( ${#UNSIGNED[@]} )); then
+    # Bazzite's drivers are signed with a key that's only trusted once Secure Boot is set up, so that's the fix
+    if (( ! SECURE_BOOT )); then
+        skip "Signed kernel modules" "Bazzite's drivers are only trusted with Secure Boot on. See the guide below."
+    elif (( ${#UNSIGNED[@]} )); then
         fail "Signed kernel modules" "Unsigned modules loaded: ${UNSIGNED[*]}"
     elif (( $(cat /proc/sys/kernel/tainted) & 8192 )); then
         fail "Signed kernel modules" "An unsigned module was loaded during this boot (reboot to clear)"
@@ -93,11 +106,11 @@ check-anticheat:
     fi
 
     # 3. Secure Boot, booted only with well-known keys
-    SB_STATE=$(mokutil --sb-state 2>&1)
-    if [[ $SB_STATE == *"SecureBoot enabled"* && $SB_STATE != *"validation is disabled"* ]]; then
+    if (( SECURE_BOOT )); then
         pass "Secure Boot enabled"
     else
         fail "Secure Boot enabled" "Enable Secure Boot in your BIOS (mokutil says: ${SB_STATE//$'\n'/ })"
+        printf '       %s\n' "Follow this guide to set it up: https://docs.bazzite.gg/General/Installation_Guide/secure_boot/"
     fi
 
     MOK_DIR=$(mktemp -d)
@@ -293,8 +306,8 @@ check-anticheat:
 
     echo
     if (( FAILED )); then
-        echo "${red}${bold}${FAILED} of $((PASSED + FAILED)) checks failed.${normal} Fix the items above, then reboot and run this again."
+        echo "${red}${bold}${FAILED} of $((PASSED + FAILED + SKIPPED)) checks failed.${normal} Fix the items above, then reboot and run this again."
         echo "Kernel argument changes take effect after a reboot."
         exit 0
     fi
-    echo "${green}${bold}All $((PASSED + FAILED)) checks passed.${normal} This system meets the EAC Linux v2 requirements."
+    echo "${green}${bold}All $((PASSED + FAILED + SKIPPED)) checks passed.${normal} This system meets the EAC Linux v2 requirements."
