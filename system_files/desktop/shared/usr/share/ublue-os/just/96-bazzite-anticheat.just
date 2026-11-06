@@ -54,7 +54,7 @@ check-anticheat:
     echo
 
     if /usr/libexec/hwsupport/valve-hardware; then
-        fail "Supported hardware" "This device's firmware doesn't fully support Secure Boot yet, so don't enable it. Contact the manufacturer about a firmware update."
+        fail "Supported hardware" "This device's firmware doesn't fully support Secure Boot yet. Do not enable it, as it can stop the device from booting. Contact the manufacturer about a firmware update."
         exit 0
     fi
 
