@@ -206,7 +206,19 @@ check-anticheat:
         # GRUB measures into PCRs 8 and 9, systemd-boot and systemd-stub into 11 and 12
         if ! PCRS=$(tpm2_eventlog "$EVENT_LOG" 2>/dev/null); then
             TPM_ERR=$(tpm2_eventlog "$EVENT_LOG" 2>&1 >/dev/null)
-            fail "Measured boot" "Couldn't read the TPM boot log (tpm2_eventlog says: ${TPM_ERR//$'\n'/ })"
+            # The log's first event lists the PCR banks, and tpm2_eventlog can't replay an SM3_256 one
+            read -ra HDR < <(od -An -v -tx1 -w4096 -N4096 "$EVENT_LOG" 2>/dev/null)
+            SM3=0
+            if [[ ${HDR[*]:32:16} == "53 70 65 63 20 49 44 20 45 76 65 6e 74 30 33 00" ]]; then
+                for ((bank = 0; bank < 0x${HDR[56]:-0}; bank++)); do
+                    [[ ${HDR[60 + 4 * bank]:-}${HDR[61 + 4 * bank]:-} == 1200 ]] && SM3=1
+                done
+            fi
+            if (( SM3 )); then
+                fail "Measured boot" "The SM3_256 PCR bank is enabled, so the boot log can't be read. Disable SM3_256 in your UEFI's TPM settings, then reboot."
+            else
+                fail "Measured boot" "Couldn't read the TPM boot log (tpm2_eventlog says: ${TPM_ERR//$'\n'/ })"
+            fi
         elif grep -Eq '^\s*PCRIndex: (8|9|11|12)$' <<<"$PCRS"; then
             pass "Measured boot" "The boot manager recorded its measurements"
         else
