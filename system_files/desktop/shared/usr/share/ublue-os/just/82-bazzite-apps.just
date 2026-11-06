@@ -639,7 +639,7 @@ install-openrazer ACTION="":
         PREFIX=~/.local make install >/dev/null 2>&1 && \
         mkdir -p ~/.config/systemd/user/ && \
         mv ~/.local/lib/systemd/user/openrazer-daemon.service ~/.config/systemd/user && \
-        pip install daemonize gobject && \
+        pip install --user daemonize gobject && \
         systemctl --user daemon-reload && \
         systemctl enable --user --now openrazer-daemon
         if ! grep -q "plugdev" /etc/group; then
