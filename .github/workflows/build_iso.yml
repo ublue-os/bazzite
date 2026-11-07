@@ -148,7 +148,7 @@ jobs:
           sudo du -sh /mnt/podman-storage.img
 
       - name: Build ISOs
-        uses: Zeglius/titanoboa@revamp-pr
+        uses: Zeglius/titanoboa@7737f4748458252ac827dca14b3d6dd09298472a # revamp-pr
         id: build
         with:
           image-ref: localhost/payload:latest
