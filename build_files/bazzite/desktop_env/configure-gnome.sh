@@ -43,6 +43,20 @@ dnf5 -y remove \
 echo "==> Building GNOME extensions..."
 /ctx/bazzite/desktop_env/build-gnome-extensions.sh
 
+# -- Hook pam_oo7 into the passwd PAM stack --
+# oo7 replaced gnome-keyring on GNOME images, but /etc/pam.d/passwd
+# (owned by shadow-utils) only hooks pam_gnome_keyring, so changing
+# the account password with passwd never re-encrypts the oo7 login
+# keyring and it stays locked at the next login. Add the same
+# pam_oo7 line the gdm-password stack already uses, right after the
+# pam_gnome_keyring line. Skip if upstream already ships it.
+echo "==> Hooking pam_oo7 into the passwd PAM stack..."
+if [[ -f /etc/pam.d/passwd ]] && ! grep -q "pam_oo7" /etc/pam.d/passwd; then
+    sed -i \
+        '/pam_gnome_keyring.so use_authtok$/a -password   optional\tpam_oo7.so use_authtok' \
+        /etc/pam.d/passwd
+fi
+
 # -- Enable dconf-update service --
 # Enable the dconf-update service for configuration persistence.
 echo "==> Enabling dconf-update service..."
