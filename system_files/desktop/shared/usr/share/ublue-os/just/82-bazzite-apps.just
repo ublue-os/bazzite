@@ -646,6 +646,8 @@ install-openrazer ACTION="":
         mkdir -p ~/.config/systemd/user/ && \
         mv ~/.local/lib/systemd/user/openrazer-daemon.service ~/.config/systemd/user && \
         pip install --user daemonize gobject && \
+        mkdir -p ~/.config/openrazer && \
+        cp ~/.local/share/openrazer/razer.conf.example ~/.config/openrazer/razer.conf && \
         systemctl --user daemon-reload && \
         systemctl enable --user --now openrazer-daemon
         if ! grep -q "plugdev" /etc/group; then
