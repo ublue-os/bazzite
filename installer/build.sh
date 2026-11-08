@@ -54,7 +54,7 @@ fi
 # Install dracut-live and regenerate the initramfs
 dnf install -y dracut-live
 kernel=$(kernel-install list --json pretty | jq -r '.[] | select(.has_kernel == true) | .version')
-DRACUT_NO_XATTR=1 dracut -v --force --zstd --reproducible --no-hostonly \
+DRACUT_NO_XATTR=1 dracut -v --force --reproducible --no-hostonly \
     --add "dmsquash-live dmsquash-live-autooverlay" \
     "/usr/lib/modules/${kernel}/initramfs.img" "${kernel}"
 

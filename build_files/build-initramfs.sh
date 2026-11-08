@@ -39,9 +39,7 @@ DRACUT_NO_XATTR=1 /usr/bin/dracut \
     --no-hostonly \
     --kver "${QUALIFIED_KERNEL}" \
     --reproducible \
-    --zstd \
     -v \
-    --add ostree \
     --add fido2 \
     -f "${INITRAMFS}"
 
