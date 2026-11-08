@@ -1,5 +1,8 @@
 on:
   workflow_call:
+    secrets:
+      SIGNING_SECRET:
+        required: true
   workflow_dispatch:
     inputs:
       handwritten:
@@ -54,12 +57,31 @@ jobs:
           echo "title=${TITLE}" >> $GITHUB_OUTPUT
           echo "tag=${TAG}" >> $GITHUB_OUTPUT
 
+      - name: Setup Cosign
+        uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
+        with:
+          cosign-release: 'v2.6.5'
+
+      - name: Sign and verify release manifest
+        env:
+          SIGNING_KEY: ${{ secrets.SIGNING_SECRET }}
+        run: |
+          cosign sign-blob -y --key env://SIGNING_KEY packages.json \
+            --output-signature packages.json.sig \
+            --new-bundle-format --bundle packages.json.sigstore.json
+          cosign verify-blob --key cosign.pub --new-bundle-format \
+            --bundle packages.json.sigstore.json packages.json
+
       - name: Create Release
         uses: softprops/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3 # v3
         with:
           name: ${{ steps.generate-release.outputs.title }}
           tag_name: ${{ steps.generate-release.outputs.tag }}
           body_path: ./changelog.md
-          files: packages.json
+          files: |
+            packages.json
+            packages.json.sig
+            packages.json.sigstore.json
+          fail_on_unmatched_files: true
           make_latest: ${{ steps.get-target.outputs.target == 'stable' }}
           prerelease: ${{ steps.get-target.outputs.target != 'stable' }}
