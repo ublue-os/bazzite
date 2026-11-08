@@ -21,13 +21,18 @@ dnf5 -y install \
 # -- Install core packages from Terra repo --
 # Install hardware support, input tools, language packs, and utilities.
 echo "==> Installing core packages from Terra repo..."
+inputplumber_package="inputplumber"
+case "${IMAGE_BRANCH}" in
+    testing|unstable) inputplumber_package="inputplumber-nightly" ;;
+esac
+
 dnf5 -y install \
     jupiter-fan-control \
     jupiter-hw-support-btrfs \
     galileo-mura \
     steamdeck-dsp \
     powerbuttond \
-    inputplumber \
+    "${inputplumber_package}" \
     hid-replay \
     gamescope-session-ogui-steam \
     steamos-manager-powerstation \
