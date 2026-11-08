@@ -148,11 +148,10 @@ jobs:
           sudo du -sh /mnt/podman-storage.img
 
       - name: Build ISOs
-        uses: Zeglius/titanoboa@5c457c3d0518bd17e754be0fd98a60d29d26abb4
+        uses: ublue-os/titanoboa@5c457c3d0518bd17e754be0fd98a60d29d26abb4
         id: build
         with:
           image-ref: localhost/payload:latest
-          # TODO (@Zeglius): Remove "liveiso" prefix once this becomes the main ISO
           iso-dest: ${{ matrix.image_name }}-${{ steps.generate-tag.outputs.tag }}-live-amd64.iso
 
       - name: Move ISOs to Upload Directory
