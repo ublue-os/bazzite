@@ -38,6 +38,7 @@ install-coolercontrol ACTION="":
     source /usr/lib/ujust/ujust.sh
 
     QUADLET=/etc/containers/systemd/coolercontrol.container
+    RESUME_SERVICE=/etc/systemd/system/coolercontrol-resume.service
     IMAGE=docker.io/coolercontrol/coolercontrold:latest
     DESKTOP_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/applications"
     DESKTOP_FILE="$DESKTOP_DIR/org.coolercontrol.CoolerControl.desktop"
@@ -84,6 +85,36 @@ install-coolercontrol ACTION="":
         fi
     }
 
+    # Podman quadlet lacks system D-Bus → no suspend/resume signals → restart on wake
+    install_resume_service() {
+        sudo tee "$RESUME_SERVICE" <<'EOF'
+    [Unit]
+    Description=Restart CoolerControl after resume
+    DefaultDependencies=no
+    After=suspend.target hibernate.target hybrid-sleep.target suspend-then-hibernate.target
+    After=coolercontrol.service
+    ConditionPathExists=/run/systemd/generator/coolercontrol.service
+
+    [Service]
+    Type=oneshot
+    ExecStart=/usr/bin/systemctl try-restart coolercontrol.service
+    TimeoutSec=30
+
+    [Install]
+    WantedBy=suspend.target hibernate.target hybrid-sleep.target suspend-then-hibernate.target
+    EOF
+        sudo systemctl daemon-reload
+        sudo systemctl enable coolercontrol-resume.service
+    }
+
+    uninstall_resume_service() {
+        if [[ -f "$RESUME_SERVICE" ]]; then
+            sudo systemctl disable --now coolercontrol-resume.service 2>/dev/null || true
+            sudo rm -f "$RESUME_SERVICE"
+            sudo systemctl daemon-reload
+        fi
+    }
+
     install_coolercontrol() {
         cleanup_layered_coolercontrol
 
@@ -124,6 +155,7 @@ install-coolercontrol ACTION="":
     EOF
         sudo systemctl daemon-reload
         sudo systemctl restart coolercontrol.service
+        install_resume_service
         mkdir -p "$DESKTOP_DIR" "$ICON_DIR"
         curl -fsSL --remove-on-error \
             https://raw.githubusercontent.com/codifryed/coolercontrol/40c9d78888c3eebf40e136d759cd7206af70c724/packaging/metadata/org.coolercontrol.CoolerControl.svg \
@@ -142,6 +174,7 @@ install-coolercontrol ACTION="":
         echo 'Added CoolerControl Web UI to the application menu.'
         echo 'CoolerControl is available at http://localhost:11987/'
         echo 'The container runs privileged for hardware access. See https://docs.coolercontrol.org/installation/docker.html#device-access to restrict access.'
+        echo 'Suspend/resume fix installed: fans will re-apply profiles after wake.'
     }
 
     uninstall_coolercontrol() {
@@ -152,6 +185,7 @@ install-coolercontrol ACTION="":
             sudo rm -f "$QUADLET"
             sudo systemctl daemon-reload
         fi
+        uninstall_resume_service
         sudo podman rm -f --ignore coolercontrold
         sudo podman image rm --ignore "$IMAGE"
         rm -f "$DESKTOP_FILE" "$DESKTOP_DIR/coolercontrol-web.desktop" "$ICON_FILE"
