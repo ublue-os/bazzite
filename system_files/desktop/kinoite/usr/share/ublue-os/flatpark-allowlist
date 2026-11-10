@@ -1,0 +1,3 @@
+deny *
+allow com.blackmagic.*
+allow com.brave.Origin
