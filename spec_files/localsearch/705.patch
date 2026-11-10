@@ -1,0 +1,92 @@
+From 80fa4bb1e0fc2ef43ac2f789f3c2d23d65291173 Mon Sep 17 00:00:00 2001
+From: Charles <charles05@canonical.com>
+Date: Tue, 6 Oct 2026 10:28:03 +0100
+Subject: [PATCH] extractor: Fix double free of GError on error propagation
+
+The GMarkup removal (b13b1d7eb and siblings) declared the inner GError
+with g_autoptr() and then handed it off with g_propagate_error(), so it
+is freed once by the caller and again on scope exit. A read error on
+the input stream (e.g. a .abw file that is neither XML nor valid gzip)
+makes localsearch-extractor-3 crash in tracker_decorator_info_complete_error()
+whilst formatting the dangling message, and the extractor then crash-loops
+on the same file.
+
+Steal the pointer on hand-off. The same pattern existed in the epub,
+msoffice-xml and oasis extractors, and in tracker_extract_file() on the
+thread creation failure path.
+---
+ src/extractor/tracker-extract-abw.c          | 2 +-
+ src/extractor/tracker-extract-epub.c         | 2 +-
+ src/extractor/tracker-extract-msoffice-xml.c | 2 +-
+ src/extractor/tracker-extract-oasis.c        | 2 +-
+ src/extractor/tracker-extract.c              | 2 +-
+ 5 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/src/extractor/tracker-extract-abw.c b/src/extractor/tracker-extract-abw.c
+index 6aececc9f..8223820f5 100644
+--- a/src/extractor/tracker-extract-abw.c
++++ b/src/extractor/tracker-extract-abw.c
+@@ -113,7 +113,7 @@ parse_xml_from_stream_sax (GInputStream        *stream,
+ 
+ 	if (!ok) {
+ 		if (inner_error) {
+-			g_propagate_error (error, inner_error);
++			g_propagate_error (error, g_steal_pointer (&inner_error));
+ 		} else if (ctxt->lastError.message) {
+ 			g_set_error (error, G_IO_ERROR, G_IO_ERROR_FAILED,
+ 			             "XML error in line %d: %s",
+diff --git a/src/extractor/tracker-extract-epub.c b/src/extractor/tracker-extract-epub.c
+index a03e99343..c3d3f6c54 100644
+--- a/src/extractor/tracker-extract-epub.c
++++ b/src/extractor/tracker-extract-epub.c
+@@ -646,7 +646,7 @@ parse_xml_from_zip_sax (TrackerZip           *zip,
+ 
+ 	if (!ok) {
+ 		if (inner_error) {
+-			g_propagate_error (error, inner_error);
++			g_propagate_error (error, g_steal_pointer (&inner_error));
+ 		} else if (ctx->lastError.message) {
+ 			g_set_error (error, G_IO_ERROR, G_IO_ERROR_FAILED,
+ 			             "XML error in %s (line %d): %s",
+diff --git a/src/extractor/tracker-extract-msoffice-xml.c b/src/extractor/tracker-extract-msoffice-xml.c
+index 724a2cc71..d579f8a59 100644
+--- a/src/extractor/tracker-extract-msoffice-xml.c
++++ b/src/extractor/tracker-extract-msoffice-xml.c
+@@ -654,7 +654,7 @@ parse_xml_from_zip_sax (TrackerZip          *zip,
+ 
+ 	if (!ok) {
+ 		if (inner_error) {
+-			g_propagate_error (error, inner_error);
++			g_propagate_error (error, g_steal_pointer (&inner_error));
+ 		} else if (ctxt->lastError.message) {
+ 			g_set_error (error, G_IO_ERROR, G_IO_ERROR_FAILED,
+ 			             "XML error in %s (line %d): %s",
+diff --git a/src/extractor/tracker-extract-oasis.c b/src/extractor/tracker-extract-oasis.c
+index 3686b149e..9e2317979 100644
+--- a/src/extractor/tracker-extract-oasis.c
++++ b/src/extractor/tracker-extract-oasis.c
+@@ -180,7 +180,7 @@ parse_xml_from_zip_sax (TrackerZip           *zip,
+ 
+ 	if (!ok) {
+ 		if (inner_error) {
+-			g_propagate_error (error, inner_error);
++			g_propagate_error (error, g_steal_pointer (&inner_error));
+ 		} else if (ctxt->lastError.message) {
+ 			g_set_error (error, G_IO_ERROR, G_IO_ERROR_FAILED,
+ 			             "XML error in %s (line %d): %s",
+diff --git a/src/extractor/tracker-extract.c b/src/extractor/tracker-extract.c
+index 5cc3ec781..b672f0daf 100644
+--- a/src/extractor/tracker-extract.c
++++ b/src/extractor/tracker-extract.c
+@@ -489,7 +489,7 @@ tracker_extract_file (TrackerExtract      *extract,
+ 					  g_main_loop_ref (extract->thread_loop),
+ 					  &error);
+ 		if (!extract->task_thread) {
+-			g_task_return_error (task, error);
++			g_task_return_error (task, g_steal_pointer (&error));
+ 			return;
+ 		}
+ 
+-- 
+GitLab
+
