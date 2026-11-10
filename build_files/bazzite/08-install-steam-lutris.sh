@@ -15,6 +15,8 @@ dnf5 -y install dmemcg-booster
 if [[ "${BASE_IMAGE_NAME}" == "kinoite" ]]; then
     dnf5 -y install plasma-foreground-booster-dmemcg
     desktop-file-edit \
+        --set-key=NoDisplay \
+        --set-value=true \
         --set-key=Hidden \
         --set-value=true \
         /usr/share/applications/org.kde.foreground-booster.desktop
