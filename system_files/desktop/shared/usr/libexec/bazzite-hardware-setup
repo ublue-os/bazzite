@@ -45,6 +45,7 @@ MINIMUM_FREE_ZRAM=$(awk '/MemTotal/ {printf "%.0f", $2 * 0.01}' /proc/meminfo)
 CURRENT_FREE_ZRAM=$(sysctl vm.min_free_kbytes | awk '{print $3}')
 KARGS=$(rpm-ostree kargs)
 NEEDED_KARGS=()
+SHOULD_REBOOT=false
 
 # Add directory for fixups
 mkdir -p /etc/bazzite/fixups
@@ -305,10 +306,10 @@ if [ ! -f /etc/hostname ]; then
   touch /etc/hostname
 fi
 
-if [[ -n "$NEEDED_KARGS" ]]; then
+if (( ${#NEEDED_KARGS[@]} > 0 )); then
   echo "Found needed karg changes, applying the following: ${NEEDED_KARGS[*]}"
   plymouth display-message --text="Preparing System - Please wait, this may take a while" || true
-  rpm-ostree kargs ${NEEDED_KARGS[*]} || exit 1
+  rpm-ostree kargs "${NEEDED_KARGS[@]}" || exit 1
   SHOULD_REBOOT=true
 else
   echo "No karg changes needed"
