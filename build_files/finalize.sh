@@ -130,7 +130,7 @@ assign_chunk ublue-os-config yearly \
     /usr/share/dnf/plugins/copr.vendor.conf
 
 assign_chunk bazzite-just quarterly /usr/share/ublue-os/just
-assign_chunk bazzite-yafti quarterly /usr/share/yafti
+assign_chunk bazzite-portal quarterly /usr/share/bazzite-portal
 assign_chunk bazzite-bazaar quarterly /usr/share/ublue-os/bazaar
 
 for GNOME_EXTENSION in /usr/share/gnome-shell/extensions/*; do
