@@ -23,7 +23,7 @@ dnf5 -y install \
 echo "==> Installing core packages from Terra repo..."
 inputplumber_package="inputplumber"
 case "${IMAGE_BRANCH}" in
-    testing|unstable) inputplumber_package="inputplumber-nightly" ;;
+    unstable) inputplumber_package="inputplumber-nightly" ;;
 esac
 
 dnf5 -y install \
