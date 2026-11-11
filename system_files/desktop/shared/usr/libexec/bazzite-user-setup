@@ -18,7 +18,7 @@ BAZZITE_CONFIG_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/bazzite"
 mkdir -p "$BAZZITE_CONFIG_DIR"
 
 # SCRIPT VERSION
-USER_SETUP_VER=58
+USER_SETUP_VER=59
 USER_SETUP_VER_FILE="$BAZZITE_CONFIG_DIR/version"
 USER_SETUP_FEDORA_VER_FILE="$BAZZITE_CONFIG_DIR/fedora_version"
 USER_SETUP_IMAGE_VER_FILE=$BAZZITE_CONFIG_DIR/image_name""
@@ -45,6 +45,12 @@ fi
 
 # Handle privileged tasks
 pkexec /usr/libexec/bazzite-privileged-user-setup "$USER"
+
+# Remove the legacy Portal autostart entry; the new Portal agent handles first login.
+legacy_portal_autostart="${XDG_CONFIG_HOME:-$HOME/.config}/autostart/bazzite-portal.desktop"
+if grep -qs "yafti_gtk" "$legacy_portal_autostart"; then
+  rm -f "$legacy_portal_autostart"
+fi
 
 # Replace existing Portal pins without adding a pin if the user removed it.
 if [[ $BASE_IMAGE_NAME =~ "kinoite" ]]; then

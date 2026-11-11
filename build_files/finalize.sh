@@ -232,7 +232,6 @@ assign_chunk bazzite-desktop-config quarterly \
     /etc/skel/.config/gnome-initial-setup-done \
     /etc/skel/.config/gtk-4.0/{gtk,kde_window_geometry}.css \
     /etc/skel/.config/kcminputrc \
-    /etc/skel/.config/autostart/bazzite-portal.desktop \
     /etc/skel/.local/share/org.gnome.Ptyxis/palettes/{vapor,vgui2}.palette \
     /etc/skel/.var/app/com.ranfdev.DistroShelf/config/glib-2.0/settings/keyfile \
     /etc/xdg/QtProject/qtlogging.ini \
