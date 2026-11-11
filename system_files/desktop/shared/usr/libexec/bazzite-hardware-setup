@@ -6,7 +6,7 @@ IMAGE_BRANCH=$(jq -r '."image-branch"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=86
+HWS_VER=87
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -110,6 +110,35 @@ fi
 if [[ $KARGS =~ "nomodeset" ]]; then
   echo "Removing nomodeset"
   NEEDED_KARGS+=("--delete-if-present=nomodeset")
+fi
+
+# Enable TSC directsync after patch
+if [[ ! $KARGS =~ "tsc=directsync" ]]; then
+  if [ ! -r /proc/cpuinfo ]; then
+    echo "Cannot read /proc/cpuinfo; unable to check TSC support." >&2
+    exit 1
+  fi
+  clocksource_file=/sys/devices/system/clocksource/clocksource0/current_clocksource
+  if [ -r "$clocksource_file" ]; then
+    current_clocksource=$(cat "$clocksource_file")
+  else
+    current_clocksource=unknown
+  fi
+  if awk '
+    /^flags[[:space:]]*:/ {
+        for (i = 2; i <= NF; i++) {
+            if ($i == "tsc") found = 1
+        }
+    }
+    END { exit !found }
+' /proc/cpuinfo &&
+    ! { [ "$current_clocksource" = hpet ] ||
+        [ "$current_clocksource" = acpi_pm ]; }; then
+    echo "CPU reports TSC support."
+  else
+    echo "Adding tsc=directsync"
+    NEEDED_KARGS+=("--append-if-missing=tsc=directsync")
+  fi
 fi
 
 if [[ $IMAGE_NAME =~ "deck" ]]; then
@@ -254,33 +283,6 @@ fi
 if [[ -f "/var/lib/waydroid/lxc/waydroid/config" ]]; then
   echo "Removing unneeded apparmor entry from Waydroid LXC"
   sed -i '/lxc\.apparmor\.profile\s*=\s*unconfined/d' "/var/lib/waydroid/lxc/waydroid/config"
-fi
-
-#Enable TSC directsync after patch
-set -eu
-if [ ! -r /proc/cpuinfo ]; then
-    echo "Cannot read /proc/cpuinfo; unable to check TSC support." >&2
-    exit 1
-fi
-clocksource_file=/sys/devices/system/clocksource/clocksource0/current_clocksource
-if [ -r "$clocksource_file" ]; then
-    current_clocksource=$(cat "$clocksource_file")
-else
-    current_clocksource=unknown
-fi
-if awk '
-    /^flags[[:space:]]*:/ {
-        for (i = 2; i <= NF; i++) {
-            if ($i == "tsc") found = 1
-        }
-    }
-    END { exit !found }
-' /proc/cpuinfo &&
-    ! { [ "$current_clocksource" = hpet ] ||
-        [ "$current_clocksource" = acpi_pm ]; }; then
-    echo "CPU reports TSC support."
-else
-    sudo rpm-ostree kargs --append-if-missing=tsc=directsync
 fi
 
 # HIBERNATION
