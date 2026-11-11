@@ -13,7 +13,7 @@ cp --archive --verbose --force \
 
 # Append the NVIDIA category on top of the selected desktop or Deck base.
 printf '\n' >> /usr/share/bazzite-portal/tools.yml
-cat /ctx/portal-tools/tools-nvidia.yml >> /usr/share/bazzite-portal/tools.yml
+cat /tmp/system_files/nvidia/portal-tools/tools-nvidia.yml >> /usr/share/bazzite-portal/tools.yml
 
 /ctx/bazzite-nvidia/01-remove-nvidia-conflicts.sh
 /ctx/bazzite-nvidia/02-install-nvidia-driver.sh

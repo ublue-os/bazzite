@@ -1,8 +1,8 @@
 # Shared actions for all images belong here.
 # Add Deck/HTPC-specific actions to:
-#   build_files/portal-tools/tools-deck.yml
+#   system_files/deck/portal-tools/tools-deck.yml
 # Add NVIDIA-specific actions to:
-#   build_files/portal-tools/tools-nvidia.yml
+#   system_files/nvidia/portal-tools/tools-nvidia.yml
 # Those category fragments are appended to this catalog during image builds.
 title: Bazzite Portal
 screens:

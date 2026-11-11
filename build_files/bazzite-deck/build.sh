@@ -13,7 +13,7 @@ cp --archive --verbose --force \
 
 # Append the Deck category after its image-specific files have been copied.
 printf '\n' >> /usr/share/bazzite-portal/tools.yml
-cat /ctx/portal-tools/tools-deck.yml >> /usr/share/bazzite-portal/tools.yml
+cat /tmp/system_files/deck/portal-tools/tools-deck.yml >> /usr/share/bazzite-portal/tools.yml
 
 /ctx/bazzite-deck/01-configure-desktop.sh
 /ctx/bazzite-deck/02-install-patched-upower.sh
