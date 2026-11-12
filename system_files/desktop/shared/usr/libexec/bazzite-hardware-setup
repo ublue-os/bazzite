@@ -92,6 +92,12 @@ if [[ ":Framework:" =~ ":$VEN_ID:" ]]; then
       NEEDED_KARGS+=("--append-if-missing=module_blacklist=hid_sensor_hub");
     fi
   fi
+  if [[ "$SYS_ID" == "Laptop 16 ("* ]]; then
+    if [[ ! $KARGS =~ "amdgpu.dcdebugmask" ]]; then
+      echo "Framework 16 Laptop detected, fixing display artifacts"
+      NEEDED_KARGS+=("--append-if-missing=amdgpu.dcdebugmask=0x410")
+    fi
+  fi
 fi
 
 # Slide reboots randomly, acpi=strict seems to fix it
