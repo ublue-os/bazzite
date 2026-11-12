@@ -119,7 +119,7 @@ if [[ $KARGS =~ "nomodeset" ]]; then
 fi
 
 # Enable TSC directsync after patch
-if [[ ! $KARGS =~ (^|[[:space:]])tsc=directsync($|[[:space:]]) ]]; then
+if [[ ! $KARGS =~ "tsc=directsync" ]]; then
   clocksource_file=/sys/devices/system/clocksource/clocksource0/current_clocksource
   if ! current_clocksource=$(cat "$clocksource_file"); then
     echo "Cannot read current clocksource; skipping tsc=directsync." >&2
