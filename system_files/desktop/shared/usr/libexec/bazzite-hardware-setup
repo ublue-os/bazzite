@@ -6,7 +6,7 @@ IMAGE_BRANCH=$(jq -r '."image-branch"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=88
+HWS_VER=89
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -119,31 +119,24 @@ if [[ $KARGS =~ "nomodeset" ]]; then
 fi
 
 # Enable TSC directsync after patch
-if [[ ! $KARGS =~ "tsc=directsync" ]]; then
-  if [ ! -r /proc/cpuinfo ]; then
-    echo "Cannot read /proc/cpuinfo; unable to check TSC support." >&2
-    exit 1
-  fi
+if [[ ! $KARGS =~ (^|[[:space:]])tsc=directsync($|[[:space:]]) ]]; then
   clocksource_file=/sys/devices/system/clocksource/clocksource0/current_clocksource
-  if [ -r "$clocksource_file" ]; then
-    current_clocksource=$(cat "$clocksource_file")
-  else
-    current_clocksource=unknown
-  fi
-  if awk '
-    /^flags[[:space:]]*:/ {
-        for (i = 2; i <= NF; i++) {
-            if ($i == "tsc") found = 1
-        }
-    }
-    END { exit !found }
-' /proc/cpuinfo &&
-    ! { [ "$current_clocksource" = hpet ] ||
-        [ "$current_clocksource" = acpi_pm ]; }; then
-    echo "CPU reports TSC support."
-  else
-    echo "Adding tsc=directsync"
-    NEEDED_KARGS+=("--append-if-missing=tsc=directsync")
+  if ! current_clocksource=$(cat "$clocksource_file"); then
+    echo "Cannot read current clocksource; skipping tsc=directsync." >&2
+  elif [[ "$current_clocksource" == hpet || "$current_clocksource" == acpi_pm ]]; then
+    if awk '
+      /^flags[[:space:]]*:/ {
+          for (i = 2; i <= NF; i++) {
+              if ($i == "tsc") found = 1
+          }
+      }
+      END { exit !found }
+    ' /proc/cpuinfo; then
+      echo "Adding tsc=directsync"
+      NEEDED_KARGS+=("--append-if-missing=tsc=directsync")
+    else
+      echo "Cannot confirm CPU TSC support; skipping tsc=directsync." >&2
+    fi
   fi
 fi
 
