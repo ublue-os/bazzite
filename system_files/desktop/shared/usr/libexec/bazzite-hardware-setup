@@ -6,7 +6,7 @@ IMAGE_BRANCH=$(jq -r '."image-branch"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=89
+HWS_VER=90
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -93,9 +93,9 @@ if [[ ":Framework:" =~ ":$VEN_ID:" ]]; then
     fi
   fi
   if [[ "$SYS_ID" == "Laptop 16 ("* ]]; then
-    if [[ ! $KARGS =~ "amdgpu.dcdebugmask" ]]; then
-      echo "Framework 16 Laptop detected, fixing display artifacts"
-      NEEDED_KARGS+=("--append-if-missing=amdgpu.dcdebugmask=0x410")
+    if [[ $KARGS =~ "amdgpu.dcdebugmask" ]]; then
+      echo "Framework 16 Laptop detected, removing replay workaround."
+      NEEDED_KARGS+=("--delete-if-present=amdgpu.dcdebugmask=0x410")
     fi
   fi
 fi
