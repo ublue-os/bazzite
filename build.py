@@ -60,13 +60,13 @@ IMAGE_VENDOR_DEFAULT = "ublue-os"
 DEFAULTS = {
     "fedora_version": 45,
     "kernel_flavor": "ogc",
-    "kernel_version": "7.3.3-ogc1.1.fc45",
+    "kernel_version": "7.3.4-ogc3.1.fc45",
     "base_image_flavor": "main",
     "arch": "x86_64",
 }
 
 #: Kernel for the nvidia-lts images, which stay on the LTS series.
-LTS_KERNEL_VERSION = "6.18.60-ogc1.1.fc45"
+LTS_KERNEL_VERSION = "6.18.60-ogc1.2.fc45"
 
 IMAGES: dict[str, dict] = {
     "bazzite": {
