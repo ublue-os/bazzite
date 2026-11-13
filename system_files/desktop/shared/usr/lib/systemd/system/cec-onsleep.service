@@ -5,6 +5,7 @@ Before=systemd-suspend.service systemd-hibernate.service systemd-hybrid-sleep.se
 
 [Service]
 Type=oneshot
+TimeoutStartSec=45
 ExecStart=-/usr/bin/cec-control onsleep
 
 [Install]
