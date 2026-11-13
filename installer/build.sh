@@ -124,6 +124,10 @@ WantedBy=multi-user.target
 EOF
 systemctl enable var-lib-flatpak.mount
 
+# systemd-tmpfiles fails to label the install target when /mnt is a symlink
+rm /mnt
+mkdir /mnt
+
 # Copy in the iso config for image-builder
 mkdir -p /usr/lib/bootc-image-builder
 cp /src/iso.yaml /usr/lib/bootc-image-builder/iso.yaml
