@@ -65,3 +65,15 @@ if ! $SKIP_VIDEOS; then
         fi
     done
 fi
+
+# Steam only runs its first-run setup when loginusers.vdf lists an account, so new installs start with a placeholder
+SETUP_ID="76561202255233022"
+LOGINUSERS="$HOME/.local/share/Steam/config/loginusers.vdf"
+REGISTRY="$HOME/.steam/registry.vdf"
+
+if [ ! -e "$REGISTRY" ] && [ ! -e "$LOGINUSERS" ]; then
+    mkdir -p "$(dirname "$LOGINUSERS")"
+    printf '"users"\n{\n\t"%s"\n\t{\n\t\t"AccountName"\t\t"bazzite-setup"\n\t}\n}\n' "$SETUP_ID" > "$LOGINUSERS"
+elif grep -qs "\"$SETUP_ID\"" "$LOGINUSERS" && grep -qsE '"CompletedOOBE"[[:space:]]+"1"' "$REGISTRY"; then
+    sed -i "/^\t\"$SETUP_ID\"\$/,/^\t}\$/d" "$LOGINUSERS"
+fi

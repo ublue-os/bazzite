@@ -83,6 +83,7 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=bind,from=akmods-nvidia,src=/rpms,dst=/tmp/rpms/nvidia \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=bind,from=brew,source=/system_files,target=/tmp/brew_files \
+    --mount=type=bind,src=steam_bootstrap,dst=/tmp/steam-bootstrap \
     --mount=type=bind,from=system_files,source=/,target=/tmp/system_files \
     --mount=type=tmpfs,dst=/tmp \
     --mount=type=secret,id=GITHUB_TOKEN \
