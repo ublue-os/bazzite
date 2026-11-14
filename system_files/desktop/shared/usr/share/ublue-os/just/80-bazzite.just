@@ -19,6 +19,80 @@ _install-system-flatpaks:
     FLATPAK_LIST="$(curl https://raw.githubusercontent.com/ublue-os/bazzite/main/installer/${FLATPAKS} | tr '\n' ' ')"
     flatpak --system -y install --reinstall --or-update ${FLATPAK_LIST}
 
+# Enable swap with zswap
+_toggle-swap:
+    #!/usr/bin/bash
+    set -euo pipefail
+    CHOICE=$(gum choose --header "Select an action:" "Enable Swap" "Disable Swap")
+
+    case "$CHOICE" in
+      "Enable Swap"*)
+        SIZE=$(gum input --header "Enter desired swapfile size (e.g., 16G, 32G):" --placeholder "8G" --value "8G")
+        if ! gum confirm "Create a ${SIZE} swapfile at /var/swap/swapfile and disable zram?"; then
+          echo "Operation cancelled."
+          exit 0
+        fi
+        if [ -z "$SIZE" ]; then
+          echo "Error: No size entered. Aborting."
+          exit 1
+        fi
+        if ! [[ "$SIZE" =~ ^[0-9]+[GM]$ ]]; then
+          echo "Error: Invalid format. Use a number followed by G or M (Example: 8G)."
+          exit 1
+        fi
+        NUM="${SIZE%[GM]}"
+        UNIT="${SIZE#$NUM}"
+        case "${UNIT^^}" in
+          G) REQ_BYTES=$((NUM * 1024 * 1024 * 1024)) ;;
+          M) REQ_BYTES=$((NUM * 1024 * 1024)) ;;
+          *) REQ_BYTES=$NUM ;;
+        esac
+        AVAIL_BYTES=$(df -B1 --output=avail /var | tail -n 1 | tr -d ' ')
+        if [ "$REQ_BYTES" -gt "$AVAIL_BYTES" ]; then
+          echo "Error: Requested size ($SIZE) exceeds available free space on /var."
+          exit 1
+        fi
+        if grep -q "swap" /etc/fstab; then
+          echo "Error: A swapfile is already configured in /etc/fstab."
+          exit 1
+        fi
+        if ! gum confirm "Create a ${SIZE} swapfile at /var/swap/swapfile and disable zram?"; then
+          echo "Operation cancelled."
+          exit 0
+        fi
+        sudo btrfs subvolume create /var/swap
+        sudo semanage fcontext -a -t var_t /var/swap
+        sudo restorecon /var/swap
+        sudo btrfs filesystem mkswapfile --size "$SIZE" /var/swap/swapfile
+        sudo semanage fcontext -a -t swapfile_t /var/swap/swapfile
+        sudo restorecon /var/swap/swapfile
+        sudo cp /etc/fstab /etc/fstab.bak
+        echo "/var/swap/swapfile none swap defaults,nofail 0 0" | sudo tee -a /etc/fstab > /dev/null
+        echo -e "# /etc/tmpfiles.d/zswap.conf\nw /sys/module/zswap/parameters/enabled          -    -    -    -    1\nw /sys/module/zswap/parameters/shrinker_enabled -    -    -    -    1\n" | sudo tee /etc/tmpfiles.d/zswap.conf > /dev/null
+        echo "" | sudo tee /etc/systemd/zram-generator.conf > /dev/null
+        echo "Swap enabled successfully, reboot to take effect"
+        ;;
+      "Disable Swap"*)
+        if ! gum confirm "Disable swapfile, remove zswap config, and restore zram?"; then
+          echo "Operation cancelled."
+          exit 0
+        fi
+        sudo swapoff /var/swap/swapfile || true
+        sudo cp /etc/fstab /etc/fstab.bak
+        sudo sed -i '\|^/var/swap/swapfile none swap defaults,nofail 0 0$|d' /etc/fstab
+        if [ -d /var/swap ]; then
+          sudo btrfs subvolume delete /var/swap
+        fi
+        sudo rm -i /etc/tmpfiles.d/zswap.conf
+        sudo cp /usr/etc/systemd/zram-generator.conf /etc/systemd/zram-generator.conf
+        echo "Swap disabled successfully, reboot to take effect"
+        ;;
+      *)
+        echo "Operation cancelled."
+        exit 0
+        ;;
+    esac
+
 alias toggle-ssh := ssh
 
 # Manage SSH availability. Options: status | enable | disable | start
