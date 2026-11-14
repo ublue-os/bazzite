@@ -130,7 +130,7 @@ assign_chunk ublue-os-config yearly \
     /usr/share/dnf/plugins/copr.vendor.conf
 
 assign_chunk bazzite-just quarterly /usr/share/ublue-os/just
-assign_chunk bazzite-yafti quarterly /usr/share/yafti
+assign_chunk bazzite-portal quarterly /usr/share/bazzite-portal
 assign_chunk bazzite-bazaar quarterly /usr/share/ublue-os/bazaar
 
 for GNOME_EXTENSION in /usr/share/gnome-shell/extensions/*; do
@@ -229,7 +229,6 @@ assign_chunk bazzite-desktop-config quarterly \
     /etc/skel/.config/gnome-initial-setup-done \
     /etc/skel/.config/gtk-4.0/{gtk,kde_window_geometry}.css \
     /etc/skel/.config/kcminputrc \
-    /etc/skel/.config/autostart/bazzite-portal.desktop \
     /etc/skel/.local/share/org.gnome.Ptyxis/palettes/{vapor,vgui2}.palette \
     /etc/skel/.var/app/com.ranfdev.DistroShelf/config/glib-2.0/settings/keyfile \
     /etc/xdg/QtProject/qtlogging.ini \
