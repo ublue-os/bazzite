@@ -231,7 +231,7 @@ jobs:
         run: |
           set -eo pipefail
           run_id="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/steam_bootstrap.yml/runs?status=success&per_page=20" \
-            --jq "[.workflow_runs[] | select(.event != \"pull_request\" and .head_repository.full_name == \"${GITHUB_REPOSITORY}\")][0].id // empty")"
+            --jq "[.workflow_runs[] | select(.event != \"pull_request\" and .head_repository.full_name == \"${GITHUB_REPOSITORY}\")][0].id // empty")" || run_id=""
           if [ -z "${run_id}" ] || ! gh run download "${run_id}" --repo "${GITHUB_REPOSITORY}" --name steam-bootstrap --dir steam_bootstrap; then
             echo "::warning::No Steam bootstrap artifact found, the build will make its own"
           fi
