@@ -94,6 +94,7 @@ jobs:
     runs-on: ubuntu-26.04
     continue-on-error: false
     permissions:
+      actions: read
       contents: read
       packages: write
       id-token: write
@@ -220,6 +221,20 @@ jobs:
 
           echo "cache_name=${CACHE_NAME}" >> "$GITHUB_OUTPUT"
           echo "allow_cache_write=${ALLOW_CACHE_WRITE}" >> "$GITHUB_OUTPUT"
+
+      # Fetch the archive published by steam_bootstrap.yml. Without it the deck
+      # build makes its own from Valve's CDN.
+      - name: Download Steam bootstrap
+        if: contains(matrix.image, 'deck')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -eo pipefail
+          run_id="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/steam_bootstrap.yml/runs?status=success&per_page=20" \
+            --jq "[.workflow_runs[] | select(.event != \"pull_request\" and .head_repository.full_name == \"${GITHUB_REPOSITORY}\")][0].id // empty")"
+          if [ -z "${run_id}" ] || ! gh run download "${run_id}" --repo "${GITHUB_REPOSITORY}" --name steam-bootstrap --dir steam_bootstrap; then
+            echo "::warning::No Steam bootstrap artifact found, the build will make its own"
+          fi
 
       # Build image using buildah and save it to raw-img
       - name: Build Image

@@ -180,7 +180,7 @@ assign_chunk ublue-docs quarterly /usr/share/ublue-os/docs
 assign_chunk extest quarterly /usr/{lib,lib64}/extest/libextest.so
 assign_chunk winetricks yearly /usr/bin/winetricks
 
-assign_chunk steam-bootstrap yearly /usr/share/gamescope-session-plus/bootstrap_steam.tar.gz
+assign_chunk steam-bootstrap yearly /usr/share/gamescope-session-plus/bootstrap_steam.tar.zst
 
 assign_chunk bazzite-init monthly \
     /usr/libexec/bazzite-* \
