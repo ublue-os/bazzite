@@ -133,6 +133,7 @@ _toggle-swap ACTION="":
         echo -e "# /etc/tmpfiles.d/zswap.conf\nw /sys/module/zswap/parameters/enabled          -    -    -    -    1\nw /sys/module/zswap/parameters/shrinker_enabled -    -    -    -    1\n" | sudo tee /etc/tmpfiles.d/zswap.conf > /dev/null
         echo "" | sudo tee /etc/systemd/zram-generator.conf > /dev/null
         echo "Swap enabled successfully, reboot to take effect"
+        echo "You may edit zswap parameters at /etc/tmpfiles.d/zswap.conf"
         ;;
       "Disable Swap"*)
         if ! gum confirm "Disable swapfile, remove zswap config, and restore zram?"; then
