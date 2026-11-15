@@ -69,6 +69,14 @@ _toggle-swap ACTION="":
 
     case "$OPTION" in
       "Enable Swap"*)
+        if [ "$SWAP_STATUS" == "Enabled" ]; then
+          if [ -f /etc/crypttab ] && sudo grep -q "^swap " /etc/crypttab; then
+            echo "Error: An encrypted swapfile is already configured in /etc/crypttab."
+            exit 1
+          fi
+          echo "Error: A swapfile is already configured in /etc/fstab."
+          exit 1
+        fi
         SIZE=$(ugum input --header "Enter desired swapfile size (e.g., 16G, 32G):" --placeholder "8G" --value "8G")
         if [ -z "$SIZE" ]; then
           echo "Error: No size entered. Aborting."
@@ -102,14 +110,6 @@ _toggle-swap ACTION="":
           exit 1
         fi
         echo "Checking for existing swap configurations..."
-        if grep -qE '^[^#]*[[:space:]]swap[[:space:]]' /etc/fstab; then
-          if [ -f /etc/crypttab ] && sudo grep -q "^swap " /etc/crypttab; then
-            echo "Error: An encrypted swapfile is already configured in /etc/crypttab."
-            exit 1
-          fi
-          echo "Error: A swapfile is already configured in /etc/fstab."
-          exit 1
-        fi
         if ! ugum confirm "Create a ${SIZE} swapfile at /var/swap/swapfile and disable zram?"; then
           echo "Operation cancelled."
           exit 0
@@ -133,9 +133,13 @@ _toggle-swap ACTION="":
         echo -e "# /etc/tmpfiles.d/zswap.conf\nw /sys/module/zswap/parameters/enabled          -    -    -    -    1\nw /sys/module/zswap/parameters/shrinker_enabled -    -    -    -    1\n" | sudo tee /etc/tmpfiles.d/zswap.conf > /dev/null
         echo "" | sudo tee /etc/systemd/zram-generator.conf > /dev/null
         echo "Swap enabled successfully, reboot to take effect"
-        echo "You may edit zswap parameters at /etc/tmpfiles.d/zswap.conf"
+        echo "You may edit zswap parameters at ${b}/etc/tmpfiles.d/zswap.conf${n}."
         ;;
       "Disable Swap"*)
+        if [ "$SWAP_STATUS" == "Disabled" ]; then
+          echo "Swap is already disabled."
+          exit 1
+        fi
         if ! ugum confirm "Disable swapfile, remove zswap config, and restore zram?"; then
           echo "Operation cancelled."
           exit 0
