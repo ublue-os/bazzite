@@ -54,9 +54,9 @@ _toggle-swap ACTION="":
     elif [ "$OPTION" == "" ]; then
       echo
       if [ "$SWAP_STATUS" == "Enabled" ]; then
-        echo -e "${b}Swap Status:${n} ${g}$SWAP_STATUS${n}\n"
+        echo -e "${b}Swap Status:${n} ${green}$SWAP_STATUS${n}\n"
       else
-        echo -e "${b}Swap Status:${n} ${y}$SWAP_STATUS${n}\n"
+        echo -e "${b}Swap Status:${n} ${yellow}$SWAP_STATUS${n}\n"
       fi
       echo "Choose an option:"
       OPTION=$(ugum choose "Enable Swap" "Disable Swap" "Exit without saving")
