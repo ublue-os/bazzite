@@ -19,17 +19,55 @@ _install-system-flatpaks:
     FLATPAK_LIST="$(curl https://raw.githubusercontent.com/ublue-os/bazzite/main/installer/${FLATPAKS} | tr '\n' ' ')"
     flatpak --system -y install --reinstall --or-update ${FLATPAK_LIST}
 
+alias _swap := _toggle-swap
 # Enable swap with zswap
 _toggle-swap:
     #!/usr/bin/bash
+    source /usr/lib/ujust/ujust.sh
     set -euo pipefail
+    get_status_token() {
+      if grep -qE '^[^#]*[[:space:]]swap[[:space:]]' /etc/fstab 2>/dev/null \
+        || { [ -f /etc/crypttab ] && grep -q '^swap ' /etc/crypttab 2>/dev/null; }; then
+        echo "enabled"
+      else
+        echo "disabled"
+      fi
+    }
+
+    OPTION="{{ ACTION }}"
+    if [ "$OPTION" == "status" ]; then
+      get_status_token
+      exit $?
+    fi
+
+    SWAP_STATUS="Disabled"
+    if [[ "$(get_status_token)" == "enabled" ]]; then
+      SWAP_STATUS="Enabled"
+    fi
+
+    if [ "$OPTION" == "help" ]; then
+      echo "Usage: ujust toggle-swap <option>"
+      echo "  <option>: Specify the option to skip the interactive prompt"
+      echo "  Use 'enable' to create a disk-backed swap with zswap"
+      echo "  Use 'disable' to remove the swapfile and restore zram"
+      exit 0
+    elif [ "$OPTION" == "" ]; then
+      echo
+      if [ "$SWAP_STATUS" == "Enabled" ]; then
+        echo -e "${b}Swap Status:${n} ${g}$SWAP_STATUS${n}\n"
+      else
+        echo -e "${b}Swap Status:${n} ${y}$SWAP_STATUS${n}\n"
+      fi
+      echo "Choose an option:"
+      OPTION=$(ugum choose "Enable Swap" "Disable Swap" "Exit without saving")
+    fi
+
     if [[ "$(findmnt -n -o FSTYPE -T /var)" != "btrfs" ]]; then
       echo "Error: /var is not on a btrfs filesystem. This helper only works on btrfs."
       exit 1
     fi
-    CHOICE=$(gum choose --header "Select an action:" "Enable Swap" "Disable Swap")
 
-    case "$CHOICE" in
+    case "$OPTION" in
       "Enable Swap"*)
         SIZE=$(gum input --header "Enter desired swapfile size (e.g., 16G, 32G):" --placeholder "8G" --value "8G")
         if [ -z "$SIZE" ]; then
