@@ -21,7 +21,7 @@ _install-system-flatpaks:
 
 alias _swap := _toggle-swap
 # Enable swap with zswap
-_toggle-swap:
+_toggle-swap ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
     set -euo pipefail
