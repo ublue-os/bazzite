@@ -23,15 +23,15 @@ _install-system-flatpaks:
 _toggle-swap:
     #!/usr/bin/bash
     set -euo pipefail
+    if [[ "$(findmnt -n -o FSTYPE -T /var)" != "btrfs" ]]; then
+      echo "Error: /var is not on a btrfs filesystem. This helper only works on btrfs."
+      exit 1
+    fi
     CHOICE=$(gum choose --header "Select an action:" "Enable Swap" "Disable Swap")
 
     case "$CHOICE" in
       "Enable Swap"*)
         SIZE=$(gum input --header "Enter desired swapfile size (e.g., 16G, 32G):" --placeholder "8G" --value "8G")
-        if ! gum confirm "Create a ${SIZE} swapfile at /var/swap/swapfile and disable zram?"; then
-          echo "Operation cancelled."
-          exit 0
-        fi
         if [ -z "$SIZE" ]; then
           echo "Error: No size entered. Aborting."
           exit 1
@@ -43,16 +43,32 @@ _toggle-swap:
         NUM="${SIZE%[GM]}"
         UNIT="${SIZE#$NUM}"
         case "${UNIT^^}" in
-          G) REQ_BYTES=$((NUM * 1024 * 1024 * 1024)) ;;
-          M) REQ_BYTES=$((NUM * 1024 * 1024)) ;;
+          G) REQ_BYTES=$((10#$NUM * 1024 * 1024 * 1024)) ;;
+          M) REQ_BYTES=$((10#$NUM * 1024 * 1024)) ;;
           *) REQ_BYTES=$NUM ;;
         esac
+        ENC_CHOICE=$(gum choose --header "Encrypt the swapfile?(Note: LUKS encrypted swap is currently not supported)" \
+          "No  - Unencrypted" \
+          "Yes - Encrypted (random key per boot, no hibernation)")
+        ENCRYPTED=false
+        if [[ "$ENC_CHOICE" == Yes* ]]; then
+          ENCRYPTED=true
+        fi
         AVAIL_BYTES=$(df -B1 --output=avail /var | tail -n 1 | tr -d ' ')
         if [ "$REQ_BYTES" -gt "$AVAIL_BYTES" ]; then
           echo "Error: Requested size ($SIZE) exceeds available free space on /var."
           exit 1
         fi
-        if grep -q "swap" /etc/fstab; then
+        if ! [ "$REQ_BYTES" -gt 0 ]; then
+          echo "Error: Requested size ("$REQ_BYTES") is negative."
+          exit 1
+        fi
+        echo "Checking for existing swap configurations..."
+        if grep -qE '^[^#]*[[:space:]]swap[[:space:]]' /etc/fstab; then
+          if [ -f /etc/crypttab ] && sudo grep -q "^swap " /etc/crypttab; then
+            echo "Error: An encrypted swapfile is already configured in /etc/crypttab."
+            exit 1
+          fi
           echo "Error: A swapfile is already configured in /etc/fstab."
           exit 1
         fi
@@ -66,8 +82,16 @@ _toggle-swap:
         sudo btrfs filesystem mkswapfile --size "$SIZE" /var/swap/swapfile
         sudo semanage fcontext -a -t swapfile_t /var/swap/swapfile
         sudo restorecon /var/swap/swapfile
-        sudo cp /etc/fstab /etc/fstab.bak
-        echo "/var/swap/swapfile none swap defaults,nofail 0 0" | sudo tee -a /etc/fstab > /dev/null
+        sudo cp /etc/fstab "/etc/fstab.bak.$(date +%Y%m%d%H%M%S)"
+        if [ "$ENCRYPTED" = true ]; then
+          if [ -f /etc/crypttab ]; then
+            sudo cp /etc/crypttab "/etc/crypttab.bak.$(date +%Y%m%d%H%M%S)"
+          fi
+          echo "swap /var/swap/swapfile /dev/urandom swap,cipher=aes-xts-plain64" | sudo tee -a /etc/crypttab > /dev/null
+          echo "/dev/mapper/swap none swap defaults,nofail 0 0" | sudo tee -a /etc/fstab > /dev/null
+        else
+          echo "/var/swap/swapfile none swap defaults,nofail 0 0" | sudo tee -a /etc/fstab > /dev/null
+        fi
         echo -e "# /etc/tmpfiles.d/zswap.conf\nw /sys/module/zswap/parameters/enabled          -    -    -    -    1\nw /sys/module/zswap/parameters/shrinker_enabled -    -    -    -    1\n" | sudo tee /etc/tmpfiles.d/zswap.conf > /dev/null
         echo "" | sudo tee /etc/systemd/zram-generator.conf > /dev/null
         echo "Swap enabled successfully, reboot to take effect"
@@ -77,13 +101,24 @@ _toggle-swap:
           echo "Operation cancelled."
           exit 0
         fi
-        sudo swapoff /var/swap/swapfile || true
-        sudo cp /etc/fstab /etc/fstab.bak
-        sudo sed -i '\|^/var/swap/swapfile none swap defaults,nofail 0 0$|d' /etc/fstab
-        if [ -d /var/swap ]; then
+        sudo cp /etc/fstab "/etc/fstab.bak.$(date +%Y%m%d%H%M%S)"
+        if [ -f /etc/crypttab ] && [ -s /etc/crypttab ]; then
+          sudo cp /etc/crypttab "/etc/crypttab.bak.$(date +%Y%m%d%H%M%S)"
+        fi
+        echo "Disabling swap, this may take a while to move swap off disk."
+        sudo swapoff /dev/mapper/swap 2>/dev/null || true
+        sudo swapoff /var/swap/swapfile 2>/dev/null || true
+        sudo systemctl stop systemd-cryptsetup@swap.service 2>/dev/null || true
+        sudo rm -f /var/swap/swapfile
+        if sudo btrfs subvolume show /var/swap >/dev/null 2>&1; then
           sudo btrfs subvolume delete /var/swap
         fi
-        sudo rm -i /etc/tmpfiles.d/zswap.conf
+        if [ -f /etc/crypttab ] && [ -s /etc/crypttab ]; then
+          sudo sed -i '/^swap /d' /etc/crypttab
+        fi
+        sudo sed -i '\|^/var/swap/swapfile none swap defaults,nofail 0 0$|d' /etc/fstab
+        sudo sed -i '\|^/dev/mapper/swap none swap defaults,nofail 0 0$|d' /etc/fstab
+        sudo rm -f /etc/tmpfiles.d/zswap.conf
         sudo cp /usr/etc/systemd/zram-generator.conf /etc/systemd/zram-generator.conf
         echo "Swap disabled successfully, reboot to take effect"
         ;;
