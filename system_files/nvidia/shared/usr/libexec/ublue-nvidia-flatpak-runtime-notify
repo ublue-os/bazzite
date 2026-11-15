@@ -28,7 +28,7 @@ action=$(eval "$notify_cmd") || exit
             /usr/bin/bazaar
             ;;
         update_runtime_only)
-            /usr/bin/yafti_gtk.py /usr/share/yafti/yafti.yml --action-id update-nvidia-runtime
+            /usr/bin/bazzite-portal --action-id update-nvidia-runtime
             ;;
         *)
             # Do nothing

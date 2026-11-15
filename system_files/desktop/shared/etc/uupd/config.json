@@ -2,6 +2,12 @@
     "modules": {
         "distrobox": {
             "disable": true
+        },
+        "flatpak": {
+            "binary-path": "/usr/libexec/bazzite-portal-uupd-flatpak"
+        },
+        "brew": {
+            "path": "/usr/libexec/bazzite-portal-uupd-brew"
         }
     }
 }
