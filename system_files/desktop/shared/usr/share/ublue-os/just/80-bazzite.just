@@ -69,7 +69,7 @@ _toggle-swap ACTION="":
 
     case "$OPTION" in
       "Enable Swap"*)
-        SIZE=$(gum input --header "Enter desired swapfile size (e.g., 16G, 32G):" --placeholder "8G" --value "8G")
+        SIZE=$(ugum input --header "Enter desired swapfile size (e.g., 16G, 32G):" --placeholder "8G" --value "8G")
         if [ -z "$SIZE" ]; then
           echo "Error: No size entered. Aborting."
           exit 1
@@ -85,7 +85,7 @@ _toggle-swap ACTION="":
           M) REQ_BYTES=$((10#$NUM * 1024 * 1024)) ;;
           *) REQ_BYTES=$NUM ;;
         esac
-        ENC_CHOICE=$(gum choose --header "Encrypt the swapfile?(Note: LUKS encrypted swap is currently not supported)" \
+        ENC_CHOICE=$(ugum choose --header "Encrypt the swapfile?(Note: LUKS encrypted swap is currently not supported)" \
           "No  - Unencrypted" \
           "Yes - Encrypted (random key per boot, no hibernation)")
         ENCRYPTED=false
@@ -110,7 +110,7 @@ _toggle-swap ACTION="":
           echo "Error: A swapfile is already configured in /etc/fstab."
           exit 1
         fi
-        if ! gum confirm "Create a ${SIZE} swapfile at /var/swap/swapfile and disable zram?"; then
+        if ! ugum confirm "Create a ${SIZE} swapfile at /var/swap/swapfile and disable zram?"; then
           echo "Operation cancelled."
           exit 0
         fi
@@ -136,7 +136,7 @@ _toggle-swap ACTION="":
         echo "You may edit zswap parameters at /etc/tmpfiles.d/zswap.conf"
         ;;
       "Disable Swap"*)
-        if ! gum confirm "Disable swapfile, remove zswap config, and restore zram?"; then
+        if ! ugum confirm "Disable swapfile, remove zswap config, and restore zram?"; then
           echo "Operation cancelled."
           exit 0
         fi
