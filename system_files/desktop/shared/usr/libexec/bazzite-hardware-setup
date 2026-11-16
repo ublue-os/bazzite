@@ -6,7 +6,7 @@ IMAGE_BRANCH=$(jq -r '."image-branch"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=89
+HWS_VER=90
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -168,13 +168,13 @@ if [[ $IMAGE_NAME =~ "deck" ]]; then
       systemctl enable --now jupiter-fan-control.service
       systemctl enable --now vpower.service
     elif /usr/libexec/hwsupport/non-valve-handheld-hardware; then
-      echo "Other handheld detected, unmasking powerstation and inputplumber".
+      echo "Other handheld detected, unmasking powerstation and inputplumber, enabling vpower".
       systemctl unmask powerstation.service
       systemctl enable --now powerstation.service
       systemctl unmask inputplumber.service
       systemctl enable --now inputplumber.service
       systemctl disable --now jupiter-fan-control.service
-      systemctl disable --now vpower.service
+      systemctl enable --now vpower.service
       systemctl disable --now jupiter-biosupdate.service
       systemctl disable --now jupiter-controller-update.service
     else
