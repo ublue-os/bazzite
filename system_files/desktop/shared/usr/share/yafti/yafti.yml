@@ -269,6 +269,15 @@ screens:
           - id: "uninstall"
             label: "Uninstall SteamCMD"
             script: "ujust get-steamcmd uninstall"
+      - id: "punktfunk"
+        title: "Punktfunk"
+        description: "Self-hosted, fully featured game streaming app. Includes support for Pyrowave, VRR, custom scripting, full compatability with game mode, companion apps for PC and Phones, Virtual Displays, and fully self contained updates."
+        default: false
+        status_script: "ujust install-punktfunk"
+        options:
+          - id: "Install/Uninstall"
+            label: "Install/Uninstall"
+            script: "yad --info --title=\"Info\" --image=dialog-information --text \"Once installed Punktfunk can be updated/managed from it's web interface, which can be accessed anytime from your system tray.\" --button=\"Got it\"!gtk-ok! && ujust install-punktfunk"
       - id: "sunshine"
         title: "Sunshine"
         description: "Self-hosted video game streaming host for Moonlight. Desktop users are encouraged to use the Flatpak version, while Deck users may wish to choose Sunshine - Brew to enable streaming from game mode."
