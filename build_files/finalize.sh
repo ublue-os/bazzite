@@ -219,6 +219,7 @@ assign_chunk bazzite-hardware-config monthly \
     /usr/lib/systemd/system/kmod-sleep-workaround@.service \
     /usr/lib/udev/hwdb.d/60-keyboard.hwdb \
     /usr/lib/udev/rules.d/{30-steamdeck,40-backlights,50-ally-fingerprint,50-ally-x-controller}.rules \
+    /usr/lib/udev/rules.d/50-ayaneo-3-controller.rules \
     /usr/lib/udev/rules.d/{50-gpd-win-4-fingerprint,50-gpd-wm2-fingerprint}.rules \
     /usr/lib/udev/rules.d/{60-schedulers,70-steam-jupiter-leds,80-gpu-reset,90-dolphin-motion}.rules \
     /usr/lib/udev/rules.d/{99-cec-bluetooth,99-powertargets,99-steamcontroller-wakeup,99-valve-leds}.rules
@@ -243,7 +244,8 @@ assign_chunk bazzite-desktop-config quarterly \
     /usr/share/glib-2.0/schemas/zz0-*.gschema.override \
     /usr/share/kde-settings/kde-profile/default/xdg/{kicker-extra-favoritesrc,krunnerrc} \
     /usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates/bazzite-pins.js \
-    /usr/share/templates/{MangoHud,dxvk,vkBasalt}.desktop
+    /usr/share/templates/{MangoHud,dxvk,vkBasalt}.desktop \
+    /usr/share/xdg-terminal-exec/{gnome,kde}-xdg-terminals.list
 
 assign_chunk bazzite-desktop-helpers monthly \
     /usr/bin/{custom-resolution-helper,distroshelf-helper,kde-ptyxis,missioncenter-helper,warehouse-helper} \
@@ -272,6 +274,7 @@ assign_chunk bazzite-gaming-helpers monthly \
     /usr/bin/{gameclass,mesa-git,protontricks,protontricks-launch,sd0,steam-tweaks}
 
 assign_chunk bazzite-gaming-config quarterly \
+    /etc/default/steam-hardware-control \
     /etc/default/steamos-{btrfs,nested-desktop} \
     /etc/skel/.config/user-tmpfiles.d/discord-rpc.conf \
     /usr/lib/systemd/user/steam-icons-cleanup.service \
@@ -302,6 +305,7 @@ assign_chunk bazzite-audio-config quarterly \
     /usr/share/wireplumber/wireplumber.conf.d/{51-disable-suspension,alsa-card0,alsa-card1,alsa-ps-controller,bluez}.conf
 
 assign_chunk bazzite-power-config quarterly \
+    /etc/UPower/UPower.conf.d/10-deck-defaults.conf \
     /usr/lib/tuned/profiles/{balanced,balanced-battery,powersave,powersave-battery,throughput-performance}-bazzite
 
 assign_chunk bazzite-network-config quarterly \
@@ -318,6 +322,7 @@ assign_chunk bazzite-storage monthly \
     /usr/lib/systemd/system/beesd@.timer \
     /usr/lib/systemd/system/fstrim.service.d/workaround-no-root-trim.conf \
     /usr/lib/systemd/user/ntfs-nag.service \
+    /usr/lib/tmpfiles.d/btrfs-reclaim.conf \
     /usr/libexec/ntfs-exfat-monitor-script
 
 assign_chunk bazzite-waydroid monthly \
