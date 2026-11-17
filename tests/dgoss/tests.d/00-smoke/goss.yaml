@@ -17,6 +17,23 @@ command:
     exec: "/usr/bin/bash -n /usr/libexec/bazzite-privileged-user-setup"
     exit-status: 0
 
+  ntsync_autoload_configured:
+    exec: |
+      sh -lc '
+      for config in /usr/lib/modules-load.d/*.conf /etc/modules-load.d/*.conf; do
+        [ -f "$config" ] || continue
+        if grep -Eq "^[[:space:]]*ntsync[[:space:]]*$" "$config"; then
+          echo "OK: ntsync autoload configured in $config"
+          exit 0
+        fi
+      done
+      echo "FAIL: no modules-load.d configuration loads ntsync"
+      exit 1
+      '
+    exit-status: 0
+    stdout:
+      - "/^OK:/"
+
   gamemode_news_hook_uses_release_channel:
     exec: |
       sh -lc '
