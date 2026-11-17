@@ -96,7 +96,7 @@ configure-htpc-auto-hdr action="":
 
     if [[ "$changed" == true ]]; then
         echo ""
-        echo "IMPORTANT: Restart your Steam Gaming Mode session"
+        echo "IMPORTANT: Restart your PC"
         echo "for this change to take effect."
         echo "Restarting Steam alone is not sufficient."
     fi
