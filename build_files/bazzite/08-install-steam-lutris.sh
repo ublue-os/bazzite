@@ -36,9 +36,12 @@ dnf5 -y install \
     jupiter-sd-mounting-btrfs \
     umu-wrapper \
     umu-launcher \
+    ntsync-autoload \
+    udev-joystick-blacklist-rm \
     dbus-x11 \
     xrandr \
     evtest \
+    hidapi \
     xdg-user-dirs \
     xdg-terminal-exec \
     gobject-introspection \
