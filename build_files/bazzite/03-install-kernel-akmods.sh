@@ -70,13 +70,14 @@ echo "==> Installing common akmods..."
     /tmp/rpms/{common,kmods}/*openrazer*.rpm \
     /tmp/rpms/{common,kmods}/*v4l2loopback*.rpm \
     /tmp/rpms/{common,kmods}/*xone*.rpm \
+    /tmp/rpms/{common,kmods}/*zenergy*.rpm \
+    /tmp/rpms/{common,kmods}/*nct6687d*.rpm \
     /tmp/rpms/{common,kmods}/*wl*.rpm
 
 # -- Install extra akmods --
 # Install extra kernel module RPMs (zenergy, gcadapter, evdi, etc.).
 echo "==> Installing extra akmods..."
 /ctx/tools/install-kmods \
-    /tmp/rpms/{extra,kmods-extra}/*zenergy*.rpm \
     /tmp/rpms/{extra,kmods-extra}/*gcadapter*.rpm \
     /tmp/rpms/{extra,kmods-extra}/*evdi*.rpm \
     /tmp/rpms/{extra,kmods-extra}/*kvmfr*.rpm \
@@ -86,7 +87,6 @@ echo "==> Installing extra akmods..."
     /tmp/rpms/{extra,kmods-extra}/*hid-fanatecff*.rpm \
     /tmp/rpms/{extra,kmods-extra}/*ryzen_smu*.rpm \
     /tmp/rpms/{extra,kmods-extra}/*sc0710*.rpm \
-    /tmp/rpms/{extra,kmods-extra}/*nct6687d*.rpm \
     /tmp/rpms/{extra,kmods-extra}/*system76*.rpm \
     /tmp/rpms/{extra,kmods-extra}/*vhba*.rpm \
     /tmp/rpms/{extra,kmods-extra}/*trueforce*.rpm \
