@@ -1,4 +1,3 @@
-
 # Configure automatic HDR switching for HTPCs in Steam Gaming Mode
 configure-htpc-auto-hdr action="":
     #!/usr/bin/env bash
@@ -6,7 +5,7 @@ configure-htpc-auto-hdr action="":
 
     CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/environment.d"
     CONFIG_FILE="$CONFIG_DIR/90-gamescope-hdr.conf"
-    choice="{{action}}"
+    choice="{{ action }}"
     changed=false
 
     # Return current state for Bazzite Portal
