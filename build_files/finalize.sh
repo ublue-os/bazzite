@@ -295,7 +295,7 @@ assign_chunk bazzite-gamescope-session monthly \
     /usr/lib/systemd/system/steam-web-debug-portforward.{service,socket} \
     /usr/libexec/os-session-select \
     /usr/share/applications/gamescope.desktop \
-    /usr/share/gamescope/scripts/00-gamescope/displays/gpd.win4.lcd.lua \
+    /usr/share/gamescope/scripts/00-gamescope/displays/{acer.nitroblaze7.lcd,gpd.win4.lcd}.lua \
     /usr/share/polkit-1/actions/org.bazzite.policykit.gamescope-session.policy \
     /usr/share/polkit-1/rules.d/{10-gamescope-session,bazzite-autologin}.rules
 
