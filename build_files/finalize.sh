@@ -216,14 +216,15 @@ assign_chunk bazzite-hardware-config monthly \
     /etc/modules-load.d/hid-steaminput-preload.conf \
     /usr/lib/modprobe.d/{fw-charge-control,mt7921,new-lg4ff}.conf \
     /usr/lib/systemd/system/cec-{onboot,onpoweroff,onsleep}.service \
-    /usr/lib/systemd/system/kmod-sleep-workaround@.service \
+    /usr/lib/systemd/system/{bmi323-sleep-workaround,kmod-sleep-workaround@}.service \
     /usr/lib/udev/hwdb.d/60-keyboard.hwdb \
+    /usr/libexec/bmi323-sleep-workaround \
     /usr/lib/udev/rules.d/{30-steamdeck,40-backlights,50-ally-fingerprint,50-ally-x-controller}.rules \
     /usr/lib/udev/rules.d/50-acer-nitro-blaze7-wakeup.rules \
     /usr/lib/udev/rules.d/50-ayaneo-3-controller.rules \
     /usr/lib/udev/rules.d/{50-gpd-win-4-fingerprint,50-gpd-wm2-fingerprint}.rules \
     /usr/lib/udev/rules.d/{60-schedulers,70-steam-jupiter-leds,80-gpu-reset,90-dolphin-motion}.rules \
-    /usr/lib/udev/rules.d/96-acer-nitro-blaze7-hide-gamepad.rules \
+    /usr/lib/udev/rules.d/{81-acer-nitro-blaze7-imu,96-acer-nitro-blaze7-hide-gamepad}.rules \
     /usr/lib/udev/rules.d/{99-cec-bluetooth,99-powertargets,99-steamcontroller-wakeup,99-valve-leds}.rules
 
 assign_chunk bazzite-desktop-config quarterly \

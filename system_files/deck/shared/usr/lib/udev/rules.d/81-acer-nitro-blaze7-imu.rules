@@ -1,0 +1,5 @@
+# Acer Nitro Blaze 7: InputPlumber streams the BMI323 through its IIO buffer for gyro. iio-sensor-proxy
+# disables that shared buffer whenever it starts or the sensor reappears after sleep, which freezes the
+# gyro, so keep iio-sensor-proxy off this sensor (no Desktop Mode auto-rotation). Runs after
+# 80-iio-sensor-proxy.rules.
+ACTION!="remove", SUBSYSTEM=="iio", ATTR{name}=="bmi323-imu", ATTR{[dmi/id]board_name}=="GN771-8HS", ENV{IIO_SENSOR_PROXY_TYPE}="", ENV{SYSTEMD_WANTS}=""
