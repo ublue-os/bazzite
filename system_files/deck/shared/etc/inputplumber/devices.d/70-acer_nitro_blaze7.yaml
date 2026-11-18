@@ -1,0 +1,58 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/ShadowBlip/InputPlumber/main/rootfs/usr/share/inputplumber/schema/composite_device_v1.json
+version: 1
+kind: CompositeDevice
+name: "Acer Nitro Blaze 7"
+
+single_source: false
+
+# Automatically manage this device when connected
+options:
+  auto_manage: true
+
+matches:
+  - dmi_data:
+      board_name: GN771-8HS
+      sys_vendor: Acer
+
+source_devices:
+  # Blaze 7 Gamepad (USB interface 0)
+  - group: gamepad
+    evdev:
+      name: Generic X-Box pad
+      vendor_id: "2f24"
+      product_id: "0135"
+      handler: event*
+  # Blaze 7 Quick Menu button (vendor HID, USB interface 3)
+  - group: gamepad
+    hidraw:
+      vendor_id: 0x2f24
+      product_id: 0x0135
+      interface_num: 3
+    capability_map_id: acer_blaze7_hid
+  # Blaze 7 Game Space button (sends Win+D through the EC keyboard)
+  - group: keyboard
+    evdev:
+      name: AT Translated Set 2 keyboard
+      phys_path: isa0060/serio0/input0
+      handler: event*
+  # Blaze 7 IMU (BMI323). Axes checked on hardware: flat screen up reads Y +1,
+  # upright facing the player Z -1, right edge up X +1.
+  - group: imu
+    iio:
+      name: bmi323-imu
+    config:
+      imu:
+        mount_matrix:
+          x: [0, 1, 0]
+          y: [0, 0, -1]
+          z: [-1, 0, 0]
+
+capability_map_id: acer_blaze7_kbd
+
+# The target input device(s) to emulate by default. The Steam Deck controller (UHID:
+# the USB/IP "deck" target keeps vhci_hcd busy and blocks suspend) carries the IMU to
+# Steam (gyro) and has native Steam and Quick Access buttons.
+target_devices:
+  - deck-uhid
+  - mouse
+  - keyboard

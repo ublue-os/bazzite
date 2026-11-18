@@ -1,0 +1,24 @@
+# Schema version number
+version: 1
+
+# The type of configuration schema
+kind: CapabilityMap
+
+# Name for the device event map
+name: "Acer Nitro Blaze 7 Keyboard"
+
+# Unique identifier of the capability mapping
+id: acer_blaze7_kbd
+
+# List of mapped events that are activated by a specific set of activation keys.
+mapping:
+  - name: Game Space
+    source_events:
+      - keyboard: KeyLeftMeta
+      - keyboard: KeyD
+    target_event:
+      gamepad:
+        button: Guide
+
+# List of events to filter from the source devices
+filtered_events: []

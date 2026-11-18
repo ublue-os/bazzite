@@ -211,7 +211,7 @@ assign_chunk bazzite-system-config quarterly \
 assign_chunk bazzite-hardware-config monthly \
     /etc/default/cec-control \
     /etc/inputplumber/capability_maps.d/acer*.yaml \
-    /etc/inputplumber/devices.d/{60-cec,70-acer_atlas8}.yaml \
+    /etc/inputplumber/devices.d/{60-cec,70-acer_atlas8,70-acer_nitro_blaze7}.yaml \
     /etc/modprobe.d/{deck-blacklist,default-disable-broadcom-wl}.conf \
     /etc/modules-load.d/hid-steaminput-preload.conf \
     /usr/lib/modprobe.d/{fw-charge-control,mt7921,new-lg4ff}.conf \
