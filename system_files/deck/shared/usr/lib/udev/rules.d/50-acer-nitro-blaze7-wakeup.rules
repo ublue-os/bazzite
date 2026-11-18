@@ -1,0 +1,6 @@
+# Acer Nitro Blaze 7: only the power button should wake the device from s2idle.
+# The SD card reader's PCIe port (GPP7) and the internal USB controller (XHC0, which carries the
+# gamepad) both raise wake events a few seconds after suspend; the gamepad drops off USB while
+# suspended and XHC0 then signals PME through GPIO 58, waking the device right away.
+ACTION=="add", SUBSYSTEM=="pci", KERNEL=="0000:00:02.3", ATTR{vendor}=="0x1022", ATTR{device}=="0x14ee", ATTR{[dmi/id]board_name}=="GN771-8HS", ATTR{power/wakeup}="disabled"
+ACTION=="add", SUBSYSTEM=="pci", KERNEL=="0000:c4:00.3", ATTR{vendor}=="0x1022", ATTR{device}=="0x15b9", ATTR{[dmi/id]board_name}=="GN771-8HS", ATTR{power/wakeup}="disabled"
