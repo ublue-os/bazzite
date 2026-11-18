@@ -1,0 +1,3 @@
+# Acer Nitro Blaze 7: the FocalTech fingerprint reader disconnects and reconnects every few seconds.
+# Power off its USB port so it stops cycling.
+ACTION=="add", SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTR{idVendor}=="2808", ATTR{idProduct}=="c652", ATTR{[dmi/id]board_name}=="GN771-8HS", ATTR{port/disable}="1"

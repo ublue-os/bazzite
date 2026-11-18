@@ -220,7 +220,7 @@ assign_chunk bazzite-hardware-config monthly \
     /usr/lib/udev/hwdb.d/60-keyboard.hwdb \
     /usr/libexec/bmi323-sleep-workaround \
     /usr/lib/udev/rules.d/{30-steamdeck,40-backlights,50-ally-fingerprint,50-ally-x-controller}.rules \
-    /usr/lib/udev/rules.d/50-acer-nitro-blaze7-wakeup.rules \
+    /usr/lib/udev/rules.d/{50-acer-nitro-blaze7-fingerprint,50-acer-nitro-blaze7-wakeup}.rules \
     /usr/lib/udev/rules.d/50-ayaneo-3-controller.rules \
     /usr/lib/udev/rules.d/{50-gpd-win-4-fingerprint,50-gpd-wm2-fingerprint}.rules \
     /usr/lib/udev/rules.d/{60-schedulers,70-steam-jupiter-leds,80-gpu-reset,90-dolphin-motion}.rules \
