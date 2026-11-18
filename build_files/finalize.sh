@@ -223,6 +223,7 @@ assign_chunk bazzite-hardware-config monthly \
     /usr/lib/udev/rules.d/50-ayaneo-3-controller.rules \
     /usr/lib/udev/rules.d/{50-gpd-win-4-fingerprint,50-gpd-wm2-fingerprint}.rules \
     /usr/lib/udev/rules.d/{60-schedulers,70-steam-jupiter-leds,80-gpu-reset,90-dolphin-motion}.rules \
+    /usr/lib/udev/rules.d/96-acer-nitro-blaze7-hide-gamepad.rules \
     /usr/lib/udev/rules.d/{99-cec-bluetooth,99-powertargets,99-steamcontroller-wakeup,99-valve-leds}.rules
 
 assign_chunk bazzite-desktop-config quarterly \

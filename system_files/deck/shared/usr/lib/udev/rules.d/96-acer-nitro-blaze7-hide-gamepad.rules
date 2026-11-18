@@ -1,0 +1,6 @@
+# Acer Nitro Blaze 7: keep the raw xpad gamepad (USB 2f24:0135, interface 0) hidden from users at all
+# times so only InputPlumber reads it. The gamepad re-enumerates after every resume and InputPlumber's
+# hide rules match the old input number, so Steam could open the new node first: a disconnect sound and
+# a dead second controller (ShadowBlip/InputPlumber#812). Runs after 73-seat-late so the ACL from
+# uaccess is cleared again. The HID mouse/keyboard interfaces (right stick mouse mode) stay visible.
+ACTION=="add|change", SUBSYSTEM=="input", KERNEL=="js[0-9]*|event[0-9]*", ATTRS{id/vendor}=="2f24", ATTRS{id/product}=="0135", ATTRS{name}=="Generic X-Box pad", ATTR{[dmi/id]board_name}=="GN771-8HS", MODE:="0000", GROUP:="root", TAG-="uaccess", RUN+="/usr/bin/chmod 000 /dev/input/%k", RUN+="/usr/bin/setfacl -b /dev/input/%k"
