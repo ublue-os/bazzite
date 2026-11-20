@@ -1,0 +1,4 @@
+blocklists:
+  - block-regex:
+    - com\.visualstudio\.code.*
+    - com\.vscodium\.codium.*

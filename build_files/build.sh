@@ -9,6 +9,7 @@ dnf5 config-manager setopt skip_if_unavailable=False
 
 echo "Build deck   = ${BUILD_DECK}"
 echo "Build nvidia = ${BUILD_NVIDIA}"
+echo "Build dx     = ${BUILD_DX}"
 echo ""
 
 # Desktop/Core builds
@@ -22,6 +23,11 @@ fi
 # Nvidia builds
 if [[ "${BUILD_NVIDIA}" == "TRUE" ]]; then
     /ctx/bazzite-nvidia/build.sh
+fi
+
+# Developer builds
+if [[ "${BUILD_DX}" == "TRUE" ]]; then
+    /ctx/bazzite-dx/build.sh
 fi
 
 # Finalize

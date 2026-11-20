@@ -118,6 +118,7 @@ jobs:
         id: get-nondeck-ref
         run: |
           ref="${{ matrix.image_name }}"
+          ref="${ref/-dx/}"
           ref="${ref/-deck/}"
           ref="${ref/-nvidia-open/}"
           ref="${ref/-nvidia/}"

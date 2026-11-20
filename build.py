@@ -54,7 +54,7 @@ IMAGE_VENDOR_DEFAULT = "ublue-os"
 # matching on the image name -- e.g. nvidia_flavor is "nvidia-open" only for
 # specific images, not anything matching a naming pattern -- since an
 # explicit table is the only version of that logic that's reviewable at a
-# glance. test_builder.py asserts these rows are correct for all 10 images.
+# glance. test_builder.py asserts these rows are correct for every image.
 # ---------------------------------------------------------------------------
 
 DEFAULTS = {
@@ -142,6 +142,38 @@ IMAGES: dict[str, dict] = {
         "nvidia_base": "bazzite",
         "nvidia_flavor": "nvidia-open",
         "install_nvidia": True,
+    },
+    "bazzite-dx": {
+        "base_image_name": "kinoite",
+        "container_target": "bazzite-dx",
+        "nvidia_base": "bazzite-deck",
+        "nvidia_flavor": "nvidia-open",
+        "install_nvidia": False,
+        "build_dx": True,
+    },
+    "bazzite-dx-gnome": {
+        "base_image_name": "silverblue",
+        "container_target": "bazzite-dx",
+        "nvidia_base": "bazzite-deck",
+        "nvidia_flavor": "nvidia-open",
+        "install_nvidia": False,
+        "build_dx": True,
+    },
+    "bazzite-dx-nvidia": {
+        "base_image_name": "kinoite",
+        "container_target": "bazzite-dx",
+        "nvidia_base": "bazzite-deck",
+        "nvidia_flavor": "nvidia-open",
+        "install_nvidia": True,
+        "build_dx": True,
+    },
+    "bazzite-dx-nvidia-gnome": {
+        "base_image_name": "silverblue",
+        "container_target": "bazzite-dx",
+        "nvidia_base": "bazzite-deck",
+        "nvidia_flavor": "nvidia-open",
+        "install_nvidia": True,
+        "build_dx": True,
     },
 }
 
@@ -350,6 +382,7 @@ class Variant:
     kernel_flavor: str
     kernel_version: str
     arch: str
+    build_dx: bool = False
 
     @property
     def base_image(self) -> str:
@@ -399,8 +432,9 @@ def build_args(
         "VERSION_TAG": version_tag,
         "VERSION_PRETTY": version_pretty,
         "ARCH": variant.arch,
-        "BUILD_DECK": str("deck" in variant.image).upper(),
-        "BUILD_NVIDIA": str("nvidia" in variant.image).upper(),
+        "BUILD_DECK": str(variant.nvidia_base == "bazzite-deck").upper(),
+        "BUILD_NVIDIA": str(variant.install_nvidia).upper(),
+        "BUILD_DX": str(variant.build_dx).upper(),
     }
 
 

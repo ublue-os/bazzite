@@ -43,6 +43,7 @@ ARG KERNEL_VERSION="${KERNEL_VERSION:-7.0.9-ogc3.2.fc${FEDORA_VERSION}.${ARCH}}"
 ARG NVIDIA_FLAVOR="${NVIDIA_FLAVOR:-nvidia-open}"
 ARG BUILD_DECK="FALSE"
 ARG BUILD_NVIDIA="FALSE"
+ARG BUILD_DX="FALSE"
 
 FROM ${BASE_IMAGE} AS base-image
 FROM ghcr.io/ublue-os/akmods:${KERNEL_FLAVOR}-${FEDORA_VERSION}-${KERNEL_VERSION} AS akmods
@@ -70,6 +71,7 @@ ARG KERNEL_FLAVOR
 ARG NVIDIA_FLAVOR
 ARG BUILD_DECK
 ARG BUILD_NVIDIA
+ARG BUILD_DX
 
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/cache/libdnf5 \
