@@ -85,3 +85,18 @@ setup-virtualization ACTION="":
       --delete-if-present="kvm.report_ignored_msrs=0"
       echo 'Please reboot to apply changes'
     fi
+
+# Add the current user to the docker group so docker works without sudo
+[group("virtualization")]
+setup-docker:
+    #!/usr/bin/bash
+    if [[ $(id -u) -eq 0 ]]; then
+      echo "Please do not run this command as root"
+      exit 1
+    fi
+    # The image keeps the docker group in /usr/lib/group; usermod only edits /etc/group.
+    if ! grep -q "^docker:" /etc/group; then
+      sudo bash -c 'grep "^docker:" /usr/lib/group >> /etc/group'
+    fi
+    sudo usermod -aG docker "$USER"
+    echo "Added $USER to the docker group. Please log out and back in to apply."

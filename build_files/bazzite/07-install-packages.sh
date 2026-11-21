@@ -93,6 +93,9 @@ dnf5 -y install \
     cockpit-system \
     cockpit-files \
     cockpit-storaged \
+    moby-engine \
+    docker-compose \
+    docker-buildx \
     ydotool \
     stress-ng \
     snapper \

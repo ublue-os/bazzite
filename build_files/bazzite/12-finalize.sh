@@ -166,6 +166,7 @@ systemctl enable bazzite-flatpak-manager.service
 systemctl disable rpm-ostreed-automatic.timer
 systemctl enable uupd.timer
 systemctl enable incus-workaround.service
+systemctl enable docker.socket
 systemctl enable bazzite-hardware-setup.service
 systemctl enable bazzite-iwd-migration.service
 systemctl disable tailscaled.service
