@@ -44,6 +44,7 @@ OTHER_NAMES = {
     "kde": "### KDE Images\n| | Name | Previous | New |\n| --- | --- | --- | --- |{changes}\n\n",
     "gnome": "### Gnome Images\n| | Name | Previous | New |\n| --- | --- | --- | --- |{changes}\n\n",
     "nvidia": "### Nvidia Images\n| | Name | Previous | New |\n| --- | --- | --- | --- |{changes}\n\n",
+    "dx": "### DX Images\n| | Name | Previous | New |\n| --- | --- | --- | --- |{changes}\n\n",
 }
 
 COMMITS_FORMAT = (
@@ -400,6 +401,8 @@ def get_package_groups(
             if t == "deck" and base != "deck":
                 continue
             if t == "desktop" and base == "deck":
+                continue
+            if t == "dx" and not _BUILD_IMAGES[img].get("build_dx", False):
                 continue
 
             if first:
