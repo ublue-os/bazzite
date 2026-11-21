@@ -770,6 +770,7 @@ def cmd_rechunk(args: argparse.Namespace) -> int:
                     "--verbose",
                     "--max-layers", str(args.max_layers),
                     "--prune", "/sysroot/",
+                    "--prune", "/run/",
                     *labels,
                     "--config", "/chunkah-config.json",
                     "--output", "oci:/run/out/chunked",
