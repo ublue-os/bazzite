@@ -150,6 +150,8 @@ get-media-app service="":
         rm -f "$repo"
         flatpak --user install wimpysworld world.wimpys.sidra -y
         flatpak override --user --nosocket=x11 world.wimpys.sidra
+
+        # cuz of the contribution code of cunduct or wtv, my user is skittle0764 on dc and github, if anything breaks.
     }
     install_crunchyroll() {
         if grep -q 'it.mijorus.gearlever' <<< $(flatpak list); then
