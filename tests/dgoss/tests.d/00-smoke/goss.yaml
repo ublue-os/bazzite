@@ -71,7 +71,7 @@ command:
         exit 1
       fi
       case "$name" in
-        *deck*) ;;
+        *deck*|bazzite-dx*) ;;
         *) echo "SKIP: $name is not a deck image" ; exit 0 ;;
       esac
       module=$(find /usr/lib/modules -type f -name "ryzen_smu.ko*" 2>/dev/null | head -n1)

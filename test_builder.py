@@ -94,6 +94,26 @@ EXPECTED_VARIANTS = {
         "nvidia_base": "bazzite", "nvidia_flavor": "nvidia-open", "install_nvidia": True,
         "kernel_flavor": "ogc", "kernel_version": KERNEL,
     },
+    "bazzite-dx": {
+        "base_image_name": "kinoite", "container_target": "bazzite-dx",
+        "nvidia_base": "bazzite-deck", "nvidia_flavor": "nvidia-open", "install_nvidia": False,
+        "kernel_flavor": "ogc", "kernel_version": KERNEL,
+    },
+    "bazzite-dx-gnome": {
+        "base_image_name": "silverblue", "container_target": "bazzite-dx",
+        "nvidia_base": "bazzite-deck", "nvidia_flavor": "nvidia-open", "install_nvidia": False,
+        "kernel_flavor": "ogc", "kernel_version": KERNEL,
+    },
+    "bazzite-dx-nvidia": {
+        "base_image_name": "kinoite", "container_target": "bazzite-dx",
+        "nvidia_base": "bazzite-deck", "nvidia_flavor": "nvidia-open", "install_nvidia": True,
+        "kernel_flavor": "ogc", "kernel_version": KERNEL,
+    },
+    "bazzite-dx-nvidia-gnome": {
+        "base_image_name": "silverblue", "container_target": "bazzite-dx",
+        "nvidia_base": "bazzite-deck", "nvidia_flavor": "nvidia-open", "install_nvidia": True,
+        "kernel_flavor": "ogc", "kernel_version": KERNEL,
+    },
 }
 
 
@@ -223,7 +243,7 @@ def test_build_args_match_containerfile_args():
     stage_args = {
         "BASE_IMAGE_NAME", "FEDORA_VERSION", "IMAGE_NAME", "IMAGE_VENDOR", "IMAGE_BRANCH",
         "KERNEL_FLAVOR", "NVIDIA_FLAVOR", "SHA_HEAD_SHORT", "VERSION_TAG", "VERSION_PRETTY",
-        "BUILD_DECK", "BUILD_NVIDIA",
+        "BUILD_DECK", "BUILD_NVIDIA", "BUILD_DX",
     }
     from_only_args = {"BASE_IMAGE", "KERNEL_VERSION", "NVIDIA_BASE", "ARCH"}
     assert set(args) == stage_args | from_only_args
@@ -259,6 +279,7 @@ def test_build_args_deck_and_nvidia_flags(image, deck, nvidia):
     )
     assert args["BUILD_DECK"] == deck
     assert args["BUILD_NVIDIA"] == nvidia
+    assert args["BUILD_DX"] == "FALSE"
 
 
 def test_labels_include_required_oci_fields():

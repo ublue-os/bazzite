@@ -259,6 +259,10 @@ assign_chunk bazzite-shell-config quarterly \
     /usr/share/fish/functions/fish_{greeting,prompt}.fish \
     /usr/share/fish/vendor_conf.d/bazzite-neofetch.fish
 
+assign_chunk bazzite-repos weekly \
+    /etc/yum.repos.d \
+    /etc/dnf/repos.override.d
+
 assign_chunk bazzite-package-management monthly \
     /etc/distrobox/distrobox.ini \
     /etc/dnf/dnf.conf \
@@ -350,6 +354,16 @@ assign_chunk bazzite-nvidia monthly \
     /usr/lib/udev/rules.d/80-nvidia-pm.rules \
     /usr/libexec/ublue-nvidia-flatpak-runtime-{notify,sync} \
     /usr/share/selinux/packages/nvidia-container.pp
+
+assign_chunk bazzite-dx quarterly \
+    /etc/skel/.config/Code/User/settings.json \
+    /usr/bin/gamemode-nested \
+    /usr/libexec/bazzite-dx-* \
+    /usr/lib/systemd/system/bazzite-dx-groups.service \
+    /usr/share/applications/gamemode-nested.desktop \
+    /usr/share/ublue-os/homebrew/bazzite-dx-*.Brewfile \
+    /usr/share/ublue-os/privileged-setup.hooks.d/20-dx.sh \
+    /usr/share/ublue-os/user-setup.hooks.d/{11-vscode-extensions,99-privileged}.sh
 
 # Catch files changed since the last stage's reset (initramfs, image-info, overrides).
 /ctx/reset-mtimes.sh

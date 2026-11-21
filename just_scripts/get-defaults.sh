@@ -9,6 +9,8 @@ elif [[ ${target} == "deck" ]]; then
     target="bazzite-deck"
 elif [[ ${target} == "nvidia" ]]; then
     target="bazzite-nvidia"
+elif [[ ${target} == "dx" ]]; then
+    target="bazzite-dx"
 fi
 
 valid_images=(
@@ -28,6 +30,8 @@ valid_targets=(
     bazzite
     bazzite-deck
     bazzite-nvidia
+    bazzite-dx
+    bazzite-dx-nvidia
 )
 if [[ ! ${valid_targets[*]} =~ ${target} ]]; then
     echo "Invalid target..."
@@ -39,7 +43,7 @@ if [[ ${image} == "gnome" || ${image} == "silverblue" ]]; then
     desktop="-gnome"
 fi
 image="${target}${desktop}"
-if [[ ${image} =~ "nvidia" ]]; then
+if [[ ${target} == "bazzite-nvidia" ]]; then
     image="bazzite${desktop}-nvidia"
 fi
 
