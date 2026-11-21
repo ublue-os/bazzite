@@ -56,7 +56,7 @@ CHANGELOG_TITLE = "{tag}: {pretty}"
 CHANGELOG_FORMAT = """\
 {handwritten}
 
-From previous `{target}` version `{prev}` there have been the following changes. **One package per new version shown.**
+{comparison}
 
 ### Major packages
 | Name | Version |
@@ -137,9 +137,9 @@ def get_images():
         yield img, base, de
 
 
-def get_manifests(target: str, registry: str = REGISTRY):
+def get_manifests(target: str, registry: str = REGISTRY, images: list[str] | None = None):
     out = {}
-    imgs = list(get_images())
+    imgs = [entry for entry in get_images() if images is None or entry[0] in images]
     for j, (img, _, _) in enumerate(imgs):
         output = None
         print(f"Getting {img}:{target} manifest ({j+1}/{len(imgs)}).")
@@ -290,12 +290,10 @@ def get_release_tag(manifests: dict[str, Any]):
     return max(versions, key=tag_sort_key)
 
 
-def get_prev_tag(target: str, manifests: dict[str, Any], curr: str):
+def get_prev_tag(target: str, manifests: dict[str, Any], curr: str) -> str | None:
     tags = set()
 
-    # Select random manifest to get reference tags from
-    first = next(iter(manifests.values()))
-    for tag in first["RepoTags"]:
+    for tag in {tag for manifest in manifests.values() for tag in manifest["RepoTags"]}:
         # Tags ending with .0 should not exist
         if tag.endswith(".0"):
             continue
@@ -306,23 +304,29 @@ def get_prev_tag(target: str, manifests: dict[str, Any], curr: str):
             if re.match(STABLE_START_PATTERN, tag):
                 tags.add(tag)
 
-    # Remove tags not present in all images
-    for manifest in manifests.values():
-        for tag in list(tags):
-            if tag not in manifest["RepoTags"]:
-                tags.remove(tag)
-
     curr_key = tag_sort_key(curr)
     tags = sorted(
         (t for t in tags if tag_sort_key(t) < curr_key), key=tag_sort_key
     )
-    assert tags, f"No tag older than {curr} found"
-    return tags[-1]
+    if not tags:
+        print(f"Warning: No tag older than {curr} found on any image; skipping comparisons")
+        return None
+    prev = tags[-1]
+    for img, manifest in manifests.items():
+        if prev not in manifest["RepoTags"]:
+            print(f"Warning: {img} has no {prev} tag; skipping its comparisons")
+    return prev
 
 
-def get_packages(ref: str, tag: str, files: dict[str, dict[str, str]], registry: str = REGISTRY):
+def get_packages(
+    ref: str,
+    tag: str,
+    files: dict[str, dict[str, str]],
+    registry: str = REGISTRY,
+    images: list[str] | None = None,
+):
     packages = {}
-    imgs = list(get_images())
+    imgs = [entry for entry in get_images() if images is None or entry[0] in images]
     for j, (img, _, _) in enumerate(imgs):
         if img in files:
             print(f"Got packages for {img}:{tag} from package file ({j+1}/{len(imgs)})")
@@ -349,22 +353,25 @@ def is_nvidia(img: str, lts: bool):
 
 
 def get_package_groups(
-    prev_tag: str,
+    prev_tag: str | None,
     curr_ref: str,
     curr_tag: str,
     curr_files: dict[str, dict[str, str]],
     prev_files: dict[str, dict[str, str]],
     registry: str = REGISTRY,
+    prev_images: list[str] | None = None,
 ):
     common = set()
     others = {k: set() for k in OTHER_NAMES.keys()}
 
     print(f"\nFetching current packages for {curr_tag}...")
     npkg = get_packages(curr_ref, curr_tag, curr_files, registry)
+    if prev_tag is None:
+        return [], {k: [] for k in OTHER_NAMES}, npkg, {}
     print(f"\nFetching previous packages for {prev_tag}...")
-    ppkg = get_packages(prev_tag, prev_tag, prev_files, registry)
+    ppkg = get_packages(prev_tag, prev_tag, prev_files, registry, images=prev_images)
 
-    keys = set(npkg.keys()) | set(ppkg.keys())
+    keys = set(npkg.keys()) & set(ppkg.keys())
     pkg = defaultdict(set)
     for k in keys:
         pkg[k] = set(npkg.get(k, {})) | set(ppkg.get(k, {}))
@@ -524,7 +531,7 @@ def generate_changelog(
     target: str,
     pretty: str | None,
     workdir: str,
-    prev_tag: str,
+    prev_tag: str | None,
     curr_tag: str,
     prev_manifests,
     manifests,
@@ -534,11 +541,15 @@ def generate_changelog(
     registry: str = REGISTRY,
 ):
     common, others, curr_packages, prev_packages = get_package_groups(
-        prev_tag, target, curr_tag, curr_files or {}, prev_files or {}, registry
+        prev_tag, target, curr_tag, curr_files or {}, prev_files or {}, registry,
+        prev_images=list(prev_manifests),
     )
     if packages_out is not None:
         write_release_packages(curr_packages, curr_tag, packages_out)
     versions = get_versions(curr_packages)
+    comparison_versions = get_versions({
+        img: packages for img, packages in curr_packages.items() if img in prev_packages
+    })
     prev_versions = get_versions(prev_packages)
 
     prev, curr = prev_tag, curr_tag
@@ -570,13 +581,34 @@ def generate_changelog(
         changelog.replace(
             "{handwritten}", handwritten if handwritten else HANDWRITTEN_PLACEHOLDER
         )
+        .replace(
+            "{comparison}",
+            "From previous `{target}` version `{prev}` there have been the following changes. "
+            "**One package per new version shown.**"
+            if prev is not None
+            else "No previous `{target}` version is available on any image. "
+            "Package and commit comparisons are unavailable for this release.",
+        )
         .replace("{target}", target)
-        .replace("{prev}", prev)
+        .replace("{prev}", prev or "")
         .replace("{curr}", curr)
     )
 
+    missing = sorted(set(curr_packages) - set(prev_packages))
+    if prev is not None and missing:
+        changelog = changelog.replace(
+            "\n\n### Major packages",
+            "\n\nImages without a previous version (excluded from comparisons): "
+            + ", ".join(f"`{img}`" for img in missing)
+            + ".\n\n### Major packages",
+        )
+
     for pkg, v in versions.items():
-        if pkg not in prev_versions or prev_versions[pkg] == v:
+        if (
+            pkg not in prev_versions
+            or prev_versions[pkg] == v
+            or comparison_versions.get(pkg) != v
+        ):
             changelog = changelog.replace(
                 "{pkgrel:" + (PKG_ALIAS.get(pkg, None) or pkg) + "}",
                 PATTERN_PKGREL.format(version=v),
@@ -590,12 +622,16 @@ def generate_changelog(
     changelog = re.sub(PKGREL_PATTERN, "N/A", changelog)
 
     changes = ""
-    changes += get_commits(prev_manifests, manifests, workdir)
-    common = calculate_changes(common, prev_versions, versions)
+    if prev_tag is not None:
+        comparison_manifests = {
+            img: manifests[img] for img in prev_manifests if img in manifests
+        }
+        changes += get_commits(prev_manifests, comparison_manifests, workdir)
+    common = calculate_changes(common, prev_versions, comparison_versions)
     if common:
         changes += COMMON_PAT.format(changes=common)
     for k, v in others.items():
-        chg = calculate_changes(v, prev_versions, versions)
+        chg = calculate_changes(v, prev_versions, comparison_versions)
         if chg:
             changes += OTHER_NAMES[k].format(changes=chg)
 
@@ -633,7 +669,10 @@ def main():
     print(f"Previous tag: {prev}")
     print(f" Current tag: {curr}")
 
-    prev_manifests = get_manifests(prev, registry)
+    prev_images = [
+        img for img, manifest in manifests.items() if prev in manifest["RepoTags"]
+    ]
+    prev_manifests = get_manifests(prev, registry, images=prev_images) if prev is not None else {}
     title, changelog = generate_changelog(
         args.handwritten,
         target,
@@ -644,7 +683,7 @@ def main():
         prev_manifests,
         manifests,
         curr_files=read_package_files(args.packages_dir, curr),
-        prev_files=download_release_packages(prev),
+        prev_files=download_release_packages(prev) if prev is not None else {},
         packages_out=args.packages_out,
         registry=registry,
     )
