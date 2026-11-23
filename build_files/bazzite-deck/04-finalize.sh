@@ -17,7 +17,8 @@ mkdir -p "/etc/xdg/autostart"
 mv "/etc/skel/.config/autostart/steam.desktop" "/etc/xdg/autostart/steam.desktop"
 
 if [[ "${BASE_IMAGE_NAME}" == "silverblue" ]]; then
-    desktop-file-edit --set-key=X-GNOME-Autostart-Delay --set-value=5 \
+    desktop-file-edit --set-key=Exec \
+        --set-value='/usr/bin/sh -c "sleep 5; exec /usr/bin/bazzite-steam -silent"' \
         /etc/xdg/autostart/steam.desktop
 fi
 
