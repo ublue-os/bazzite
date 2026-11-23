@@ -16,6 +16,11 @@ echo "==> Configuring desktop autostart..."
 mkdir -p "/etc/xdg/autostart"
 mv "/etc/skel/.config/autostart/steam.desktop" "/etc/xdg/autostart/steam.desktop"
 
+if [[ "${BASE_IMAGE_NAME}" == "silverblue" ]]; then
+    desktop-file-edit --set-key=X-GNOME-Autostart-Delay --set-value=5 \
+        /etc/xdg/autostart/steam.desktop
+fi
+
 # -- Configure Waydroid desktop entry --
 # Update Waydroid launch command and add Steam library metadata.
 echo "==> Configuring Waydroid desktop entry..."
