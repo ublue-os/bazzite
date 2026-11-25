@@ -356,6 +356,11 @@ screens:
         description: "Subscription service for entertainment on demand."
         default: false
         script: "ujust get-media-app \"Apple TV\""
+      - id: "apple-music"
+        title: "Apple Music"
+        description: "Apple Music, installed via Sidra (webapp)"
+        default: false
+        script: "ujust get-media-app \"Apple Music\""
       - id: "crunchyroll"
         title: "Crunchyroll"
         description: "Subscription service centered on Japanese animation on demand."

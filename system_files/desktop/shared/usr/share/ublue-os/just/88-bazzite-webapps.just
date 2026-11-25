@@ -56,6 +56,7 @@ get-media-app service="":
             "Disney Plus" \
             "Amazon Prime Video" \
             "Apple TV" \
+            "Apple Music" \
             "Curiosity Stream" \
             "Crunchyroll" \
             "GeForce Now" \
@@ -117,6 +118,40 @@ get-media-app service="":
         else
             echo "Skipping Steam integration due to installation failure."
         fi
+    }
+    install_apple_music_sidra() {
+        local key='B39939A127C7A8D338F53A3AE132098A87DB88E0'
+        local repo actual
+
+        # skip all if alr installed
+        # technically not needed since flatpak automatically skips if installed, but bleh :P
+        flatpak info world.wimpys.sidra &>/dev/null && return 0
+
+        repo=$(mktemp) || return 1
+        if ! curl -fsSL "https://flatpak.wimpys.world/wimpysworld.flatpakrepo" -o "$repo"; then
+            echo "Failed to download the repo."
+            rm -f "$repo"; return 1
+        fi
+
+        # imma be so fr rn, idk how t# gpg works so i kinda let claude do that teeny weeny part for me :3
+        # i verified it works, so i hope you dont judge me for it :sob:
+        # Fingerprint of the key embedded in the .flatpakrepo
+        actual=$(sed -n 's/^GPGKey=//p' "$repo" \
+            | base64 -d \
+            | gpg --show-keys --with-colons 2>/dev/null \
+            | awk -F: '$1=="fpr"{print $10; exit}')
+
+        if [[ "$actual" != "$key" ]]; then
+            echo "Failed to verify the GPG key for Sidra."
+            rm -f "$repo"; return 1
+        fi
+
+        flatpak --user remote-add --if-not-exists wimpysworld "$repo"
+        rm -f "$repo"
+        flatpak --user install wimpysworld world.wimpys.sidra -y
+        flatpak override --user --nosocket=x11 world.wimpys.sidra
+
+        # cuz of the contribution code of cunduct or wtv, my user is skittle0764 on dc and github, if anything breaks.
     }
     install_crunchyroll() {
         if grep -q 'it.mijorus.gearlever' <<< $(flatpak list); then
@@ -232,6 +267,7 @@ get-media-app service="":
         "Disney Plus") create_script "disney-plus" "disneyPlus" ;;
         "Amazon Prime Video") create_script "prime-video" "amazonPrimeVideo" ;;
         "Apple TV") create_script "apple-tv" "appleTv" ;;
+        "Apple Music") install_apple_music_sidra "apple-music" "appleMusic" ;;
         "Curiosity Stream") create_script "curiosity-stream" "curiosityStream" ;;
         "Crunchyroll") install_crunchyroll ;;
         "GeForce Now") create_script "geforce-now" "geForceNow" ;;
