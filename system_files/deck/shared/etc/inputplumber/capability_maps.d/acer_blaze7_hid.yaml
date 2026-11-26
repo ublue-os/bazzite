@@ -1,0 +1,32 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/ShadowBlip/InputPlumber/main/rootfs/usr/share/inputplumber/schema/capability_map_v2.json
+# Schema version number
+version: 2
+
+# The type of configuration schema
+kind: CapabilityMap
+
+# Name for the device event map
+name: "Acer Nitro Blaze 7 Quick Menu"
+
+# Unique identifier of the capability mapping
+id: acer_blaze7_hid
+
+# HID Reports (sent only on change, report IDs 02 and 03)
+# Data: 02 80 80 80 80 00 00 00 00 01 00 00 ...
+# Data: 03 80 80 80 80 00 00 00 00 01 37 01 ...
+# BUF[9] bit 0 = Quick Menu Pressed
+
+# List of mapped events that are activated by a specific set of activation keys.
+mapping:
+  - name: Quick Menu
+    source_events:
+      - hidraw:
+          value_type: bool
+          byte_start: 9
+          bit_offset: 0
+    target_event:
+      gamepad:
+        button: QuickAccess
+
+# List of events to filter from the source devices
+filtered_events: []

@@ -1,0 +1,27 @@
+#!/bin/sh
+# Acer Nitro Blaze 7: the BMI323 IMU resets during s2idle (sensors off, default rates and ranges, reads return
+# 0x8000). pre: save the rates and ranges in use and stop InputPlumber's buffer, so its hrtimer trigger does not
+# read over I2C while the bus is suspended ("Transfer while suspended"). post: write the settings back, which turns
+# the sensors on again (the writes need the buffer off), then restart the buffer. The IIO device itself stays
+# (unbinding it made a new device per sleep and left InputPlumber triggers behind).
+STATE=/run/bmi323-sleep-workaround
+ATTRS="in_accel_scale in_accel_sampling_frequency in_accel_oversampling_ratio in_anglvel_scale in_anglvel_sampling_frequency in_anglvel_oversampling_ratio"
+for d in /sys/bus/iio/devices/iio:device*; do
+    [ "$(cat "$d/name" 2>/dev/null)" = bmi323-imu ] && D=$d
+done
+[ -n "$D" ] || exit 0
+case "$1" in
+pre)
+    mkdir -p $STATE
+    for a in $ATTRS buffer/enable; do cat "$D/$a" > "$STATE/${a#buffer/}"; done
+    echo 0 > "$D/buffer/enable"
+    ;;
+post)
+    echo 0 > "$D/buffer/enable"
+    for a in $ATTRS; do
+        [ -s "$STATE/$a" ] && cat "$STATE/$a" > "$D/$a"
+    done
+    [ "$(cat $STATE/enable 2>/dev/null)" = 1 ] && echo 1 > "$D/buffer/enable"
+    ;;
+esac
+exit 0

@@ -1,0 +1,14 @@
+[Unit]
+Description=Restores the BMI323 IMU settings after sleep on devices where it resets during s2idle
+ConditionFirmware=smbios-field(board_name = GN771-8HS)
+Before=sleep.target
+StopWhenUnneeded=yes
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/libexec/bmi323-sleep-workaround pre
+ExecStop=/usr/libexec/bmi323-sleep-workaround post
+
+[Install]
+WantedBy=sleep.target

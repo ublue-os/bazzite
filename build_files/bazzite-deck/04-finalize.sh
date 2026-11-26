@@ -102,6 +102,7 @@ systemctl enable wireplumber-workaround.service
 systemctl enable wireplumber-sysconf.service
 systemctl enable pipewire-workaround.service
 systemctl enable pipewire-sysconf.service
+systemctl enable bmi323-sleep-workaround.service
 systemctl --global enable gamemode-news-hook.service
 systemctl --global disable sdgyrodsu.service
 systemctl --global enable steamos-powerbuttond.service
