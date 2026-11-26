@@ -9,21 +9,25 @@ matches: []
 maximum_sources: 1
 
 source_devices:
+  # CEC input devices are named after the DRM connector
   - group: keyboard
     udev:
       subsystem: input
       attributes:
         - name: name
           value: "DP-*"
-
-##untested pulse8 matching
-#  - group: gamepad
-#    unique: true
-#    evdev:
-#      vendor_id: "2548"
-#      product_id: "{1001,1002}"
-#      handler: event*
-
+  - group: keyboard
+    udev:
+      subsystem: input
+      attributes:
+        - name: name
+          value: "HDMI-*"
+  # Pulse-Eight USB-CEC Adapter (2548:1002)
+  - group: keyboard
+    udev:
+      subsystem: input
+      sys_name: "event*"
+      driver: "pulse8-cec"
 
 target_devices:
   - gamepad
