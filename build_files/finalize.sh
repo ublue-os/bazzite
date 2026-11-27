@@ -97,6 +97,10 @@ rm -rf \
     /etc/subuid- \
     /etc/subgid-
 
+# Refresh the icon cache so that the new icons are picked up
+# https://invent.kde.org/frameworks/kiconthemes/-/merge_requests/222
+gtk-update-icon-cache -f -t /usr/share/icons/hicolor
+
 # Chunkah
 # See: https://github.com/coreos/chunkah#customizing-the-layers
 assign_chunk() {
