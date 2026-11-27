@@ -1,0 +1,8 @@
+# AYANEO 3 controller (Magic Modules)
+#
+# When controller power returns after the Magic Modules are refitted, the
+# controller first connects in a state that does not answer the default
+# descriptor read and reconnects about 11 s later. With the default USB
+# enumeration scheme it takes about 32 s to come back; with the old scheme
+# quirk on its port it takes about 12 s.
+ACTION=="add", SUBSYSTEM=="usb", DRIVER=="usb", ATTR{idVendor}=="1c4f", ATTR{idProduct}=="0002", ATTR{manufacturer}=="AYANEO", ATTR{[dmi/id]sys_vendor}=="AYANEO", ATTR{[dmi/id]product_name}=="AYANEO 3", ATTR{port/quirks}="1"

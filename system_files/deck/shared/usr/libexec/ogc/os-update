@@ -8,8 +8,8 @@
 # steamos-update                                    -- should perform an update
 
 # Exit Codes:
-# 0: Success (e.g., upgrade available, --supports-duplicate-detection handled, or script completed even if upgrade failed).
-# 7: Failure (e.g., uupd not installed, upgrade already installed, update checks failed, or connectivity check failed).
+# 0: Success (e.g., upgrade available, --supports-duplicate-detection handled, or upgrade installed).
+# 7: Failure (e.g., uupd not installed, upgrade already installed, update checks failed, connectivity check failed, or upgrade failed).
 
 _upgrade() {
     # Log rotate the last session
@@ -54,8 +54,6 @@ _fixup_file=/etc/bazzite/fixups/first_steam_gamemode_boostrap
 if [[ ! -f $_fixup_file ]]; then
     mkdir -p "$(dirname "$_fixup_file")"
     touch "$_fixup_file"
-    sync "$_fixup_file"
-    systemctl restart graphical.target
     exit 7
 fi
 
@@ -109,6 +107,6 @@ else
     if [ $? -eq 0 ]; then
         touch /tmp/upgrade-installed
     else
-        exit 0 # Upgrade failed
+        exit 7 # Upgrade failed
     fi
 fi

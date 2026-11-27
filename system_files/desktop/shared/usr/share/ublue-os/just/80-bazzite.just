@@ -960,13 +960,16 @@ configure-us-intl-dead-keys:
         echo ""
         echo "Applies a Windows/Mac-like behavior for US international keyboard layouts with dead keys."
         echo "When enabled, dead keys will produce accented characters directly (e.g., ' + e = é)."
-        echo "This will set the input method module to 'fcitx' and download a custom .XCompose file."
+        echo "This sets the fcitx input method (XMODIFIERS/XCOMPOSEFILE) and downloads a custom .XCompose file."
+        echo "GTK/Qt/SDL IM module env vars are intentionally not set; apps use the native Wayland"
+        echo "input method protocol via the compositor (KWin virtual keyboard) instead."
         echo ""
         echo "This requires the \"US International with dead keys\" input method keyboard layout to be selected"
         echo "in your system settings and will only take effect after a logout/restart."
         echo ""
         echo "Some flatpak applications (e.g. Discord) may not respect this setting due to sandboxing limitations."
-        echo "Use the override option in this script to apply environment variables to those applications."
+        echo "Use the override option in this script to apply the env variables and mount the"
+        echo "compose file into those applications."
         echo ""
         OPTION="$(ugum choose "Apply to user" "Remove from user" "Apply to flatpak environment" "Remove from flatpak environment" "Exit without saving")"
     fi
@@ -975,9 +978,6 @@ configure-us-intl-dead-keys:
             curl -fsSL "${XCOMPOSE_REMOTE_LOCATION}" -o "${XCOMPOSE_FILE}"
             mkdir -p "$(dirname "${INPUT_MODULE_ENV_FILE}")"
             cat > "${INPUT_MODULE_ENV_FILE}" <<-EOF
-    export GTK_IM_MODULE=fcitx
-    export QT_IM_MODULE=fcitx
-    export SDL_IM_MODULE=fcitx
     export XMODIFIERS=@im=fcitx
     export XCOMPOSEFILE=$HOME/.XCompose
     EOF
@@ -995,12 +995,10 @@ configure-us-intl-dead-keys:
               echo "No app selected. Aborting."
               exit 0
             fi
-            flatpak override --user --env=GTK_IM_MODULE=fcitx "${APP_ID}"
-            flatpak override --user --env=QT_IM_MODULE=fcitx "${APP_ID}"
-            flatpak override --user --env=SDL_IM_MODULE=fcitx "${APP_ID}"
             flatpak override --user --env=XMODIFIERS=@im=fcitx "${APP_ID}"
             flatpak override --user --env=XCOMPOSEFILE=$HOME/.XCompose "${APP_ID}"
-            echo -e "Flatpak environment overrides ${bold}${green}applied${normal} to ${bold}${app}${normal}"
+            flatpak override --user --filesystem="$HOME/.XCompose:ro" "${APP_ID}"
+            echo -e "Flatpak environment overrides ${bold}${green}applied${normal} to ${bold}${APP_ID}${normal}"
             ;;
         "Remove from flatpak environment")
             SELECTION=$(flatpak list --columns=name,application | fzf)
@@ -1009,11 +1007,13 @@ configure-us-intl-dead-keys:
               echo "No app selected. Aborting."
               exit 0
             fi
+            # The IM module unsets also clean up overrides applied by older recipe versions.
             flatpak override --user --unset-env=GTK_IM_MODULE "${APP_ID}"
             flatpak override --user --unset-env=QT_IM_MODULE "${APP_ID}"
             flatpak override --user --unset-env=SDL_IM_MODULE "${APP_ID}"
             flatpak override --user --unset-env=XMODIFIERS "${APP_ID}"
             flatpak override --user --unset-env=XCOMPOSEFILE "${APP_ID}"
+            flatpak override --user --nofilesystem="$HOME/.XCompose" "${APP_ID}"
             echo -e "Flatpak environment overrides ${bold}${red}removed${normal} from ${bold}${APP_ID}${normal}"
             ;;
         *)

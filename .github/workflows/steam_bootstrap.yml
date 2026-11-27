@@ -1,0 +1,49 @@
+name: Publish Steam Bootstrap
+on:
+  schedule:
+    - cron: "0 4 1 * *" # 4:00 utc on the 1st of every month
+  push:
+    branches:
+      - testing
+      - unstable
+    paths:
+      - "build_files/tools/steam-bootstrap"
+      - ".github/workflows/steam_bootstrap.yml"
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Publish
+    runs-on: ubuntu-26.04
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Build bootstrap archive
+        run: |
+          set -euo pipefail
+          mkdir "${RUNNER_TEMP}/out"
+          curl --fail --location --silent --show-error --retry 5 --retry-all-errors \
+            --output "${RUNNER_TEMP}/manifest" \
+            https://client-update.steamstatic.com/steam_client_steamdeck_stable_steamrt64
+          TMPDIR="${RUNNER_TEMP}" ./build_files/tools/steam-bootstrap \
+            "${RUNNER_TEMP}/manifest" "${RUNNER_TEMP}/out/bootstrap_steam.tar.zst"
+
+      - name: Upload bootstrap archive
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: steam-bootstrap
+          path: ${{ runner.temp }}/out/bootstrap_steam.tar.zst
+          retention-days: 90
+          compression-level: 0
+          if-no-files-found: error

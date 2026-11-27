@@ -94,6 +94,8 @@ import "/usr/share/ublue-os/just/93-bazzite-update.just"
 import "/usr/share/ublue-os/just/94-bazzite-protonplus.just"
 import "/usr/share/ublue-os/just/95-bazzite-deck-session.just"
 import "/usr/share/ublue-os/just/96-bazzite-anticheat.just"
+import "/usr/share/ublue-os/just/97-bazzite-punktfunk.just"
+import "/usr/share/ublue-os/just/98-bazzite-htpc-auto-hdr.just"
 EOF
 
 # -- Handle Silverblue dconf overrides --

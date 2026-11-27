@@ -1,10 +1,11 @@
 [Unit]
 Description=Configure Bazzite for current user
 ConditionUser=!@system
+ConditionEnvironment=XDG_SESSION_CLASS=user
 
 [Service]
 Type=simple
 ExecStart=/usr/libexec/bazzite-user-setup
 
 [Install]
-WantedBy=default.target
+WantedBy=graphical-session-pre.target

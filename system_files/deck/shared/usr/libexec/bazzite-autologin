@@ -36,3 +36,7 @@ if [[ ! -f ${HOLO_CONF} ]]; then
 Session=${SESSION}
 EOF
 fi
+
+# Future config timestamps prevent SDDM from detecting temporary session changes.
+find /etc/sddm.conf /etc/sddm.conf.d -maxdepth 1 -newermt now \
+  -print -exec touch -h -m -d @0 {} +

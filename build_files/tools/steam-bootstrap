@@ -1,0 +1,134 @@
+#!/usr/bin/env bash
+#
+# Build an offline Steam client bootstrap archive from a Valve client
+# manifest.
+#
+# Usage: steam-bootstrap <manifest> <output.tar.zst>
+#
+# Downloads every package listed in the manifest from Valve's CDN, checks
+# its size and sha256, and unpacks it into Steam/ the way the Steam
+# updater does. The archive holds only client files, so nothing from a
+# user profile ends up in it.
+#
+set -xeuo pipefail
+
+MANIFEST="$(realpath "${1:?manifest required}")"
+OUTPUT="$(realpath "${2:?output required}")"
+
+WORKDIR="$(mktemp -d --tmpdir="${TMPDIR:-/var/tmp}")"
+trap 'rm -rf "${WORKDIR}"' EXIT
+
+# -- Download and unpack client packages --
+echo "==> Unpacking Steam client packages..."
+python3 -I - "${MANIFEST}" "${WORKDIR}" <<'EOF'
+import calendar
+import hashlib
+import os
+import re
+import shutil
+import stat
+import subprocess
+import sys
+import zipfile
+
+CDN = "https://client-update.steamstatic.com"
+CHANNELS = ("", "steamdeck_stable_")
+OSVER = -183
+
+manifest, workdir = sys.argv[1:3]
+text = open(manifest, encoding="utf-8").read()
+platform = re.match(r'\s*"([^"]+)"', text).group(1)
+version = int(re.search(r'"version"\s*"(\d+)"', text).group(1))
+packages = re.findall(
+    r'"[^"]+"\s*\{\s*"file"\s*"([^"]+)"\s*"size"\s*"(\d+)"\s*"sha2"\s*"([0-9a-f]{64})"',
+    text,
+)
+if not packages:
+    sys.exit("no packages found in manifest")
+
+downloads = os.path.join(workdir, "downloads")
+root = os.path.join(workdir, "root", "Steam")
+os.umask(0o022)
+os.makedirs(downloads)
+os.makedirs(root)
+
+
+def sha256(path):
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(1 << 20), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def mtime(info):
+    # The client reads zip DOS timestamps as fixed UTC-8.
+    return calendar.timegm(info.date_time + (0, 0, -1)) + 8 * 3600
+
+
+entries = {}
+for name, size, digest in packages:
+    path = os.path.join(downloads, name)
+    subprocess.run(
+        ["curl", "--fail", "--location", "--silent", "--show-error",
+         "--retry", "5", "--retry-all-errors", "--continue-at", "-",
+         "--output", path, f"{CDN}/{name}"],
+        check=True,
+    )
+    if os.path.getsize(path) != int(size) or sha256(path) != digest:
+        sys.exit(f"checksum mismatch for {name}")
+
+    with zipfile.ZipFile(path) as zf:
+        for info in zf.infolist():
+            rel = info.filename.replace("\\", "/")
+            dest = os.path.join(root, rel)
+            mode = info.external_attr >> 16
+            if rel.endswith("/") or stat.S_ISDIR(mode):
+                os.makedirs(dest, exist_ok=True)
+                entries[rel.rstrip("/") + "/"] = (-1, mtime(info), 0)
+                continue
+            os.makedirs(os.path.dirname(dest), exist_ok=True)
+            if os.path.lexists(dest):
+                os.unlink(dest)
+            if stat.S_ISLNK(mode):
+                os.symlink(zf.read(info).decode(), dest)
+                entries[rel] = (-2, mtime(info), info.CRC)
+                continue
+            with zf.open(info) as src, open(dest, "wb") as out:
+                shutil.copyfileobj(src, out, 1 << 20)
+            if info.create_system == 3 and stat.S_IMODE(mode):
+                os.chmod(dest, stat.S_IMODE(mode))
+            else:
+                os.chmod(dest, 0o755)
+            entries[rel] = (info.file_size, mtime(info), info.CRC)
+    os.unlink(path)
+
+body = "".join(f"{rel},{size};{ts};{crc}\n" for rel, (size, ts, crc) in entries.items())
+body += f"OSVER={OSVER}\nVERSION=3\n"
+installed = body + f"SHA1={hashlib.sha1(body.encode()).hexdigest().upper()}\n"
+
+package_dir = os.path.join(root, "package")
+os.makedirs(package_dir, exist_ok=True)
+for channel in CHANNELS:
+    base = os.path.join(package_dir, f"steam_client_{channel}{platform}")
+    shutil.copyfile(manifest, base + ".manifest")
+    with open(base + ".installed", "w", encoding="utf-8") as f:
+        f.write(installed)
+
+for dirpath, dirnames, filenames in os.walk(root, topdown=False):
+    for path in [os.path.join(dirpath, n) for n in filenames + dirnames] + [dirpath]:
+        rel = os.path.relpath(path, root) + ("/" if os.path.isdir(path) and not os.path.islink(path) else "")
+        ts = entries[rel][1] if rel in entries else version
+        os.utime(path, (ts, ts), follow_symlinks=False)
+EOF
+
+# -- Create the bootstrap archive --
+echo "==> Creating Steam bootstrap archive..."
+tar --create \
+    --use-compress-program="zstd -T0 -10 --long=27" \
+    --sort=name \
+    --owner=0 --group=0 --numeric-owner \
+    --pax-option=exthdr.name=%d/PaxHeaders/%f,delete=atime,delete=ctime \
+    --directory "${WORKDIR}/root" \
+    --file "${OUTPUT}" \
+    Steam

@@ -4,6 +4,7 @@ After=suspend.target hibernate.target hybrid-sleep.target suspend-then-hibernate
 
 [Service]
 Type=oneshot
+TimeoutStartSec=180
 ExecStart=-/usr/bin/cec-control onboot
 
 [Install]

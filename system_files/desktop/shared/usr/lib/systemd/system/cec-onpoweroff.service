@@ -5,6 +5,7 @@ Before=systemd-poweroff.service poweroff.target
 
 [Service]
 Type=oneshot
+TimeoutStartSec=45
 ExecStart=-/usr/bin/cec-control onpoweroff
 
 [Install]

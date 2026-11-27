@@ -109,7 +109,9 @@ dnf5 -y install \
     sbsigntools \
     xdg-native-messaging-proxy \
     cicpoffs \
-    openssl3-libs
+    openssl3-libs \
+    ddcutil \
+    libddcutil
 
 # -- Replace switcheroo-control with cardwire --
 # Swap in cardwire (and its GUI) from the Terra repository.
@@ -120,15 +122,6 @@ dnf5 -y swap \
 
 dnf5 -y install \
     cardwire-gui
-
-# -- Replace ddcutil packages with Terra variants --
-# Install terra-ddcutil and terra-libddcutil from the Terra extras repository.
-echo "==> Installing Terra ddcutil packages..."
-dnf5 -y install \
-    --allowerasing \
-    --repo terra-extras \
-    terra-ddcutil \
-    terra-libddcutil
 
 # -- Disable unnecessary services --
 # Mask services that are not needed on the Bazzite image.

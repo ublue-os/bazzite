@@ -27,9 +27,9 @@ if [[ $IMAGE_NAME =~ "deck" ]]; then
     OOTB_DISABLE_UPDATER_OPTION="-testoobeupdater"
 
     # Set up steam with the bootstrap before starting it, this allows steam to run for the first time even with no network access
-    if [[ -f "/usr/share/gamescope-session-plus/bootstrap_steam.tar.gz" ]]; then
+    if [[ -f "/usr/share/gamescope-session-plus/bootstrap_steam.tar.zst" ]]; then
         mkdir -p ~/.local/share
-        tar xf /usr/share/gamescope-session-plus/bootstrap_steam.tar.gz -C ~/.local/share
+        tar xf /usr/share/gamescope-session-plus/bootstrap_steam.tar.zst -C ~/.local/share
     fi
   fi
 

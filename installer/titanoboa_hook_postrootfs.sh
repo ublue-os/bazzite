@@ -142,8 +142,8 @@ if [[ ! -f "\$SECUREBOOT_KEY" ]]; then
 fi
 
 SYS_ID="\$(cat /sys/devices/virtual/dmi/id/product_name)"
-if [[ ":Jupiter:Galileo:" =~ ":\$SYS_ID:" ]]; then
-	echo "Steam Deck hardware detected. Skipping key enrollment."
+if [[ ":Jupiter:Galileo:Fremont:" =~ ":\$SYS_ID:" ]]; then
+	echo "Valve hardware detected. Skipping key enrollment."
 	exit 0
 fi
 

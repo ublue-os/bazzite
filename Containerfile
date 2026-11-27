@@ -43,12 +43,13 @@ ARG KERNEL_VERSION="${KERNEL_VERSION:-7.0.9-ogc3.2.fc${FEDORA_VERSION}.${ARCH}}"
 ARG NVIDIA_FLAVOR="${NVIDIA_FLAVOR:-nvidia-open}"
 ARG BUILD_DECK="FALSE"
 ARG BUILD_NVIDIA="FALSE"
+ARG BUILD_DX="FALSE"
 
 FROM ${BASE_IMAGE} AS base-image
 FROM ghcr.io/ublue-os/akmods:${KERNEL_FLAVOR}-${FEDORA_VERSION}-${KERNEL_VERSION} AS akmods
 FROM ghcr.io/ublue-os/akmods-extra:${KERNEL_FLAVOR}-${FEDORA_VERSION}-${KERNEL_VERSION} AS akmods-extra
 FROM ghcr.io/ublue-os/akmods-${NVIDIA_FLAVOR}:${KERNEL_FLAVOR}-${FEDORA_VERSION}-${KERNEL_VERSION} AS akmods-nvidia
-FROM ghcr.io/ublue-os/brew:latest@sha256:974ce5e4d6d5fceb6151910957515a42c0eefced4ea386fdfadb0fbad84499a5 AS brew
+FROM ghcr.io/ublue-os/brew:latest@sha256:9c51c948d48de69b0fadfb3d97dc1a7eaa91a4e5a2af7b2b6626fdd8fca362b1 AS brew
 
 FROM scratch AS ctx
 COPY build_files /
@@ -70,6 +71,7 @@ ARG KERNEL_FLAVOR
 ARG NVIDIA_FLAVOR
 ARG BUILD_DECK
 ARG BUILD_NVIDIA
+ARG BUILD_DX
 
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/cache/libdnf5 \
@@ -83,6 +85,7 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=bind,from=akmods-nvidia,src=/rpms,dst=/tmp/rpms/nvidia \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=bind,from=brew,source=/system_files,target=/tmp/brew_files \
+    --mount=type=bind,src=steam_bootstrap,dst=/tmp/steam-bootstrap \
     --mount=type=bind,from=system_files,source=/,target=/tmp/system_files \
     --mount=type=tmpfs,dst=/tmp \
     --mount=type=secret,id=GITHUB_TOKEN \

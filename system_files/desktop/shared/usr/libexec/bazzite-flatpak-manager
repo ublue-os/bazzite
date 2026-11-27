@@ -34,11 +34,6 @@ flatpak remote-modify --system --enable flathub || :
 flatpak remote-modify --disable fedora || :
 flatpak remote-modify --disable fedora-testing || :
 
-# Filter out references from Flathub remote
-if [[ -f /usr/share/ublue-os/flatpak-blocklist ]]; then
-  flatpak remote-modify --system --filter=/usr/share/ublue-os/flatpak-blocklist flathub
-fi
-
 # Remove Bazzite Portal Flatpak Leftovers if present
 flatpak uninstall --system --assumeyes com.github.yafti.gtk || :
 flatpak uninstall --system --assumeyes io.github.xxjsonderuloxx.yafti-gtk || :

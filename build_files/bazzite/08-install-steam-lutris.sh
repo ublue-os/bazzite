@@ -15,6 +15,8 @@ dnf5 -y install dmemcg-booster
 if [[ "${BASE_IMAGE_NAME}" == "kinoite" ]]; then
     dnf5 -y install plasma-foreground-booster-dmemcg
     desktop-file-edit \
+        --set-key=NoDisplay \
+        --set-value=true \
         --set-key=Hidden \
         --set-value=true \
         /usr/share/applications/org.kde.foreground-booster.desktop
@@ -34,9 +36,12 @@ dnf5 -y install \
     jupiter-sd-mounting-btrfs \
     umu-wrapper \
     umu-launcher \
+    ntsync-autoload \
+    udev-joystick-blacklist-rm \
     dbus-x11 \
     xrandr \
     evtest \
+    hidapi \
     xdg-user-dirs \
     xdg-terminal-exec \
     gobject-introspection \

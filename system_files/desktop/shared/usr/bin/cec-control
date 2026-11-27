@@ -17,6 +17,7 @@ CEC_SETSOURCE=${CEC_SETSOURCE:-true}
 CEC_ONPOWEROFF_STANDBY=${CEC_ONPOWEROFF_STANDBY:-true}
 CEC_ONSLEEP_STANDBY=${CEC_ONSLEEP_STANDBY:-false}
 CEC_OSD_NAME=${CEC_OSD_NAME:-$(hostname)}
+CEC_CLIENT_TIMEOUT=${CEC_CLIENT_TIMEOUT:-30}
 
 # Auto-detect which CEC backend to use
 # If /dev/cec* exists -> kernel CEC (GPU native) -> use cec-ctl
@@ -60,7 +61,7 @@ function perform_standby {
     else
         # libcec path
         for id in ${CEC_TVID[@]}; do
-            echo "standby $id" | cec-client ${args[@]}
+            echo "standby $id" | timeout -k 5 "$CEC_CLIENT_TIMEOUT" cec-client ${args[@]}
         done
     fi
 }
@@ -87,11 +88,11 @@ function perform_activate {
     else
         # libcec path
         for id in ${CEC_TVID[@]}; do
-            echo "on $id" | cec-client ${args[@]}
+            echo "on $id" | timeout -k 5 "$CEC_CLIENT_TIMEOUT" cec-client ${args[@]}
         done
 
         if [ "$CEC_SETSOURCE" = true ]; then
-            echo "as" | cec-client ${args[@]}
+            echo "as" | timeout -k 5 "$CEC_CLIENT_TIMEOUT" cec-client ${args[@]}
         fi
     fi
 }

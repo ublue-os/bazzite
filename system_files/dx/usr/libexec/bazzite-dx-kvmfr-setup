@@ -1,0 +1,128 @@
+#!/usr/bin/env bash
+# shellcheck disable=SC1091
+source /usr/lib/ujust/ujust.sh
+# Get the image name based on the filename
+IMAGE_NAME=$(basename "$0" | sed -E 's/(-dx|)-kvmfr-setup//')
+if [ "$IMAGE_NAME" == "bazzite" ]; then
+    IMAGE_NAME="bazzite-dx"
+fi
+
+# Required disclaimer and where to report issues first
+echo "$(Urllink "https://looking-glass.io/docs/rc/ivshmem_kvmfr/#libvirt" "This module") along with $(Urllink "https://looking-glass.io" "Looking Glass") is very experimental and not recommended for production use!"
+echo "The ublue team packages the kvmfr module only because it has to be supplied with the system image while using an atomic desktop."
+echo "If you do plan to use Looking Glass, please $(Urllink "https://docs.bazzite.gg/Advanced/looking-glass/#compiling-looking-glass-client" "follow the guide here") on how to compile it for your system."
+echo "To use the kvmfr module after enabling it, just add and edit the xml for libvirt from the documentation in the first link."
+echo "Since we package the kvmfr module please open kvmfr related issues you have on ${IMAGE_NAME^} and tag @HikariKnight"
+echo "in the $(Urllink "https://discord.gg/WEu6BdFEtp" "Universal Blue Discord") or the $(Urllink "https://github.com/ublue-os/bazzite/issues" "Bazzite Github issue tracker")."
+echo "~ @HikariKnight"
+
+CONFIRM=$(Choose Ok Cancel)
+if [ "$CONFIRM" == "Cancel" ]; then
+    exit 0
+fi
+
+# Add kvmfr modprobe file following upstream documentation
+echo "Setting up kvmfr module so it loads next boot"
+if [ -f "/etc/modprobe.d/kvmfr.conf" ]; then
+    echo "Re-creating dummy kvmfr modprobe file"
+    sudo rm /etc/modprobe.d/kvmfr.conf
+fi
+sudo bash -c 'cat << KVMFR_MODPROBE > /etc/modprobe.d/kvmfr.conf
+# This is a dummy file and changing it does nothing
+# If you want to change the kvmfr static_size_mb
+# Run "rpm-ostree kargs --replace=kvmfr.static_size_mb=oldvalue=newvalue"
+# Default value set by us is 128 which is enough for 4k SDR
+# Find the current value by running "rpm-ostree kargs"
+KVMFR_MODPROBE'
+
+# Add kvmfr static size karg
+rpm-ostree kargs --append-if-missing="kvmfr.static_size_mb=128"
+
+# Add upstream udev rule for kvmfr, adjusted for fedora systems
+echo "Adding udev rule for /dev/kvmfr0"
+sudo bash -c 'cat << KVMFR_UDEV > /etc/udev/rules.d/99-kvmfr.rules
+SUBSYSTEM=="kvmfr", GROUP="qemu", MODE="0660", TAG+="uaccess"
+KVMFR_UDEV'
+
+# Add /dev/kvmfr0 to qemu cgroup device acl list
+echo "Adding /dev/kvmfr0 to qemu cgroup_device_acl"
+# This is not ideal and if someone has a better way to do this without perl, you are welcome to change it
+sudo perl -0777 -pi -e 's/
+#cgroup_device_acl = \[
+#    "\/dev\/null", "\/dev\/full", "\/dev\/zero",
+#    "\/dev\/random", "\/dev\/urandom",
+#    "\/dev\/ptmx", "\/dev\/kvm",
+#    "\/dev\/userfaultfd"
+#\]
+/
+cgroup_device_acl = \[
+    "\/dev\/null", "\/dev\/full", "\/dev\/zero",
+    "\/dev\/random", "\/dev\/urandom",
+    "\/dev\/ptmx", "\/dev\/kvm",
+    "\/dev\/userfaultfd", "\/dev\/kvmfr0"
+\]
+/' /etc/libvirt/qemu.conf
+
+# Add SELinux context record for /dev/kvmfr0 (for simplicity we use the same one that was used for the shm)
+echo "Adding SELinux context record for /dev/kvmfr0"
+sudo semanage fcontext -a -t svirt_tmpfs_t /dev/kvmfr0
+
+# Create type enforcement for /dev/kvmfr0 as there is no existing way to access kvmfr using virt context
+echo "Adding SELinux access rules for /dev/kvmfr0"
+if [ ! -d "$HOME/.config/selinux_te/mod" ]; then
+    mkdir -p "$HOME/.config/selinux_te/mod"
+fi
+if [ ! -d "$HOME/.config/selinux_te/pp" ]; then
+    mkdir -p "$HOME/.config/selinux_te/pp"
+fi
+if [ -f "$HOME/.config/selinux_te/kvmfr.te" ]; then
+    echo "Re-creating kvmfr selinux type enforcement rules"
+    rm "$HOME/.config/selinux_te/kvmfr.te"
+fi
+bash -c "cat << KVMFR_SELINUX > $HOME/.config/selinux_te/kvmfr.te
+module kvmfr 1.0;
+require {
+    type device_t;
+    type svirt_t;
+    class chr_file { open read write map };
+}
+#============= svirt_t ==============
+allow svirt_t device_t:chr_file { open read write map };
+KVMFR_SELINUX"
+
+# Tell user what type enforcement we made and how it looks like
+echo "This is the type enforcement we wrote for SELinux and you can find it in $HOME/.config/selinux_te/kvmfr.te"
+echo "#======= start of kvmfr.te ======="
+cat "$HOME/.config/selinux_te/kvmfr.te"
+echo "#======== end of kvmfr.te ========"
+CONFIRM=$(Choose OK)
+
+# Convert .te a .pp file for semodule
+checkmodule -M -m -o "$HOME/.config/selinux_te/mod/kvmfr.mod" "$HOME/.config/selinux_te/kvmfr.te"
+semodule_package -o "$HOME/.config/selinux_te/pp/kvmfr.pp" -m "$HOME/.config/selinux_te/mod/kvmfr.mod"
+sudo semodule -i "$HOME/.config/selinux_te/pp/kvmfr.pp"
+
+# Load kvmfr module into currently booted system
+echo "Loading kvmfr module so you do not have to reboot to use it the first time"
+sudo modprobe kvmfr static_size_mb=128
+
+# Final message and regenerate initramfs so kvmfr loads next boot
+echo ""
+echo "Kvmfr0 $(Urllink "https://looking-glass.io/docs/rc/install_libvirt/#determining-memory" "static size is set to 128mb by default")"
+echo "this will work with up to 4K SDR resolutiion, as most dummy plugs go up to 4K"
+echo "some games will try use the adapters max resolution on first boot and cause issues if the value is too low."
+echo "Most ghost display adapters max out at 4k, hence the default value of 128mb."
+echo ""
+echo "If you need to change it to a different value"
+echo "you can read how to do that in /etc/modprobe.d/kvmfr.conf"
+Urllink "https://looking-glass.io/docs/rc/ivshmem_kvmfr/#libvirt" "Please read official documentation for kvmfr for how to use it"
+echo ""
+if [ -e "/dev/kvmfr0" ]; then
+    sudo chown "$USER:qemu" /dev/kvmfr0
+    # shellcheck disable=SC2154
+    echo "${b}NOTE: You can start using kvmfr right now without rebooting${n}"
+else
+    echo "Please reboot in order to fully load the kvmfr module."
+fi
+
+CONFIRM=$(Choose OK)

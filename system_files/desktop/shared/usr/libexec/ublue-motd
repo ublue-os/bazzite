@@ -11,7 +11,7 @@ fi
 
 if command -v tput >/dev/null 2>&1 && [ -t 1 ]; then
   cols=$(tput cols 2>/dev/null)
-  envsubst < "${MOTD_TEMPLATE_FILE}" | glow -s "${MOTD_THEME_FILE}" -w $cols -
+  envsubst < "${MOTD_TEMPLATE_FILE}" | TERM=dumb glow -s "${MOTD_THEME_FILE}" -w $cols -
 else
-  envsubst < "${MOTD_TEMPLATE_FILE}" | glow -s "${MOTD_THEME_FILE}" -
+  envsubst < "${MOTD_TEMPLATE_FILE}" | TERM=dumb glow -s "${MOTD_THEME_FILE}" -
 fi

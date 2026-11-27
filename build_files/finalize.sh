@@ -180,7 +180,7 @@ assign_chunk ublue-docs quarterly /usr/share/ublue-os/docs
 assign_chunk extest quarterly /usr/{lib,lib64}/extest/libextest.so
 assign_chunk winetricks yearly /usr/bin/winetricks
 
-assign_chunk steam-bootstrap yearly /usr/share/gamescope-session-plus/bootstrap_steam.tar.gz
+assign_chunk steam-bootstrap yearly /usr/share/gamescope-session-plus/bootstrap_steam.tar.zst
 
 assign_chunk bazzite-init monthly \
     /usr/libexec/bazzite-* \
@@ -188,7 +188,6 @@ assign_chunk bazzite-init monthly \
     /usr/share/bazzite-cli \
     /usr/bin/bazzite-* \
     /usr/bin/cec-control \
-    /usr/bin/startplasma-steamos-oneshot \
     /usr/lib/systemd/system/bazzite-{flatpak-manager,hardware-setup,iwd-migration,libvirtd-setup}.service \
     /usr/lib/systemd/user/bazzite-{dynamic-fixes,user-setup}.service \
     /usr/share/polkit-1/actions/org.bazzite.privileged.user.setup.policy \
@@ -216,11 +215,11 @@ assign_chunk bazzite-hardware-config monthly \
     /etc/modprobe.d/{deck-blacklist,default-disable-broadcom-wl}.conf \
     /etc/modules-load.d/hid-steaminput-preload.conf \
     /usr/lib/modprobe.d/{fw-charge-control,mt7921,new-lg4ff}.conf \
-    /usr/lib/modules-load.d/wine-ntsync.conf \
     /usr/lib/systemd/system/cec-{onboot,onpoweroff,onsleep}.service \
     /usr/lib/systemd/system/kmod-sleep-workaround@.service \
     /usr/lib/udev/hwdb.d/60-keyboard.hwdb \
     /usr/lib/udev/rules.d/{30-steamdeck,40-backlights,50-ally-fingerprint,50-ally-x-controller}.rules \
+    /usr/lib/udev/rules.d/50-ayaneo-3-controller.rules \
     /usr/lib/udev/rules.d/{50-gpd-win-4-fingerprint,50-gpd-wm2-fingerprint}.rules \
     /usr/lib/udev/rules.d/{60-schedulers,70-steam-jupiter-leds,80-gpu-reset,90-dolphin-motion}.rules \
     /usr/lib/udev/rules.d/{99-cec-bluetooth,99-powertargets,99-steamcontroller-wakeup,99-valve-leds}.rules
@@ -228,7 +227,6 @@ assign_chunk bazzite-hardware-config monthly \
 assign_chunk bazzite-desktop-config quarterly \
     /etc/dconf/db/distro.d/*bazzite* \
     /etc/dconf/db/distro.d/locks/*bazzite* \
-    /etc/polkit-1/rules.d/50-efibootmgr.rules \
     /etc/skel/.config/gnome-initial-setup-done \
     /etc/skel/.config/gtk-4.0/{gtk,kde_window_geometry}.css \
     /etc/skel/.config/kcminputrc \
@@ -246,7 +244,8 @@ assign_chunk bazzite-desktop-config quarterly \
     /usr/share/glib-2.0/schemas/zz0-*.gschema.override \
     /usr/share/kde-settings/kde-profile/default/xdg/{kicker-extra-favoritesrc,krunnerrc} \
     /usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates/bazzite-pins.js \
-    /usr/share/templates/{MangoHud,dxvk,vkBasalt}.desktop
+    /usr/share/templates/{MangoHud,dxvk,vkBasalt}.desktop \
+    /usr/share/xdg-terminal-exec/{gnome,kde}-xdg-terminals.list
 
 assign_chunk bazzite-desktop-helpers monthly \
     /usr/bin/{custom-resolution-helper,distroshelf-helper,kde-ptyxis,missioncenter-helper,warehouse-helper} \
@@ -259,6 +258,10 @@ assign_chunk bazzite-shell-config quarterly \
     /usr/libexec/ublue-motd \
     /usr/share/fish/functions/fish_{greeting,prompt}.fish \
     /usr/share/fish/vendor_conf.d/bazzite-neofetch.fish
+
+assign_chunk bazzite-repos weekly \
+    /etc/yum.repos.d \
+    /etc/dnf/repos.override.d
 
 assign_chunk bazzite-package-management monthly \
     /etc/distrobox/distrobox.ini \
@@ -275,14 +278,13 @@ assign_chunk bazzite-gaming-helpers monthly \
     /usr/bin/{gameclass,mesa-git,protontricks,protontricks-launch,sd0,steam-tweaks}
 
 assign_chunk bazzite-gaming-config quarterly \
+    /etc/default/steam-hardware-control \
     /etc/default/steamos-{btrfs,nested-desktop} \
     /etc/skel/.config/user-tmpfiles.d/discord-rpc.conf \
     /usr/lib/systemd/user/steam-icons-cleanup.service \
     /usr/share/applications/bazzite-steam-bpm.desktop
 
 assign_chunk bazzite-gamescope-session monthly \
-    /etc/dbus-1/system.d/org.opengamingcollective.cardwire.bazzite.conf \
-    /etc/default/steam-hardware-control \
     /etc/sddm.conf.d/virtualkbd.conf \
     /etc/systemd/logind.conf.d/deck.conf \
     /etc/xdg/autostart/bazzite-desktop-bootstrap.desktop \
@@ -292,7 +294,6 @@ assign_chunk bazzite-gamescope-session monthly \
     /usr/lib/systemd/system/{ac,battery}.target \
     /usr/lib/systemd/system/bazzite-autologin.service \
     /usr/lib/systemd/system/steam-web-debug-portforward.{service,socket} \
-    /usr/lib/systemd/user/bazzite-native-steam-input.service \
     /usr/libexec/os-session-select \
     /usr/share/applications/gamescope.desktop \
     /usr/share/gamescope/scripts/00-gamescope/displays/gpd.win4.lcd.lua \
@@ -308,7 +309,7 @@ assign_chunk bazzite-audio-config quarterly \
     /usr/share/wireplumber/wireplumber.conf.d/{51-disable-suspension,alsa-card0,alsa-card1,alsa-ps-controller,bluez}.conf
 
 assign_chunk bazzite-power-config quarterly \
-    /etc/scx_loader/config.toml \
+    /etc/UPower/UPower.conf.d/10-deck-defaults.conf \
     /usr/lib/tuned/profiles/{balanced,balanced-battery,powersave,powersave-battery,throughput-performance}-bazzite
 
 assign_chunk bazzite-network-config quarterly \
@@ -325,6 +326,7 @@ assign_chunk bazzite-storage monthly \
     /usr/lib/systemd/system/beesd@.timer \
     /usr/lib/systemd/system/fstrim.service.d/workaround-no-root-trim.conf \
     /usr/lib/systemd/user/ntfs-nag.service \
+    /usr/lib/tmpfiles.d/btrfs-reclaim.conf \
     /usr/libexec/ntfs-exfat-monitor-script
 
 assign_chunk bazzite-waydroid monthly \
@@ -352,6 +354,16 @@ assign_chunk bazzite-nvidia monthly \
     /usr/lib/udev/rules.d/80-nvidia-pm.rules \
     /usr/libexec/ublue-nvidia-flatpak-runtime-{notify,sync} \
     /usr/share/selinux/packages/nvidia-container.pp
+
+assign_chunk bazzite-dx quarterly \
+    /etc/skel/.config/Code/User/settings.json \
+    /usr/bin/gamemode-nested \
+    /usr/libexec/bazzite-dx-* \
+    /usr/lib/systemd/system/bazzite-dx-groups.service \
+    /usr/share/applications/gamemode-nested.desktop \
+    /usr/share/ublue-os/homebrew/bazzite-dx-*.Brewfile \
+    /usr/share/ublue-os/privileged-setup.hooks.d/20-dx.sh \
+    /usr/share/ublue-os/user-setup.hooks.d/{11-vscode-extensions,99-privileged}.sh
 
 # Catch files changed since the last stage's reset (initramfs, image-info, overrides).
 /ctx/reset-mtimes.sh

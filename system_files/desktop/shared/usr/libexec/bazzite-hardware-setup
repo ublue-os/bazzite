@@ -6,7 +6,7 @@ IMAGE_BRANCH=$(jq -r '."image-branch"' < $IMAGE_INFO)
 FEDORA_VERSION=$(jq -r '."fedora-version"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
-HWS_VER=85
+HWS_VER=91
 HWS_VER_FILE="/etc/bazzite/hws_version"
 HWS_VER_RAN=$(cat $HWS_VER_FILE)
 
@@ -45,6 +45,7 @@ MINIMUM_FREE_ZRAM=$(awk '/MemTotal/ {printf "%.0f", $2 * 0.01}' /proc/meminfo)
 CURRENT_FREE_ZRAM=$(sysctl vm.min_free_kbytes | awk '{print $3}')
 KARGS=$(rpm-ostree kargs)
 NEEDED_KARGS=()
+SHOULD_REBOOT=false
 
 # Add directory for fixups
 mkdir -p /etc/bazzite/fixups
@@ -91,6 +92,12 @@ if [[ ":Framework:" =~ ":$VEN_ID:" ]]; then
       NEEDED_KARGS+=("--append-if-missing=module_blacklist=hid_sensor_hub");
     fi
   fi
+  if [[ "$SYS_ID" == "Laptop 16 ("* ]]; then
+    if [[ ! $KARGS =~ "amdgpu.dcdebugmask" ]]; then
+      echo "Framework 16 Laptop detected, fixing display artifacts"
+      NEEDED_KARGS+=("--append-if-missing=amdgpu.dcdebugmask=0x410")
+    fi
+  fi
 fi
 
 # Slide reboots randomly, acpi=strict seems to fix it
@@ -109,6 +116,28 @@ fi
 if [[ $KARGS =~ "nomodeset" ]]; then
   echo "Removing nomodeset"
   NEEDED_KARGS+=("--delete-if-present=nomodeset")
+fi
+
+# Enable TSC directsync after patch
+if [[ ! $KARGS =~ "tsc=directsync" ]]; then
+  clocksource_file=/sys/devices/system/clocksource/clocksource0/current_clocksource
+  if ! current_clocksource=$(cat "$clocksource_file"); then
+    echo "Cannot read current clocksource; skipping tsc=directsync." >&2
+  elif [[ "$current_clocksource" == hpet || "$current_clocksource" == acpi_pm ]]; then
+    if awk '
+      /^flags[[:space:]]*:/ {
+          for (i = 2; i <= NF; i++) {
+              if ($i == "tsc") found = 1
+          }
+      }
+      END { exit !found }
+    ' /proc/cpuinfo; then
+      echo "Adding tsc=directsync"
+      NEEDED_KARGS+=("--append-if-missing=tsc=directsync")
+    else
+      echo "Cannot confirm CPU TSC support; skipping tsc=directsync." >&2
+    fi
+  fi
 fi
 
 if [[ $IMAGE_NAME =~ "deck" ]]; then
@@ -139,7 +168,7 @@ if [[ $IMAGE_NAME =~ "deck" ]]; then
       systemctl enable --now jupiter-fan-control.service
       systemctl enable --now vpower.service
     elif /usr/libexec/hwsupport/non-valve-handheld-hardware; then
-      echo "Other handheld detected, unmasking powerstation and inputplumber".
+      echo "Other handheld detected, unmasking powerstation and inputplumber, disabling vpower".
       systemctl unmask powerstation.service
       systemctl enable --now powerstation.service
       systemctl unmask inputplumber.service
@@ -278,10 +307,10 @@ if [ ! -f /etc/hostname ]; then
   touch /etc/hostname
 fi
 
-if [[ -n "$NEEDED_KARGS" ]]; then
+if (( ${#NEEDED_KARGS[@]} > 0 )); then
   echo "Found needed karg changes, applying the following: ${NEEDED_KARGS[*]}"
   plymouth display-message --text="Preparing System - Please wait, this may take a while" || true
-  rpm-ostree kargs ${NEEDED_KARGS[*]} || exit 1
+  rpm-ostree kargs "${NEEDED_KARGS[@]}" || exit 1
   SHOULD_REBOOT=true
 else
   echo "No karg changes needed"

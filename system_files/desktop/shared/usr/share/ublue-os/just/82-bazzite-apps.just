@@ -106,8 +106,14 @@ install-coolercontrol ACTION="":
     PublishPort=127.0.0.1:11987:11987
     Volume=/etc/coolercontrol:/etc/coolercontrol
     Volume=/var/lib/coolercontrol:/var/lib/coolercontrol
+    Volume=/etc/localtime:/etc/localtime
+
+    # make dbus sleep listener work
+    Volume=/var/run/dbus/system_bus_socket:/var/run/dbus/system_bus_socket
+    Environment=CC_DBUS=ON
+
     PodmanArgs=$podman_args
-    Label=io.containers.autoupdate=registry
+    AutoUpdate=registry
 
     [Service]
     Restart=always
@@ -596,7 +602,7 @@ install-openrazer ACTION="":
         fi
     }
     get_current_status() {
-        if ! layered_package openrazer-daemon; then
+        if ! [[ -f "$HOME/.config/systemd/user/openrazer-daemon.service" ]]; then
             echo "Not Installed"
         elif flatpak_installed xyz.z3ntu.razergenie; then
             echo "Installed (Razer Genie)"
@@ -627,30 +633,53 @@ install-openrazer ACTION="":
             echo "Not Selecting GUI Frontend"
         fi
 
-        sudo rm -f /etc/yum.repos.d/hardware:razer.repo
-        just _enable_terra
-        rpm-ostree install -y openrazer-daemon
+        cleanup_layered_openrazer
+
+        echo "Installing Openrazer..."
+        mkdir -p /tmp/openrazer && \
+        curl -s https://api.github.com/repos/openrazer/openrazer/releases/latest \
+        | jq -r '.assets | sort_by(.created_at) | .[] | select (.name|test("openrazer.*tar.xz$")) | .browser_download_url' \
+        | wget -qi - -O /tmp/openrazer/openrazer.tar.xz && \
+        tar --strip-components=1 -xvf /tmp/openrazer/openrazer.tar.xz -C /tmp/openrazer >/dev/null 2>&1 && \
+        cd /tmp/openrazer/daemon && \
+        PREFIX=~/.local make install >/dev/null 2>&1 && \
+        mkdir -p ~/.config/systemd/user/ && \
+        mv ~/.local/lib/systemd/user/openrazer-daemon.service ~/.config/systemd/user && \
+        pip install --user daemonize gobject && \
+        mkdir -p ~/.config/openrazer && \
+        cp ~/.local/share/openrazer/razer.conf.example ~/.config/openrazer/razer.conf && \
+        systemctl --user daemon-reload && \
+        systemctl enable --user --now openrazer-daemon
         if ! grep -q "plugdev" /etc/group; then
             sudo bash -c 'grep "plugdev" /lib/group >> /etc/group'
         fi
         sudo usermod -a -G plugdev "$USER"
         echo "$OPENRAZER_CONFIGURATOR_APP is installed"
-        echo "Please reboot to apply needed changes."
+        echo "Please re-login to apply needed changes."
     }
-    uninstall_openrazer() {
+    cleanup_layered_openrazer() {
         if layered_package openrazer-daemon; then
             rpm-ostree uninstall -y openrazer-daemon
-            echo "OpenRazer daemon has been uninstalled."
+            echo "OpenRazer daemon RPM has been uninstalled. Please reboot to apply needed changes."
         else
             echo "OpenRazer daemon is not layered."
         fi
+    }
+    uninstall_openrazer() {
+        systemctl disable --user --now openrazer-daemon
+        cleanup_layered_openrazer
+        rm ~/.local/bin/openrazer-daemon
+        pip uninstall -y openrazer_daemon
+        rm -rf ~/.local/share/openrazer
+        rm ~/.local/share/man/man8/openrazer-daemon.8.gz
+        rm ~/.local/share/man/man5/razer.conf.5.gz
+        rm ~/.config/systemd/user/openrazer-daemon.service
         if flatpak_installed xyz.z3ntu.razergenie; then
             flatpak --system remove -y xyz.z3ntu.razergenie
         fi
         if flatpak_installed app.polychromatic.controller; then
             flatpak --system remove -y app.polychromatic.controller
         fi
-        echo "Please reboot to apply needed changes."
     }
     OPTION="{{ ACTION }}"
     if [[ "$OPTION" == "help" ]]; then

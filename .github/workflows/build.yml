@@ -94,6 +94,7 @@ jobs:
     runs-on: ubuntu-26.04
     continue-on-error: false
     permissions:
+      actions: read
       contents: read
       packages: write
       id-token: write
@@ -208,7 +209,6 @@ jobs:
 
           ALLOW_CACHE_WRITE="false"
 
-          # TODO: If we ever integrate dx images here then this may need to be adjusted
           # TODO: remove testing here when we have cache on main branch
           # PR caches are useless and may wipe cache on main
           if [[ "${IMAGE}" =~ "-deck" ]] && \
@@ -220,6 +220,20 @@ jobs:
 
           echo "cache_name=${CACHE_NAME}" >> "$GITHUB_OUTPUT"
           echo "allow_cache_write=${ALLOW_CACHE_WRITE}" >> "$GITHUB_OUTPUT"
+
+      # Fetch the archive published by steam_bootstrap.yml. Without it the deck
+      # build makes its own from Valve's CDN.
+      - name: Download Steam bootstrap
+        if: contains(matrix.image, 'deck') || contains(matrix.image, '-dx')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -eo pipefail
+          run_id="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/steam_bootstrap.yml/runs?status=success&per_page=20" \
+            --jq "[.workflow_runs[] | select(.event != \"pull_request\" and .head_repository.full_name == \"${GITHUB_REPOSITORY}\")][0].id // empty")" || run_id=""
+          if [ -z "${run_id}" ] || ! gh run download "${run_id}" --repo "${GITHUB_REPOSITORY}" --name steam-bootstrap --dir steam_bootstrap; then
+            echo "::warning::No Steam bootstrap artifact found, the build will make its own"
+          fi
 
       # Build image using buildah and save it to raw-img
       - name: Build Image
@@ -284,7 +298,7 @@ jobs:
       - name: Setup Syft
         id: setup-syft
         if: github.event_name != 'pull_request'
-        uses: anchore/sbom-action/download-syft@66cbf4bc1f1c0d2edc94016e65bc221b6bb0ad6c # v0.24.3
+        uses: anchore/sbom-action/download-syft@dfcb83b97731532d72be422cbc51ee64adb6fd56 # v0.24.4
         with:
           # FIXME: a renovate rule for this would be nice
           syft-version: v1.44.0
@@ -381,7 +395,7 @@ jobs:
 
       - name: Install ORAS
         if: github.event_name != 'pull_request'
-        uses: oras-project/setup-oras@5e2f2482b30b0cb3e14e67f89a80c88c659a7c63 # v2.0.3
+        uses: oras-project/setup-oras@ac735097e22fe643015b0d19645f7c9a69942128 # v2.0.4
 
       - name: Login to GitHub Container Registry with ORAS
         if: github.event_name != 'pull_request'
@@ -470,16 +484,3 @@ jobs:
           repository: ublue-os/bazzite-gamemode-news
           event-type: build-announcements
           client-payload: '{"branch": "${{ steps.get-target.outputs.target }}"}'
-
-  kickoff_bazzite_dx:
-    runs-on: ubuntu-26.04
-    needs: [generate_release]
-    if: github.repository == 'ublue-os/bazzite' && github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
-    steps:
-      - name: Kickoff Bazzite-DX
-        uses: peter-evans/repository-dispatch@28959ce8df70de7be546dd1250a005dd32156697 # v4
-        continue-on-error: true
-        with:
-          token: ${{ secrets.PAT }}
-          repository: ublue-os/bazzite-dx
-          event-type: build
