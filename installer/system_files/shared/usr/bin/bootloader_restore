@@ -77,7 +77,7 @@ efi_dev=$(systemd-repart --json=short "$DISK_PATH" 2>/dev/null |
         xdg-terminal-exec --title="$_APP_NAME - Restoring EFI system partition" -- \
         # Parted doesn't really have a way to track whether the rescue is successful, so we
         # trach the number of existing partitions instead.
-        PRE_COUNT=$(systemd-repart --json=short "$DISK_PATH" 2>/dev/null | jq -r '.length')
+        PRE_COUNT=$(systemd-repart --json=short "$DISK_PATH" 2>/dev/null | jq -r 'length')
         # In most configurations I have seen, the ESP starts at 1049kB and ends at 630MB.
         # `rescue` knows to search near the given spots, so a bit of leeway to account for
         # possible hardware-specific quirks in storage is fine.
@@ -85,7 +85,7 @@ efi_dev=$(systemd-repart --json=short "$DISK_PATH" 2>/dev/null |
         parted "$DISK_PATH" rescue 0 630MB
 
         partprobe
-        POST_COUNT=$(systemd-repart --json=short "$DISK_PATH" 2>/dev/null | jq -r '.length')
+        POST_COUNT=$(systemd-repart --json=short "$DISK_PATH" 2>/dev/null | jq -r 'length')
         [[ "$PRE_COUNT" = "$POST_COUNT" ]] && {
             error "'parted rescue' on the ESP is unsuccessful"
             die_gui "Parted is unable to recreate the ESP."
