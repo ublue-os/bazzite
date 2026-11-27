@@ -8,7 +8,7 @@ boot_was_ro=false
 # Remount /boot as read-only if it was mounted as read-only ealier
 function remount_boot_ro {
     if $boot_was_ro; then
-        mount -o remount,ro /boot || exit 13
+        sudo mount -o remount,ro /boot || exit 13
     fi
     return
 }
@@ -16,7 +16,7 @@ function remount_boot_ro {
 # Remount /boot as read-write if it was mounted as read-only
 function remount_boot_rw {
     if grep -q " /boot .* ro," /proc/mounts; then
-        mount -o remount,rw /boot || exit 13
+        sudo mount -o remount,rw /boot || exit 13
         boot_was_ro=true
     fi
     return
