@@ -92,3 +92,7 @@ if [[ "${BASE_IMAGE_NAME}" == "kinoite" ]]; then
     dnf versionlock add "qt6-*"
     dnf versionlock add "plasma-*"
 fi
+
+# Global version locks
+dnf versionlock add "zstd"
+dnf versionlock add "libzstd"
