@@ -66,7 +66,42 @@ DISK_PATH=/dev/${DISK_PATH}
 
 efi_dev=$(systemd-repart --json=short "$DISK_PATH" 2>/dev/null |
     jq -r '.[] | select(.type == "esp").node')
-[[ -n ${efi_dev} ]] || { die_gui "EFI partition not found"; }
+[[ -n ${efi_dev} ]] || {
+    yad --text="The EFI system partition on $DISK_PATH is not found. It *might* be recoverable. Proceed?" || {
+        info "User cancelled during ESP recreation confirmation"
+        die_gui "EFI partition not found and recreation is not confirmed. No change has been performed on disk.";
+    }
+    # `parted rescue` should generally work if the ESP is only removed from the table and not wiped.
+    yad --text="Attempting a direct partition recovery. Type 'y' and press enter in terminal window, when the prompt shows up." --button="OK:0"
+    run0 --user="$PKEXEC_UID" -- \
+        xdg-terminal-exec --title="$_APP_NAME - Restoring EFI system partition" -- \
+        # Parted doesn't really have a way to track whether the rescue is successful, so we
+        # trach the number of existing partitions instead.
+        PRE_COUNT=$(systemd-repart --json=short "$DISK_PATH" 2>/dev/null | jq -r '.length')
+        # In most configurations I have seen, the ESP starts at 1049kB and ends at 630MB.
+        # `rescue` knows to search near the given spots, so a bit of leeway to account for
+        # possible hardware-specific quirks in storage is fine.
+        # 0 and 630MB works in my testing.
+        parted "$DISK_PATH" rescue 0 630MB
+
+        partprobe
+        POST_COUNT=$(systemd-repart --json=short "$DISK_PATH" 2>/dev/null | jq -r '.length')
+        [[ "$PRE_COUNT" = "$POST_COUNT" ]] && {
+            error "'parted rescue' on the ESP is unsuccessful"
+            die_gui "Parted is unable to recreate the ESP."
+            # TODO: Maybe create a new ESP if recreation fails.
+        }
+
+        parted "$DISK_PATH" set 1 boot on
+        parted "$DISK_PATH" set 1 esp on
+        parted "$DISK_PATH" set 1 msftdata off
+        partprobe
+        efi_dev=$(systemd-repart --json=short "$DISK_PATH" 2>/dev/null |
+            jq -r '.[] | select(.type == "esp").node')
+
+    info "ESP $efi_dev recreated from 'parted rescue', proceeding"
+}
+
 xboot_dev=$(
     lsblk -J -p -f -o NAME,LABEL,SIZE,FSTYPE "$DISK_PATH" 2>/dev/null |
         jq -r '.blockdevices[0].children[] | select(.fstype == "ext4") | "\(.name)
