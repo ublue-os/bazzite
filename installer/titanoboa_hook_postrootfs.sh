@@ -8,7 +8,7 @@ source /etc/os-release
 dnf -qy versionlock clear
 
 # Install Anaconda
-dnf install -qy --enable-repo=fedora-cisco-openh264 --allowerasing firefox anaconda-live libblockdev-{btrfs,lvm,dm}
+dnf install -qy --enable-repo=fedora-cisco-openh264 --allowerasing firefox anaconda-live libblockdev-{btrfs,lvm,dm} udisks2-btrfs
 
 mkdir -p /var/lib/rpm-state # Needed for Anaconda Web UI
 
