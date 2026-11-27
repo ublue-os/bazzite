@@ -1,0 +1,21 @@
+# >>> bazzite-ac3-surround >>>
+# Managed by 'ujust setup-ac3-surround'. Re-run the recipe instead of editing this block.
+# Based on Basso's AC3-over-HDMI guide: https://gist.github.com/basso/04cbdc9cad5629f2ae83a941875c4ad5
+pcm.a52_raw {
+    type a52
+    rate 48000
+    bitrate 640
+    channels 6
+    format S16_LE
+    slavepcm "@SLAVE_PCM@"
+}
+
+pcm.a52_safe {
+    type plug
+    slave.pcm "a52_raw"
+    hint {
+        show on
+        description "TV (AC3 Surround)"
+    }
+}
+# <<< bazzite-ac3-surround <<<

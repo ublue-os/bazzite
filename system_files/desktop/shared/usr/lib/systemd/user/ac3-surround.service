@@ -1,0 +1,29 @@
+# Managed by Bazzite. Enable with 'ujust setup-ac3-surround'; the per-machine
+# settings live in ~/.config/ac3-surround/state (see the EnvironmentFile below).
+# Based on Basso's AC3-over-HDMI guide: https://gist.github.com/basso/04cbdc9cad5629f2ae83a941875c4ad5
+
+[Unit]
+Description=AC3 (Dolby Digital 5.1) sink for HDMI, kept alive so the receiver does not drop the stream
+Documentation=https://docs.bazzite.gg/ https://gist.github.com/basso/04cbdc9cad5629f2ae83a941875c4ad5
+After=pipewire.service pipewire-pulse.service wireplumber.service
+Wants=pipewire-pulse.service
+
+[Service]
+EnvironmentFile=-%h/.config/ac3-surround/state
+# Wait for the sound server to accept clients before touching the ALSA device.
+ExecStartPre=/usr/bin/bash -c "for _ in {1..30}; do /usr/bin/pactl info >/dev/null 2>&1 && break; /usr/bin/sleep 1; done"
+# Keep PipeWire off the HDMI PCM (AC3_CARD is empty when there is nothing to release).
+ExecStartPre=-/bin/sh -c '[ -n "${AC3_CARD}" ] && exec /usr/bin/pactl set-card-profile "${AC3_CARD}" off'
+# Create the 5.1 AC3 sink if it is missing, and make it the default.
+ExecStartPre=/usr/bin/bash -c "if ! /usr/bin/pactl list short sinks | /usr/bin/grep -qE '[[:space:]]TV_AC3[[:space:]]'; then /usr/bin/pactl load-module module-alsa-sink device=a52_safe sink_name=TV_AC3 channels=6 channel_map=front-left,front-right,rear-left,rear-right,front-center,lfe rate=48000 format=s16le sink_properties=device.description=TV_Surround_5.1; fi"
+ExecStartPre=-/usr/bin/pactl set-default-sink TV_AC3
+# Digital silence keeps the encoder from idling, so the receiver does not drop the stream.
+ExecStart=/usr/bin/paplay --raw --format=s16le --rate=48000 --channels=2 --device=TV_AC3 --property=media.role=background --latency-msec=2000 /dev/zero
+# Restarting recreates the sink, so the setup survives PipeWire restarts, and it comes back on
+# its own when the receiver is switched on again. RestartSec keeps a failing start to one attempt
+# per 10 s, inside systemd's default start limit, so a stuck setup cannot spin.
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=default.target

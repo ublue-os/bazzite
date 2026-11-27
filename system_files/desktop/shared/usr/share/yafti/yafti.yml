@@ -794,6 +794,18 @@ screens:
           - id: "disable"
             label: "Remove Virtual Headphone Surround"
             script: 'ujust setup-virtual-surround disable; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+      - id: "ac3-surround"
+        title: "Setup Dolby Digital 5.1 (AC3) over HDMI"
+        description: "Encode all audio as AC3 for TVs and AV receivers that only accept stereo PCM over HDMI ARC/eARC."
+        default: false
+        status_script: "ujust setup-ac3-surround status"
+        options:
+          - id: "enable"
+            label: "Enable AC3 5.1 Surround"
+            script: 'ujust setup-ac3-surround enable; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
+          - id: "disable"
+            label: "Disable AC3 5.1 Surround"
+            script: 'ujust setup-ac3-surround disable; status=$?; echo; echo "Press Enter to close..."; read -r _; exit $status'
       - id: "virtualization"
         title: "Setup virtualization"
         description: "Manage host virtualization support for virt-manager."

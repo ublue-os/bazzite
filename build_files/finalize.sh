@@ -302,6 +302,8 @@ assign_chunk bazzite-gamescope-session monthly \
 
 assign_chunk bazzite-audio-config quarterly \
     /usr/lib/systemd/system/{pipewire,wireplumber}-workaround.service \
+    /usr/lib/systemd/user/ac3-surround.service \
+    /usr/share/ublue-os/ac3-surround/asoundrc \
     /usr/lib/tmpfiles.d/wireplumber-workaround.conf \
     /usr/share/alsa/ucm2/codecs/tas2783/init.conf \
     /usr/share/alsa/ucm2/sof-soundwire/tas2783.conf \

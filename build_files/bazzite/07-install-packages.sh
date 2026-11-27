@@ -50,6 +50,7 @@ dnf5 -y install \
     framework-system \
     udica \
     ladspa-caps-plugins \
+    alsa-plugins-a52 \
     pipewire-module-filter-chain-sofa \
     python3-icoextract \
     tailscale \
