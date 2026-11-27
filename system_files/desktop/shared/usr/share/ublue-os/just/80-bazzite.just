@@ -1451,6 +1451,19 @@ get-logs:
     #!/bin/bash
     set -euo pipefail
     source /usr/lib/ujust/ujust.sh
+    check_url_accessible() {
+      url=$1
+     if curl --connect-timeout 10 --max-time 15 --silent --head  --output /dev/null "$url" ; then
+         return 0
+     else
+         echo "URL $url is not reachable."
+         return 1
+     fi
+    }
+    if ! check_url_accessible https://centos.org/; then
+      echo "Could not upload logs. Please check your internet connection and try again."
+      exit 7
+    fi
     echo -e "${red}${bold}Generating and uploading system information and logs for Bazzite Support...${normal}"
     echo " "
     # Upload system status information
