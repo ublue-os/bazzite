@@ -221,7 +221,7 @@ assign_chunk bazzite-hardware-config monthly \
     /usr/lib/modprobe.d/{fw-charge-control,mt7921,new-lg4ff}.conf \
     /usr/lib/systemd/system/cec-{onboot,onpoweroff,onsleep}.service \
     /usr/lib/systemd/system/kmod-sleep-workaround@.service \
-    /usr/lib/udev/hwdb.d/60-keyboard.hwdb \
+    /usr/lib/udev/hwdb.d/59-bazzite-onexplayer-volume.hwdb \
     /usr/lib/udev/rules.d/{30-steamdeck,40-backlights,50-ally-fingerprint,50-ally-x-controller}.rules \
     /usr/lib/udev/rules.d/50-ayaneo-3-controller.rules \
     /usr/lib/udev/rules.d/{50-gpd-win-4-fingerprint,50-gpd-wm2-fingerprint}.rules \
