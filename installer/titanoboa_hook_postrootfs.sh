@@ -106,21 +106,13 @@ run0 --user=liveuser yad \
     < /tmp/anaconda.log
 %end
 
-ostreecontainer --url=$imageref:$imagetag --transport=containers-storage --no-signature-verification
-%include /usr/share/anaconda/post-scripts/install-configure-upgrade.ks
+bootc --source-imgref=containers-storage:$image_ref:$image_tag --target-imgref=$image_ref:$image_tag
 %include /usr/share/anaconda/post-scripts/disable-fedora-flatpak.ks
 %include /usr/share/anaconda/post-scripts/install-flatpaks.ks
 %include /usr/share/anaconda/post-scripts/restore-selinux-labels.ks
 %include /usr/share/anaconda/post-scripts/secureboot-enroll-key.ks
 %include /usr/share/anaconda/post-scripts/secureboot-docs.ks
 
-EOF
-
-# Signed Images
-cat <<EOF >>/usr/share/anaconda/post-scripts/install-configure-upgrade.ks
-%post --erroronfail --log=/tmp/anacoda_custom_logs/bootc-switch.log
-bootc switch --mutate-in-place --enforce-container-sigpolicy --transport registry $imageref:$imagetag
-%end
 EOF
 
 # Enroll Secureboot Key
