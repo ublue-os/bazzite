@@ -6,6 +6,7 @@ set -xeuo pipefail
 
 echo "--- Starting core build ---"
 
+/ctx/bazzite/00-version-lock.sh
 /ctx/bazzite/01-copy-brew-files.sh
 
 cp --archive --verbose --force \
