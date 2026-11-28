@@ -1,0 +1,3 @@
+# Suppress console output and enable Plymouth
+# This might be able to be upstreamed into Fedora https://forge.fedoraproject.org/atomic-desktops/config
+kargs = ["quiet rhgb"]
